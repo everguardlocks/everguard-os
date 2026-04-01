@@ -272,6 +272,24 @@ select.inp{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.
 .alert-banner{border-radius:10px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:12px;min-height:54px;}
 .ab-red{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);}
 .ab-gold{background:var(--gbg);border:1px solid var(--gbr);}
+
+/* WIN FLASH */
+.win-ov{position:fixed;inset:0;background:rgba(5,13,8,.94);z-index:500;display:flex;align-items:center;justify-content:center;animation:wfadeIn .2s ease;}
+@keyframes wfadeIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.win-card{background:var(--s2);border:2px solid var(--gbr);border-radius:22px;padding:36px 28px;text-align:center;max-width:310px;width:90%;box-shadow:0 30px 80px rgba(0,0,0,.8);}
+
+/* PROFIT HERO */
+.profit-hero{background:var(--s2);border:1px solid var(--gbr);border-radius:12px;padding:14px 16px;margin-top:10px;}
+.ph-row{display:flex;justify-content:space-between;align-items:center;}
+.ph-sub{display:flex;gap:18px;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd);}
+.ph-item-v{font-size:13px;font-weight:700;}
+.ph-item-l{font-size:10px;color:var(--t3);font-weight:600;margin-top:2px;}
+
+/* 7-DAY MOMENTUM */
+.momentum{background:rgba(82,224,154,.04);border:1px solid rgba(82,224,154,.25);border-radius:14px;padding:16px 18px;margin-bottom:12px;}
+
+/* LABOR DESC TEXTAREA */
+.li-desc-ta{background:var(--s2);border:1px solid var(--b2);border-radius:9px;padding:11px 12px;color:var(--tx);font-size:14px;font-weight:500;outline:none;font-family:var(--f);min-height:52px;}
 </style>
 </head>
 <body>
@@ -319,6 +337,7 @@ let S = {
   // misc
   taskAssign:'Both', taxEnabled:false,
   loading:false, loadingMsg:'',
+  winData:null,
   showMap:false, mapAddr:'',
   editingGoal:false,
   invPrefill:[],
@@ -512,7 +531,8 @@ function render(){
     +'<div class="hright">'+st.action+gear+' '+rb+'<button class="lout" onclick="logout()">Exit</button></div></div>'
     +'<div class="scroll" id="main">'+rMain()+'</div>'
     +'<nav class="bnav">'+nav+'</nav>'
-    +mapOv;
+    +mapOv
+    +(S.winData?rWinFlash():'');
   if(S.showMap)setTimeout(()=>initMap(S.mapAddr),200);
   if(S.invPrefill&&S.invPrefill.length&&document.getElementById('inv-li-con'))setTimeout(prefillInvoiceItems,200);
 }
@@ -607,7 +627,23 @@ function rDash(){
   const lowStock=S.inventory.filter(i=>i.qty_on_hand<=i.low_stock_threshold&&i.is_active!==false);
   const pendingComp=S.drawComparisons.find(c=>c.status==='Pending');
   const todayJobs=S.jobs.filter(j=>j.scheduled_date===td()&&j.status!=='Complete'&&!j.archived);
+  // 7-day momentum
+  const cutoff=new Date();cutoff.setDate(cutoff.getDate()-7);
+  const last7=S.invoices.filter(i=>{
+    if(i.status!=='Paid'&&i.status!=='Partial')return false;
+    return new Date((i.created_at||td())+'T00:00:00')>=cutoff;
+  });
+  const last7Rev=last7.reduce((s,i)=>s+(i.status==='Paid'?(i.total||0):(i.amt_received||0)),0);
+  const last7Profit=last7.reduce((s,i)=>s+(i.line_items||[]).reduce((ps,li)=>ps+((li.sell_price||0)-(li.cost_price||0))*(li.qty||1),0),0);
   let h='<div style="font-size:13px;color:var(--t3);margin-bottom:14px;font-weight:600">'+now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+'</div>';
+  if(last7Rev>0){
+    h+='<div class="momentum">'
+      +'<div style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--grn);margin-bottom:6px">Last 7 Days</div>'
+      +'<div style="font-size:30px;font-weight:800;letter-spacing:-1px;color:var(--grn)">'+fmt(last7Rev)+'</div>'
+      +'<div style="font-size:13px;color:var(--t2);margin-top:4px;font-weight:600">'+last7.length+' invoice'+(last7.length!==1?'s':'')+' collected'
+      +(last7Profit>0?' &nbsp;·&nbsp; <strong style="color:var(--grn)">+'+fmt(last7Profit)+' profit</strong>':'')
+      +'</div></div>';
+  }
   if(lowStock.length)h+='<div class="alert-banner ab-red"><span style="font-size:18px">⚠️</span><div><div style="font-size:13px;font-weight:800;color:var(--red)">'+lowStock.length+' item'+(lowStock.length>1?'s':'')+' low on stock</div><div style="font-size:12px;color:var(--t2);margin-top:2px">'+lowStock.slice(0,3).map(i=>i.name).join(', ')+'</div></div></div>';
   if(pendingComp){const myApp=S.role==='tech1'?pendingComp.drew_approved:S.role==='tech2'?pendingComp.jaime_approved:true;if(!myApp&&!isAdmin())h+='<div class="alert-banner ab-gold"><span style="font-size:18px">💬</span><div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--gold)">Draw comparison requested</div></div><button class="btn-gold" onclick="approveCompare(\''+pendingComp.id+'\')">Approve</button></div>';}
   h+='<div class="plb"><div class="pll">Net P&amp;L — '+y+' YTD</div><div class="plv" style="color:'+plc+'">'+fmtS(ytd.net)+'</div><div class="plm">Net Margin: <strong style="color:'+plc+'">'+pct(ytd.netMargin)+'</strong> &nbsp;·&nbsp; Gross: <span style="color:var(--grn)">'+pct(ytd.grossMargin)+'</span></div><div class="plr"><div class="pli"><div class="pli-v">'+fmt(ytd.rev)+'</div><div class="pli-l">Revenue</div></div><div class="pli"><div class="pli-v" style="color:var(--red)">'+fmt(ar)+'</div><div class="pli-l">A/R</div></div><div class="pli"><div class="pli-v" style="color:'+moc+'">'+fmtS(mo.net)+'</div><div class="pli-l">This Month</div></div></div></div>';
@@ -792,27 +828,45 @@ function addLI(container,type){
   const id='li'+Date.now();const d=document.createElement('div');d.className='li-row';d.id=id;
   const taxed=type==='part'||type==='custom';
   const cs='width:64px;background:var(--s2);border:1px solid var(--b2);border-radius:9px;padding:11px 6px;color:var(--t3);font-size:13px;font-weight:600;outline:none;text-align:center;min-height:44px;';
-  let descHTML='',costVal='0';
-  if(type==='part'){
-    const opts=S.inventory.filter(i=>i.is_active!==false).map(i=>'<option value="'+i.sell_price+'" data-cost="'+(i.cost_price||0)+'" data-desc="'+i.name+'" data-inv-id="'+i.id+'">'+i.name+' ('+i.qty_on_hand+' on hand)</option>').join('');
-    descHTML='<select class="li-desc" onchange="var r=this.parentElement;var opt=this.options[this.selectedIndex];r.querySelector(\'.li-price\').value=this.value;r.querySelector(\'.li-cost\').value=opt.getAttribute(\'data-cost\')||0;r.querySelector(\'.li-inv-id\').value=opt.getAttribute(\'data-inv-id\')||\'\';;updateTotal(\''+container+'\')"><option value="">Select part...</option>'+opts+'</select>';
-  }else if(type==='labor'){
+  const autoC='var _c=this.closest(".li-row").querySelector(".li-cost");if(_c)_c.value=(parseFloat(this.value||0)*0.20).toFixed(2);updateTotal("'+container+'")';
+  if(type==='labor'){
     const presets=S.laborCatalog.filter(l=>l.is_active!==false);
-    const pb=presets.length?'<button type="button" style="flex-shrink:0;background:var(--gbg);border:1px solid var(--gbr);color:var(--gold);border-radius:8px;padding:0 10px;font-size:11px;font-weight:800;cursor:pointer;min-height:44px;" onclick="pickLaborPreset(\''+id+'\',\''+container+'\')">Rate ▾</button>':'';
-    descHTML='<div style="display:flex;flex:1;gap:6px;min-width:0"><input class="li-desc" placeholder="Describe work done..." oninput="updateTotal(\''+container+'\')" style="flex:1;min-width:0">'+pb+'</div>';
-  }else if(type==='svcall'){
-    descHTML='<input class="li-desc" value="Service Call" oninput="updateTotal(\''+container+'\')">';
-  }else{
-    descHTML='<input class="li-desc" placeholder="Description" oninput="updateTotal(\''+container+'\')">';
+    const pb=presets.length?'<button type="button" style="flex-shrink:0;background:var(--gbg);border:1px solid var(--gbr);color:var(--gold);border-radius:8px;padding:0 12px;font-size:11px;font-weight:800;cursor:pointer;min-height:44px;align-self:flex-start" onclick="pickLaborPreset(\''+id+'\',\''+container+'\')">Rate ▾</button>':'';
+    d.style.cssText='flex-direction:column;align-items:stretch;gap:8px;';
+    d.innerHTML=
+      '<div style="display:flex;gap:6px;align-items:flex-start">'
+      +'<textarea class="li-desc-ta" placeholder="Describe work done..." rows="2" oninput="updateTotal(\''+container+'\')" style="flex:1;min-width:0;resize:none"></textarea>'
+      +pb+'</div>'
+      +'<div style="display:flex;gap:6px;align-items:center">'
+      +'<input class="li-qty" type="number" value="1" oninput="updateTotal(\''+container+'\')">'
+      +'<input class="li-price" type="number" value="0" placeholder="Sell" oninput="'+autoC+'">'
+      +'<input class="li-cost" type="number" value="0" placeholder="Cost" style="'+cs+'" oninput="updateTotal(\''+container+'\')">'
+      +'<input type="hidden" class="li-type" value="labor">'
+      +'<input type="hidden" class="li-inv-id" value="">'
+      +'<div class="li-tax-wrap"><span class="li-tax-lbl">Tax</span><input type="checkbox" class="li-tax-cb" onchange="updateTotal(\''+container+'\')"></div>'
+      +'<button class="del-btn" onclick="document.getElementById(\''+id+'\').remove();updateTotal(\''+container+'\')">✕</button>'
+      +'</div>';
+  } else {
+    let descHTML='',costVal='0';
+    let priceOninput='updateTotal("'+container+'")';
+    if(type==='part'){
+      const opts=S.inventory.filter(i=>i.is_active!==false).map(i=>'<option value="'+i.sell_price+'" data-cost="'+(i.cost_price||0)+'" data-desc="'+i.name+'" data-inv-id="'+i.id+'">'+i.name+' ('+i.qty_on_hand+' on hand)</option>').join('');
+      descHTML='<select class="li-desc" onchange="var r=this.parentElement;var opt=this.options[this.selectedIndex];r.querySelector(\'.li-price\').value=this.value;r.querySelector(\'.li-cost\').value=opt.getAttribute(\'data-cost\')||0;r.querySelector(\'.li-inv-id\').value=opt.getAttribute(\'data-inv-id\')||\'\';;updateTotal(\''+container+'\')"><option value="">Select part...</option>'+opts+'</select>';
+    }else if(type==='svcall'){
+      descHTML='<input class="li-desc" value="Service Call" oninput="updateTotal(\''+container+'\')">';
+      priceOninput=autoC;
+    }else{
+      descHTML='<input class="li-desc" placeholder="Description" oninput="updateTotal(\''+container+'\')">';
+    }
+    d.innerHTML=descHTML
+      +'<input class="li-qty" type="number" value="1" oninput="updateTotal(\''+container+'\')">'
+      +'<input class="li-price" type="number" value="0" placeholder="Sell" oninput="'+priceOninput+'">'
+      +'<input class="li-cost" type="number" value="'+costVal+'" placeholder="Cost" style="'+cs+'" oninput="updateTotal(\''+container+'\')">'
+      +'<input type="hidden" class="li-type" value="'+type+'">'
+      +'<input type="hidden" class="li-inv-id" value="">'
+      +'<div class="li-tax-wrap"><span class="li-tax-lbl">Tax</span><input type="checkbox" class="li-tax-cb" '+(taxed?'checked':'')+' onchange="updateTotal(\''+container+'\')"></div>'
+      +'<button class="del-btn" onclick="document.getElementById(\''+id+'\').remove();updateTotal(\''+container+'\')">✕</button>';
   }
-  d.innerHTML=descHTML
-    +'<input class="li-qty" type="number" value="1" oninput="updateTotal(\''+container+'\')">'
-    +'<input class="li-price" type="number" value="0" placeholder="Sell" oninput="updateTotal(\''+container+'\')">'
-    +'<input class="li-cost" type="number" value="'+costVal+'" placeholder="Cost" style="'+cs+'" oninput="updateTotal(\''+container+'\')">'
-    +'<input type="hidden" class="li-type" value="'+type+'">'
-    +'<input type="hidden" class="li-inv-id" value="">'
-    +'<div class="li-tax-wrap"><span class="li-tax-lbl">Tax</span><input type="checkbox" class="li-tax-cb" '+(taxed?'checked':'')+' onchange="updateTotal(\''+container+'\')"></div>'
-    +'<button class="del-btn" onclick="document.getElementById(\''+id+'\').remove();updateTotal(\''+container+'\')">✕</button>';
   con.appendChild(d);
 }
 
@@ -834,7 +888,7 @@ function applyLaborPreset(rowId,sell,cost,container){
 
 function getLIs(containerId){
   return Array.from(document.querySelectorAll('#'+containerId+'-con .li-row')).map(r=>{
-    const descEl=r.querySelector('.li-desc');
+    const descEl=r.querySelector('.li-desc,.li-desc-ta');
     let desc=descEl?(descEl.tagName==='SELECT'?(descEl.options[descEl.selectedIndex]?.getAttribute('data-desc')||descEl.value):descEl.value):'';
     return{description:desc.trim(),qty:parseFloat(r.querySelector('.li-qty')?.value)||1,
       sell_price:parseFloat(r.querySelector('.li-price')?.value)||0,
@@ -850,13 +904,24 @@ function updateTotal(containerId){
   const{sub,taxable,tax}=calcInvTotal(lis,AZ_TAX,true);
   const cogs=lis.reduce((s,i)=>s+(i.cost_price||0)*(i.qty||1),0);
   const gross=sub-cogs;const marg=sub>0?(gross/sub*100).toFixed(1):0;
-  const mc=parseFloat(marg)>=40?'#52e09a':parseFloat(marg)>=20?'#DBB183':'#f87171';
+  const mc=parseFloat(marg)>=40?'var(--grn)':parseFloat(marg)>=20?'var(--gold)':'var(--red)';
+  const total=sub+tax;
   const tid=containerId+'-total';const t=document.getElementById(tid);
   if(t){
-    const taxStr=taxable>0?' + <span style="color:#7a9e8c">'+fmt2(tax)+' tax</span>':'';
-    t.innerHTML='Subtotal: <strong style="color:#DBB183">'+fmt2(sub)+'</strong>'+taxStr
-      +(tax>0?' = <strong style="color:#DBB183">'+fmt2(sub+tax)+'</strong>':'')
-      +(cogs>0?'<br><span style="font-size:12px;color:#7a9e8c">COGS: '+fmt2(cogs)+' &nbsp;·&nbsp; Gross: '+fmt2(gross)+' &nbsp;·&nbsp; Margin: <strong style="color:'+mc+'">'+marg+'%</strong></span>':'');
+    if(sub===0){t.innerHTML='';return;}
+    t.innerHTML='<div class="profit-hero">'
+      +'<div class="ph-row">'
+      +'<div><div style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:4px">Est. Profit</div>'
+      +'<div style="font-size:32px;font-weight:800;letter-spacing:-1px;color:'+mc+'">'+fmt(gross)+'</div></div>'
+      +'<div style="text-align:right"><div style="font-size:26px;font-weight:800;color:'+mc+'">'+marg+'%</div>'
+      +'<div style="font-size:10px;color:var(--t3);font-weight:700;margin-top:2px;letter-spacing:1px">MARGIN</div></div>'
+      +'</div>'
+      +'<div class="ph-sub">'
+      +'<div><div class="ph-item-v" style="color:var(--gold)">'+fmt2(total)+'</div><div class="ph-item-l">Total</div></div>'
+      +(cogs>0?'<div><div class="ph-item-v" style="color:var(--t2)">'+fmt2(cogs)+'</div><div class="ph-item-l">Cost</div></div>':'')
+      +(tax>0?'<div><div class="ph-item-v" style="color:var(--t2)">'+fmt2(tax)+'</div><div class="ph-item-l">Tax</div></div>':'')
+      +'</div>'
+      +'</div>';
   }
 }
 
@@ -1272,8 +1337,31 @@ async function updateInvStatus(id,status){
       await dbUpd('jobs',inv.job_id,{archived:true});
       S.jobs=S.jobs.map(j=>j.id===inv.job_id?{...j,archived:true}:j);
     }
+    if(status==='Paid'){
+      const collected=inv?.total||0;
+      const profit=(inv?.line_items||[]).reduce((s,li)=>s+((li.sell_price||0)-(li.cost_price||0))*(li.qty||1),0);
+      const margin=collected>0?(profit/collected*100):0;
+      S.winData={collected,profit,margin};
+    }
   }catch(e){alert('Error: '+e.message);}
   hideLoading();render();
+}
+
+function rWinFlash(){
+  const w=S.winData;
+  const pc=w.profit>0?'var(--grn)':'var(--red)';
+  const hasCost=w.profit>0&&w.profit<w.collected;
+  return '<div class="win-ov" onclick="S.winData=null;render()">'
+    +'<div class="win-card">'
+    +'<div style="font-size:52px;margin-bottom:12px">💰</div>'
+    +'<div style="font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:6px">Collected</div>'
+    +'<div style="font-size:44px;font-weight:800;color:var(--gold);letter-spacing:-2px;margin-bottom:16px">'+fmt(w.collected)+'</div>'
+    +(hasCost?'<div style="width:100%;height:1px;background:var(--bd);margin-bottom:16px"></div>'
+      +'<div style="font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:6px">Profit</div>'
+      +'<div style="font-size:28px;font-weight:800;color:'+pc+';margin-bottom:4px">+'+fmt(w.profit)+'</div>'
+      +'<div style="font-size:13px;color:var(--t3);font-weight:700">'+w.margin.toFixed(1)+'% margin</div>':'')
+    +'<div style="margin-top:24px;font-size:11px;color:var(--t3);font-weight:600;letter-spacing:1px">TAP TO CONTINUE</div>'
+    +'</div></div>';
 }
 async function savePartial(id){
   const v=parseFloat(document.getElementById('partial-amt')?.value||0);
