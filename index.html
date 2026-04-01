@@ -363,18 +363,32 @@ function calcInvTotal(lis,taxRate,taxEnabled){
 function calcStats(jobs,exps,invs){
   const paidInvs=(invs||S.invoices).filter(i=>i.status==='Paid'||i.status==='Partial');
   const rev=paidInvs.reduce((s,i)=>s+(i.status==='Paid'?(i.total||0):(i.amt_received||0)),0);
-  const mat=jobs.reduce((s,j)=>s+(j.materials_cost||0),0);
-  const lab=jobs.reduce((s,j)=>s+(j.labor_cost||0),0);
-  const mil=jobs.reduce((s,j)=>s+(j.mileage_amt||0),0);
-  const cogs=mat+lab+mil;
+  // COGS from invoice line item cost_price fields
+  let partsCost=0,laborCost=0,otherCost=0;
+  paidInvs.forEach(inv=>{
+    (inv.line_items||[]).forEach(li=>{
+      const c=(li.cost_price||0)*(li.qty||1);
+      if(li.li_type==='part')partsCost+=c;
+      else if(li.li_type==='labor')laborCost+=c;
+      else otherCost+=c;
+    });
+  });
+  const cogs=partsCost+laborCost+otherCost;
   const fixed=exps.filter(e=>e.type==='Fixed').reduce((s,e)=>s+e.amount,0);
   const variable=exps.filter(e=>e.type==='Variable').reduce((s,e)=>s+e.amount,0);
   const onetime=exps.filter(e=>e.type==='One-Time').reduce((s,e)=>s+e.amount,0);
   const ovh=fixed+variable+onetime;
   const gross=rev-cogs;
   const net=gross-ovh;
-  return{rev,mat,lab,mil,cogs,fixed,variable,onetime,ovh,gross,net,
+  return{rev,partsCost,laborCost,otherCost,cogs,fixed,variable,onetime,ovh,gross,net,
     grossMargin:rev>0?gross/rev*100:0,netMargin:rev>0?net/rev*100:0,cnt:jobs.length};
+}
+function jobMargin(inv){
+  if(!inv)return{rev:0,cogs:0,gross:0,pct:0};
+  const rev=inv.status==='Paid'?(inv.total||0):inv.status==='Partial'?(inv.amt_received||0):(inv.total||0);
+  const cogs=(inv.line_items||[]).reduce((s,li)=>s+(li.cost_price||0)*(li.qty||1),0);
+  const gross=rev-cogs;
+  return{rev,cogs,gross,pct:rev>0?gross/rev*100:0};
 }
 
 // ─── AUTH ─────────────────────────────────────────────────
@@ -777,13 +791,15 @@ function addLI(container,type){
   const con=document.getElementById(container+'-con');if(!con)return;
   const id='li'+Date.now();const d=document.createElement('div');d.className='li-row';d.id=id;
   const taxed=type==='part'||type==='custom';
-  let descHTML='';
+  const cs='width:64px;background:var(--s2);border:1px solid var(--b2);border-radius:9px;padding:11px 6px;color:var(--t3);font-size:13px;font-weight:600;outline:none;text-align:center;min-height:44px;';
+  let descHTML='',costVal='0';
   if(type==='part'){
-    const opts=S.inventory.filter(i=>i.is_active!==false).map(i=>'<option value="'+i.sell_price+'" data-desc="'+i.name+'">'+i.name+' ($'+i.sell_price+')</option>').join('');
-    descHTML='<select class="li-desc" onchange="this.parentElement.querySelector(\'.li-price\').value=this.value;updateTotal(\''+container+'\')"><option value="">Select part...</option>'+opts+'</select>';
+    const opts=S.inventory.filter(i=>i.is_active!==false).map(i=>'<option value="'+i.sell_price+'" data-cost="'+(i.cost_price||0)+'" data-desc="'+i.name+'">'+i.name+'</option>').join('');
+    descHTML='<select class="li-desc" onchange="var r=this.parentElement;r.querySelector(\'.li-price\').value=this.value;r.querySelector(\'.li-cost\').value=this.options[this.selectedIndex].getAttribute(\'data-cost\')||0;updateTotal(\''+container+'\')"><option value="">Select part...</option>'+opts+'</select>';
   }else if(type==='labor'){
-    const opts=S.laborCatalog.filter(l=>l.is_active!==false).map(l=>'<option value="'+l.sell_rate+'" data-desc="'+l.name+'">'+l.name+'</option>').join('');
-    descHTML='<select class="li-desc" onchange="this.parentElement.querySelector(\'.li-price\').value=this.value;updateTotal(\''+container+'\')"><option value="">Select labor...</option>'+opts+'</select>';
+    const presets=S.laborCatalog.filter(l=>l.is_active!==false);
+    const pb=presets.length?'<button type="button" style="flex-shrink:0;background:var(--gbg);border:1px solid var(--gbr);color:var(--gold);border-radius:8px;padding:0 10px;font-size:11px;font-weight:800;cursor:pointer;min-height:44px;" onclick="pickLaborPreset(\''+id+'\',\''+container+'\')">Rate ▾</button>':'';
+    descHTML='<div style="display:flex;flex:1;gap:6px;min-width:0"><input class="li-desc" placeholder="Describe work done..." oninput="updateTotal(\''+container+'\')" style="flex:1;min-width:0">'+pb+'</div>';
   }else if(type==='svcall'){
     descHTML='<input class="li-desc" value="Service Call" oninput="updateTotal(\''+container+'\')">';
   }else{
@@ -791,10 +807,28 @@ function addLI(container,type){
   }
   d.innerHTML=descHTML
     +'<input class="li-qty" type="number" value="1" oninput="updateTotal(\''+container+'\')">'
-    +'<input class="li-price" type="number" value="0" oninput="updateTotal(\''+container+'\')">'
+    +'<input class="li-price" type="number" value="0" placeholder="Sell" oninput="updateTotal(\''+container+'\')">'
+    +'<input class="li-cost" type="number" value="'+costVal+'" placeholder="Cost" style="'+cs+'" oninput="updateTotal(\''+container+'\')">'
+    +'<input type="hidden" class="li-type" value="'+type+'">'
     +'<div class="li-tax-wrap"><span class="li-tax-lbl">Tax</span><input type="checkbox" class="li-tax-cb" '+(taxed?'checked':'')+' onchange="updateTotal(\''+container+'\')"></div>'
     +'<button class="del-btn" onclick="document.getElementById(\''+id+'\').remove();updateTotal(\''+container+'\')">✕</button>';
   con.appendChild(d);
+}
+
+function pickLaborPreset(rowId,container){
+  const existing=document.getElementById('labor-preset-pop');if(existing)existing.remove();
+  const p=S.laborCatalog.filter(l=>l.is_active!==false);if(!p.length)return;
+  const div=document.createElement('div');div.id='labor-preset-pop';
+  div.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--s2);border:1px solid var(--gbr);border-radius:14px;padding:16px;z-index:300;min-width:260px;box-shadow:0 20px 60px rgba(0,0,0,.85);font-family:Manrope,sans-serif;';
+  div.innerHTML='<div style="font-size:14px;font-weight:800;color:var(--gold);margin-bottom:12px">Labor Rates</div>'
+    +p.map(l=>'<div onclick="applyLaborPreset(\''+rowId+'\','+l.sell_rate+','+l.cost_rate+',\''+container+'\');document.getElementById(\'labor-preset-pop\').remove()" style="padding:12px;border-bottom:1px solid #1c3224;cursor:pointer;display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:700;font-size:14px;color:#e6ede8">'+l.name+'</div><div style="font-size:11px;color:#3a5a48;margin-top:2px">Cost: $'+l.cost_rate+'</div></div><span style="color:#DBB183;font-weight:800;font-size:16px">$'+l.sell_rate+'</span></div>').join('')
+    +'<button onclick="document.getElementById(\'labor-preset-pop\').remove()" style="width:100%;margin-top:12px;padding:10px;background:transparent;border:1px solid #2a4a38;border-radius:8px;color:#7a9e8c;font-family:Manrope,sans-serif;font-weight:700;cursor:pointer;font-size:13px;">Cancel</button>';
+  document.body.appendChild(div);
+}
+function applyLaborPreset(rowId,sell,cost,container){
+  const r=document.getElementById(rowId);if(!r)return;
+  const p=r.querySelector('.li-price');const c=r.querySelector('.li-cost');
+  if(p)p.value=sell;if(c)c.value=cost;updateTotal(container);
 }
 
 function getLIs(containerId){
@@ -803,15 +837,25 @@ function getLIs(containerId){
     let desc=descEl?(descEl.tagName==='SELECT'?(descEl.options[descEl.selectedIndex]?.getAttribute('data-desc')||descEl.value):descEl.value):'';
     return{description:desc.trim(),qty:parseFloat(r.querySelector('.li-qty')?.value)||1,
       sell_price:parseFloat(r.querySelector('.li-price')?.value)||0,
+      cost_price:parseFloat(r.querySelector('.li-cost')?.value)||0,
+      li_type:r.querySelector('.li-type')?.value||'custom',
       taxable:r.querySelector('.li-tax-cb')?.checked||false};
   }).filter(i=>i.description||i.sell_price>0);
 }
 
 function updateTotal(containerId){
   const lis=getLIs(containerId);
-  const{sub,taxable,tax,total}=calcInvTotal(lis,AZ_TAX,true);
+  const{sub,taxable,tax}=calcInvTotal(lis,AZ_TAX,true);
+  const cogs=lis.reduce((s,i)=>s+(i.cost_price||0)*(i.qty||1),0);
+  const gross=sub-cogs;const marg=sub>0?(gross/sub*100).toFixed(1):0;
+  const mc=parseFloat(marg)>=40?'#52e09a':parseFloat(marg)>=20?'#DBB183':'#f87171';
   const tid=containerId+'-total';const t=document.getElementById(tid);
-  if(t){const taxStr=taxable>0?' (tax on '+fmt2(taxable)+' materials)':'';t.textContent='Total: '+fmt2(sub+tax)+taxStr;}
+  if(t){
+    const taxStr=taxable>0?' + <span style="color:#7a9e8c">'+fmt2(tax)+' tax</span>':'';
+    t.innerHTML='Subtotal: <strong style="color:#DBB183">'+fmt2(sub)+'</strong>'+taxStr
+      +(tax>0?' = <strong style="color:#DBB183">'+fmt2(sub+tax)+'</strong>':'')
+      +(cogs>0?'<br><span style="font-size:12px;color:#7a9e8c">COGS: '+fmt2(cogs)+' &nbsp;·&nbsp; Gross: '+fmt2(gross)+' &nbsp;·&nbsp; Margin: <strong style="color:'+mc+'">'+marg+'%</strong></span>':'');
+  }
 }
 
 async function saveQuote(){
@@ -986,12 +1030,21 @@ function rCompletedJobDetail(){
     +'</div><span class="sbadge sb-'+(j.archived?'archived':'complete')+'">'+(j.archived?'Archived':'Complete')+'</span></div>'
     +(j.notes?'<div style="font-size:14px;color:var(--t2);padding-top:12px;border-top:1px solid var(--bd)">'+j.notes+'</div>':'')+'</div>';
   if(linkedInv){
-    const{sub,tax,total}=calcInvTotal(linkedInv.line_items,linkedInv.tax_rate,linkedInv.tax_enabled);
-    h+='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div style="font-size:16px;font-weight:800">'+linkedInv.number+'</div><span class="sbadge sb-'+linkedInv.status.toLowerCase()+'">'+linkedInv.status+'</span></div>'
-      +'<div style="font-size:24px;font-weight:800;color:var(--gold)">'+fmt2(linkedInv.total||0)+'</div>'
-      +'<button class="btn-gold" style="width:100%;margin-top:12px;min-height:46px" onclick="S.fsub=\'invoices\';S.invId=\''+linkedInv.id+'\';S.tab=\'finance\';render()">View Invoice →</button></div>';
-  }else{h+='<div class="card"><button class="btns" style="width:100%" onclick="triggerInvoiceFromJob(\''+j.id+'\')">+ Create Invoice</button></div>';}
-  if(isAdmin()&&!j.archived)h+='<button onclick="archiveJob(\''+j.id+'\')" class="btnd" style="margin-top:4px">Archive Job</button>';
+    const m=jobMargin(linkedInv);
+    const mc=m.pct>=40?'var(--grn)':m.pct>=20?'var(--gold)':'var(--red)';
+    h+='<div class="card">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">'
+      +'<div><div style="font-size:14px;font-weight:700">'+linkedInv.number+'</div><div style="font-size:12px;color:var(--t2);margin-top:2px">'+sfmt(linkedInv.created_at)+'</div></div>'
+      +'<span class="sbadge sb-'+linkedInv.status.toLowerCase()+'">'+linkedInv.status+'</span></div>'
+      +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px;background:var(--bg);border-radius:10px;margin-bottom:14px">'
+      +'<div style="text-align:center"><div style="font-size:16px;font-weight:800;color:var(--gold)">'+fmt2(m.rev)+'</div><div style="font-size:9px;color:var(--t3);margin-top:3px;font-weight:800;letter-spacing:1px">REVENUE</div></div>'
+      +'<div style="text-align:center"><div style="font-size:16px;font-weight:800;color:var(--red)">'+fmt2(m.cogs)+'</div><div style="font-size:9px;color:var(--t3);margin-top:3px;font-weight:800;letter-spacing:1px">COGS</div></div>'
+      +'<div style="text-align:center"><div style="font-size:16px;font-weight:800;color:'+mc+'">'+fmt2(m.gross)+'</div><div style="font-size:9px;color:var(--t3);margin-top:3px;font-weight:800;letter-spacing:1px">GROSS</div></div>'
+      +'<div style="text-align:center"><div style="font-size:16px;font-weight:800;color:'+mc+'">'+m.pct.toFixed(1)+'%</div><div style="font-size:9px;color:var(--t3);margin-top:3px;font-weight:800;letter-spacing:1px">MARGIN</div></div>'
+      +'</div>'
+      +'<button class="btn-gold" style="width:100%;min-height:46px" onclick="S.fsub=\'invoices\';S.invId=\''+linkedInv.id+'\';S.tab=\'finance\';render()">View Invoice →</button></div>';
+  }else{h+='<div class="card"><div style="font-size:14px;color:var(--t2);margin-bottom:12px">Job complete. Create invoice to bill this job and track margin.</div><button class="btns" style="width:100%" onclick="triggerInvoiceFromJob(\''+j.id+'\')">+ Create Invoice</button></div>';}
+  if(isAdmin()&&!j.archived)h+='<button onclick="archiveJob(\''+j.id+'\')" class="btnd" style="margin-top:4px;width:100%">Archive Job</button>';
   return h;
 }
 
@@ -1061,18 +1114,21 @@ function rInvoiceForm(){
   const due=new Date();due.setDate(due.getDate()+30);
   const dueStr=due.toISOString().split('T')[0];
   const lis=inv.line_items||[];
-  const liRows=lis.map(li=>'<div class="li-row"><input class="li-desc" value="'+((li.description||'').replace(/"/g,'&quot;'))+'" oninput="updateTotal(\'inv\')"><input class="li-qty" type="number" value="'+(li.qty||1)+'" oninput="updateTotal(\'inv\')"><input class="li-price" type="number" value="'+(li.sell_price||0)+'" oninput="updateTotal(\'inv\')"><div class="li-tax-wrap"><span class="li-tax-lbl">Tax</span><input type="checkbox" class="li-tax-cb" '+(li.taxable?'checked':'')+' onchange="updateTotal(\'inv\')"></div><button class="del-btn" onclick="this.parentElement.remove();updateTotal(\'inv\')">✕</button></div>').join('');
+  const openPOs=S.purchaseOrders.filter(p=>p.status==='Open'||(p.id===inv.po_id&&inv.po_id));
+  const cs='width:64px;background:var(--s2);border:1px solid var(--b2);border-radius:9px;padding:11px 6px;color:var(--t3);font-size:13px;font-weight:600;outline:none;text-align:center;min-height:44px;';
+  const liRows=lis.map(li=>'<div class="li-row"><input class="li-desc" value="'+((li.description||'').replace(/"/g,'&quot;'))+'" oninput="updateTotal(\'inv\')"><input class="li-qty" type="number" value="'+(li.qty||1)+'" oninput="updateTotal(\'inv\')"><input class="li-price" type="number" value="'+(li.sell_price||0)+'" oninput="updateTotal(\'inv\')"><input class="li-cost" type="number" value="'+(li.cost_price||0)+'" style="'+cs+'" oninput="updateTotal(\'inv\')"><input type="hidden" class="li-type" value="'+(li.li_type||'custom')+'"><div class="li-tax-wrap"><span class="li-tax-lbl">Tax</span><input type="checkbox" class="li-tax-cb" '+(li.taxable?'checked':'')+' onchange="updateTotal(\'inv\')"></div><button class="del-btn" onclick="this.parentElement.remove();updateTotal(\'inv\')">✕</button></div>').join('');
   const pmOpts=PAY_METHODS.map(m=>'<option'+(m===(inv.payment_method||'Cash')?' selected':'')+'>'+m+'</option>').join('');
   let h='<div class="card">'
     +(c?'<div style="font-size:13px;color:var(--t2);font-weight:600;margin-bottom:14px">Client: <strong style="color:var(--gold)">'+c.name+'</strong>'+(c.tax_exempt?' <span class="sbadge sb-draft" style="font-size:10px">TAX EXEMPT</span>':'')+'</div>':'')
     +(!cid?'<div class="field"><div class="fl">Client</div><select class="inp" id="inv-cid"><option value="">Select...</option>'+S.clients.map(cl=>'<option value="'+cl.id+'"'+(cl.id===cid?' selected':'')+'>'+cl.name+'</option>').join('')+'</select></div>':'')
     +'<div class="two"><div class="field"><div class="fl">Invoice Date</div><input type="date" class="inp" id="inv-date" value="'+(inv.created_at||td())+'"></div>'
     +'<div class="field"><div class="fl">Due Date</div><input type="date" class="inp" id="inv-due" value="'+(inv.due_date||dueStr)+'"></div></div>'
+    +(openPOs.length?'<div class="field"><div class="fl">Link PO (auto-attaches)</div><select class="inp" id="inv-po"><option value="">None</option>'+openPOs.map(p=>'<option value="'+p.id+'"'+(p.id===inv.po_id?' selected':'')+'>#'+p.po_number+(p.vendor_id?' — '+(S.vendors.find(v=>v.id===p.vendor_id)?.name||''):'')+'</option>').join('')+'</select></div>':'')
     +'<div class="field"><div class="fl">Line Items</div>'
-    +'<div class="li-header"><span class="li-h" style="flex:1">Description</span><span class="li-h" style="width:60px;text-align:center">Qty</span><span class="li-h" style="width:76px;text-align:center">Price</span><span class="li-h" style="width:20px">Tax</span><span style="width:32px"></span></div>'
+    +'<div class="li-header"><span class="li-h" style="flex:1">Description</span><span class="li-h" style="width:60px;text-align:center">Qty</span><span class="li-h" style="width:76px;text-align:center">Sell</span><span class="li-h" style="width:64px;text-align:center;color:var(--t3)">Cost</span><span class="li-h" style="width:20px">Tax</span><span style="width:32px"></span></div>'
     +'<div id="inv-con">'+liRows+'</div>'
     +'<div class="ali-btns"><button class="ali-btn" onclick="addLI(\'inv\',\'part\')">+ Part</button><button class="ali-btn" onclick="addLI(\'inv\',\'labor\')">+ Labor</button><button class="ali-btn" onclick="addLI(\'inv\',\'svcall\')">+ Svc Call</button><button class="ali-btn" onclick="addLI(\'inv\',\'custom\')">+ Custom</button></div></div>'
-    +'<div id="inv-total" style="text-align:right;margin-top:10px;font-size:15px;font-weight:700;color:var(--gold)"></div>'
+    +'<div id="inv-total" style="margin-top:10px;font-size:14px;font-weight:700;color:var(--gold);line-height:1.9"></div>'
     +'<div class="field" style="margin-top:12px"><div class="fl">Payment Method</div><select class="inp" id="inv-method">'+pmOpts+'</select></div>'
     +'<div class="field"><div class="fl">Notes</div><textarea class="inp" id="inv-notes" rows="2" style="resize:vertical">'+(inv.notes||'Net 30 — Payment due within 30 days')+'</textarea></div>'
     +'<div class="brow"><button class="btnc" onclick="goBack()">Cancel</button><button class="btns" onclick="saveInvoice()">Save Invoice</button></div></div>';
@@ -1098,10 +1154,11 @@ async function saveInvoice(){
   if(!cid){alert('Select a client');return;}
   const c=getC(cid);
   const lis=getLIs('inv');
-  const taxable=c&&c.tax_exempt?false:true;
-  const{sub,tax,total}=calcInvTotal(lis,AZ_TAX,taxable);
-  const data={client_id:cid,job_id:S.formJobId||null,number:nextInvNum(),line_items:lis,
-    tax_enabled:taxable,tax_rate:AZ_TAX,subtotal:sub,tax,total,
+  const taxEnabled=!(c&&c.tax_exempt);
+  const{sub,tax,total}=calcInvTotal(lis,AZ_TAX,taxEnabled);
+  const poId=document.getElementById('inv-po')?.value||null;
+  const data={client_id:cid,job_id:S.formJobId||null,po_id:poId||null,number:nextInvNum(),line_items:lis,
+    tax_enabled:taxEnabled,tax_rate:AZ_TAX,subtotal:sub,tax,total,
     status:'Draft',amt_received:0,
     due_date:document.getElementById('inv-due')?.value||null,
     payment_method:document.getElementById('inv-method')?.value||'Cash',
@@ -1111,6 +1168,10 @@ async function saveInvoice(){
     let invId=S.editingId;
     if(S.editingId){await dbUpd('invoices',S.editingId,data);S.invoices=S.invoices.map(i=>i.id===S.editingId?{...i,...data}:i);}
     else{const r=await dbIns('invoices',data);S.invoices.unshift(r);S.invoiceN++;invId=r.id;}
+    if(poId){
+      await dbUpd('purchase_orders',poId,{status:'Attached',invoice_id:invId});
+      S.purchaseOrders=S.purchaseOrders.map(p=>p.id===poId?{...p,status:'Attached',invoice_id:invId}:p);
+    }
     S.showForm=null;S.formClientId=null;S.formJobId=null;S.editingId=null;S.invId=invId;S.tab='finance';S.fsub='invoices';
   }catch(e){alert('Error: '+e.message);}
   hideLoading();render();
@@ -1134,21 +1195,33 @@ function rInvoiceDetail(){
   const inv=getInv(S.invId);if(!inv)return'';
   const c=getC(inv.client_id);
   const j=inv.job_id?getJ(inv.job_id):null;
+  const po=inv.po_id?S.purchaseOrders.find(p=>p.id===inv.po_id):null;
   const lis=inv.line_items||[];
   const{sub,taxable,tax}=calcInvTotal(lis,inv.tax_rate,inv.tax_enabled);
+  const m=jobMargin(inv);
+  const mc=m.pct>=40?'var(--grn)':m.pct>=20?'var(--gold)':'var(--red)';
   let h='<div class="card"><div class="card-head">'
-    +'<div><div class="doc-num">'+inv.number+'</div><div style="font-size:17px;font-weight:800;margin-top:4px">'+(c?c.name:'Unknown')+'</div><div style="font-size:13px;color:var(--t2);margin-top:4px">Issued: '+dfmt(inv.created_at)+'</div></div>'
-    +'<div style="text-align:right"><span class="sbadge sb-'+((inv.status||'draft').toLowerCase())+'">'+inv.status+'</span><div style="font-size:22px;font-weight:800;color:var(--gold);margin-top:8px">'+fmt2(inv.total||0)+'</div></div></div>'
-    +'<table class="yt"><tr><td class="lb" style="width:45%">Item</td><td class="lb" style="text-align:center">Qty</td><td class="lb">Price</td><td class="lb">Total</td></tr>'
-    +lis.map(li=>'<tr><td>'+li.description+(li.taxable?'<span style="font-size:9px;color:var(--t3);margin-left:4px">TAX</span>':'')+'</td><td style="text-align:center">'+li.qty+'</td><td>'+fmt2(li.sell_price)+'</td><td>'+fmt2(li.qty*li.sell_price)+'</td></tr>').join('')
-    +'<tr><td class="lb" colspan="3">Subtotal</td><td>'+fmt2(sub)+'</td></tr>'
-    +(taxable>0?'<tr><td class="lb" colspan="3">Tax on '+fmt2(taxable)+'</td><td>'+fmt2(tax)+'</td></tr>':'')
-    +'<tr class="total-row"><td colspan="3">Total Due</td><td style="color:var(--gold)">'+fmt2(inv.total||0)+'</td></tr>'
-    +(inv.amt_received?'<tr><td class="lb" colspan="3">Received</td><td style="color:var(--grn)">'+fmt2(inv.amt_received)+'</td></tr>':'')
+    +'<div><div class="doc-num">'+inv.number+'</div><div style="font-size:17px;font-weight:800;margin-top:4px">'+(c?c.name:'Unknown')+'</div><div style="font-size:13px;color:var(--t2);margin-top:4px">Issued: '+dfmt(inv.created_at)+'</div>'
+    +(po?'<div style="font-size:12px;color:var(--t3);margin-top:4px">PO #'+po.po_number+(S.vendors.find(v=>v.id===po.vendor_id)?' — '+S.vendors.find(v=>v.id===po.vendor_id)?.name:'')+'</div>':'')
+    +'</div><div style="text-align:right"><span class="sbadge sb-'+((inv.status||'draft').toLowerCase())+'">'+inv.status+'</span><div style="font-size:22px;font-weight:800;color:var(--gold);margin-top:8px">'+fmt2(inv.total||0)+'</div></div></div>'
+    +'<table class="yt"><tr><td class="lb" style="width:40%">Item</td><td class="lb" style="text-align:center">Qty</td><td class="lb">Sell</td><td class="lb">Cost</td><td class="lb">Total</td></tr>'
+    +lis.map(li=>'<tr><td>'+li.description+(li.taxable?'<span style="font-size:9px;color:var(--t3);margin-left:4px">TAX</span>':'')+'</td><td style="text-align:center">'+li.qty+'</td><td>'+fmt2(li.sell_price)+'</td><td style="color:var(--t3)">'+fmt2(li.cost_price||0)+'</td><td>'+fmt2(li.qty*li.sell_price)+'</td></tr>').join('')
+    +'<tr><td class="lb" colspan="4">Subtotal</td><td>'+fmt2(sub)+'</td></tr>'
+    +(taxable>0?'<tr><td class="lb" colspan="4">Tax on '+fmt2(taxable)+'</td><td>'+fmt2(tax)+'</td></tr>':'')
+    +'<tr class="total-row"><td colspan="4">Total Due</td><td style="color:var(--gold)">'+fmt2(inv.total||0)+'</td></tr>'
+    +(inv.amt_received?'<tr><td class="lb" colspan="4">Received</td><td style="color:var(--grn)">'+fmt2(inv.amt_received)+'</td></tr>':'')
     +'</table>'
     +(inv.payment_method?'<div style="font-size:13px;color:var(--t2);margin-top:10px">Payment: '+inv.payment_method+'</div>':'')
     +(inv.notes?'<div style="font-size:13px;color:var(--t2);margin-top:8px;padding-top:8px;border-top:1px solid var(--bd)">'+inv.notes+'</div>':'')
     +(j?'<div style="font-size:12px;color:var(--t3);margin-top:8px">Job: '+j.job_type+' · '+sfmt(j.scheduled_date)+'</div>':'')+'</div>';
+  if(m.cogs>0){
+    h+='<div class="card"><div class="sl">Job Margin</div><div style="display:flex;gap:20px;padding-top:4px">'
+      +'<div><div style="font-size:18px;font-weight:800;color:var(--gold)">'+fmt2(m.rev)+'</div><div style="font-size:10px;color:var(--t3);margin-top:2px;font-weight:700">REVENUE</div></div>'
+      +'<div><div style="font-size:18px;font-weight:800;color:var(--red)">-'+fmt2(m.cogs)+'</div><div style="font-size:10px;color:var(--t3);margin-top:2px;font-weight:700">COGS</div></div>'
+      +'<div><div style="font-size:18px;font-weight:800;color:'+mc+'">'+fmt2(m.gross)+'</div><div style="font-size:10px;color:var(--t3);margin-top:2px;font-weight:700">GROSS</div></div>'
+      +'<div><div style="font-size:18px;font-weight:800;color:'+mc+'">'+m.pct.toFixed(1)+'%</div><div style="font-size:10px;color:var(--t3);margin-top:2px;font-weight:700">MARGIN</div></div>'
+      +'</div></div>';
+  }
   h+='<div class="card"><div class="sl">Payment Status</div><div class="status-btns">'
     +INV_STATUS.map(s=>'<button class="status-btn '+(inv.status===s?'on':'')+'" onclick="updateInvStatus(\''+inv.id+'\',\''+s+'\')">'+s+'</button>').join('')+'</div>'
     +(inv.status==='Partial'?'<div style="display:flex;gap:8px;margin-top:12px">'
@@ -1430,25 +1503,49 @@ function rReport(){
   const ytdE=S.expenses.filter(e=>new Date(e.date+'T00:00:00').getFullYear()===y);
   const ytdInvs=S.invoices.filter(i=>new Date((i.created_at||td())+'T00:00:00').getFullYear()===y);
   const s=calcStats(allJobs,ytdE,ytdInvs);
-  const plc=s.net>=0?'var(--grn)':'var(--red)',gmc=s.grossMargin>=40?'var(--grn)':s.grossMargin>=20?'var(--gold)':'var(--red)';
+  const plc=s.net>=0?'var(--grn)':'var(--red)';
+  const gmc=s.grossMargin>=40?'var(--grn)':s.grossMargin>=20?'var(--gold)':'var(--red)';
   const ytdDraws=S.draws.filter(d=>new Date(d.date+'T00:00:00').getFullYear()===y).reduce((sum,d)=>sum+d.amount,0);
   const retained=s.net-ytdDraws;
   const ar=S.invoices.filter(i=>i.status==='Sent'||i.status==='Partial'||i.status==='Overdue').reduce((sum,i)=>sum+(i.total||0)-(i.amt_received||0),0);
-  let h='<div style="margin-bottom:12px"><button class="btns" style="width:100%" onclick="exportCSV()">⬇ Export CSV</button></div>';
+  // Job margin stats from invoices with COGS data
+  const paidWithCOGS=ytdInvs.filter(i=>(i.status==='Paid'||i.status==='Partial')&&(i.line_items||[]).some(li=>li.cost_price>0));
+  const avgMargin=paidWithCOGS.length?paidWithCOGS.reduce((s,i)=>s+jobMargin(i).pct,0)/paidWithCOGS.length:0;
+  const amc=avgMargin>=40?'var(--grn)':avgMargin>=20?'var(--gold)':'var(--red)';
+  let h='<div style="margin-bottom:12px;display:flex;gap:10px"><button class="btns" style="flex:1" onclick="exportCSV()">⬇ Export CSV</button></div>';
+  // KPI row
+  h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px">'
+    +'<div class="sc g"><div class="sc-v">'+fmt(s.rev)+'</div><div class="sc-l">Revenue</div></div>'
+    +'<div class="sc '+(s.net>=0?'gr':'r')+'"><div class="sc-v">'+fmt(s.net)+'</div><div class="sc-l">Net Profit</div></div>'
+    +'<div class="sc b"><div class="sc-v" style="color:'+amc+'">'+avgMargin.toFixed(1)+'%</div><div class="sc-l">Avg Margin</div></div>'
+    +'</div>';
   h+='<div class="sl">'+y+' Income Statement</div><div class="card"><table class="yt">'
     +'<tr><td style="font-size:10px;font-weight:800;color:var(--t3);letter-spacing:1px" colspan="2">REVENUE</td></tr>'
-    +'<tr><td class="lb">Gross Revenue (Paid Invoices)</td><td style="color:var(--gold)">'+fmt(s.rev)+'</td></tr>'
+    +'<tr><td class="lb">Collected (Paid Invoices)</td><td style="color:var(--gold)">'+fmt(s.rev)+'</td></tr>'
     +'<tr><td class="lb">Outstanding A/R</td><td style="color:var(--red)">'+fmt(ar)+'</td></tr>'
+    +'<tr><td style="font-size:10px;font-weight:800;color:var(--t3);letter-spacing:1px;padding-top:12px" colspan="2">COST OF GOODS SOLD</td></tr>'
+    +(s.partsCost>0?'<tr><td class="lb sb2">Parts / Materials</td><td style="color:var(--t2)">-'+fmt(s.partsCost)+'</td></tr>':'')
+    +(s.laborCost>0?'<tr><td class="lb sb2">Labor Cost</td><td style="color:var(--t2)">-'+fmt(s.laborCost)+'</td></tr>':'')
+    +(s.otherCost>0?'<tr><td class="lb sb2">Other Direct Cost</td><td style="color:var(--t2)">-'+fmt(s.otherCost)+'</td></tr>':'')
+    +(s.cogs>0?'<tr><td class="lb">Total COGS</td><td style="color:var(--t2)">-'+fmt(s.cogs)+'</td></tr>':'')
+    +'<tr class="total-row"><td>Gross Profit</td><td style="color:'+gmc+'">'+fmt(s.gross)+' ('+s.grossMargin.toFixed(1)+'%)</td></tr>'
     +'<tr><td style="font-size:10px;font-weight:800;color:var(--t3);letter-spacing:1px;padding-top:12px" colspan="2">OPERATING EXPENSES</td></tr>'
     +'<tr><td class="lb sb2">Fixed</td><td style="color:var(--t2)">-'+fmt(s.fixed)+'</td></tr>'
     +'<tr><td class="lb sb2">Variable</td><td style="color:var(--t2)">-'+fmt(s.variable)+'</td></tr>'
     +'<tr><td class="lb sb2">One-Time</td><td style="color:var(--t2)">-'+fmt(s.onetime)+'</td></tr>'
-    +'<tr class="total-row"><td>Net Operating Profit</td><td style="color:'+plc+'">'+fmt(s.net)+' ('+pct(s.netMargin)+')</td></tr>'
+    +'<tr class="total-row"><td>Net Operating Profit</td><td style="color:'+plc+'">'+fmt(s.net)+' ('+s.netMargin.toFixed(1)+'%)</td></tr>'
     +'<tr><td style="font-size:10px;font-weight:800;color:var(--t3);letter-spacing:1px;padding-top:12px" colspan="2">DISTRIBUTIONS</td></tr>'
     +'<tr><td class="lb sb2">Owner Draws</td><td style="color:var(--t2)">-'+fmt(ytdDraws)+'</td></tr>'
     +'<tr class="total-row"><td>Retained Earnings</td><td style="color:'+(retained>=0?'var(--grn)':'var(--red)')+'">'+fmtS(retained)+'</td></tr>'
     +'</table></div>';
-  h+='<div class="sl" style="margin-top:4px">Monthly Revenue</div><div class="card" style="padding:14px">';
+  // Per-job margin table (paid invoices with cost data)
+  if(paidWithCOGS.length){
+    h+='<div class="sl" style="margin-top:4px">Job Margins ('+paidWithCOGS.length+' jobs with cost data)</div><div class="card" style="padding:0;overflow:hidden">'
+      +'<table class="yt" style="font-size:12px"><tr><td class="lb" style="padding:10px 12px">Client</td><td class="lb">Rev</td><td class="lb">COGS</td><td class="lb">Margin</td></tr>';
+    paidWithCOGS.slice(0,10).forEach(inv=>{const c=getC(inv.client_id);const m=jobMargin(inv);const mc2=m.pct>=40?'var(--grn)':m.pct>=20?'var(--gold)':'var(--red)';h+='<tr onclick="S.invId=\''+inv.id+'\';S.fsub=\'invoices\';render()" style="cursor:pointer"><td style="padding:10px 12px">'+(c?c.name.split(' ')[0]:'?')+'</td><td>'+fmt(m.rev)+'</td><td style="color:var(--red)">'+fmt(m.cogs)+'</td><td style="color:'+mc2+';font-weight:800">'+m.pct.toFixed(0)+'%</td></tr>';});
+    h+='</table></div>';
+  }
+  h+='<div class="sl" style="margin-top:4px">Monthly Revenue &amp; Net</div><div class="card" style="padding:14px">';
   const maxR=Math.max(...MONTHS.map((_,i)=>{const mi=ytdInvs.filter(inv=>smf(inv.created_at||td(),i,y)&&(inv.status==='Paid'||inv.status==='Partial'));return mi.reduce((s,i)=>s+(i.status==='Paid'?(i.total||0):(i.amt_received||0)),0);}),1);
   MONTHS.forEach((m,i)=>{
     const mi=ytdInvs.filter(inv=>smf(inv.created_at||td(),i,y));
@@ -1476,11 +1573,20 @@ function exportCSV(){
 }
 
 // ─── TASKS ────────────────────────────────────────────────
+function canSeeTask(t){
+  const v=t.visibility||'all';
+  if(v==='all')return true;
+  if(v==='drew')return S.role==='tech1'||isAdmin();
+  if(v==='jaime')return S.role==='tech2'||isAdmin();
+  if(v==='admin')return isAdmin();
+  return true;
+}
 function rTasks(){
   if(S.showForm==='task')return rTaskForm();
-  const open=S.tasks.filter(t=>t.status==='open');
-  const done=S.tasks.filter(t=>t.status==='done');
-  if(!S.tasks.length)return'<div class="empty">No tasks yet.<br>Tap <strong>+ Task</strong> to add one.</div>';
+  const visible=S.tasks.filter(canSeeTask);
+  const open=visible.filter(t=>t.status==='open');
+  const done=visible.filter(t=>t.status==='done');
+  if(!visible.length)return'<div class="empty">No tasks yet.<br>Tap <strong>+ Task</strong> to add one.</div>';
   let h='';
   if(open.length){h+='<div class="sl">Open ('+open.length+')</div>';open.forEach(t=>h+=renderTask(t));}
   if(done.length){h+='<div class="sl" style="margin-top:8px">Completed</div>';done.forEach(t=>h+=renderTask(t));}
@@ -1490,15 +1596,18 @@ function rTasks(){
 function renderTask(t){
   const ac=t.assigned_to==='Drew'?'ta-drew':t.assigned_to==='Jaime'?'ta-jaime':'ta-both';
   const canDel=isAdmin()||(t.created_by===S.role);
-  return '<div class="task-row"><div style="display:flex;align-items:flex-start;gap:12px">'
+  const priv=t.visibility&&t.visibility!=='all';
+  const privLabel=t.visibility==='drew'?'🔒 Drew only':t.visibility==='jaime'?'🔒 Jaime only':t.visibility==='admin'?'🔒 Admin only':'';
+  return '<div class="task-row"'+(priv?' style="border-color:var(--gbr);background:rgba(219,177,131,0.04)"':'')+'><div style="display:flex;align-items:flex-start;gap:12px">'
     +'<div class="chk '+(t.status==='done'?'dn':'')+'" onclick="toggleTask(\''+t.id+'\')">'
     +(t.status==='done'?'<svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" stroke="#050d08" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>':'')+'</div>'
     +'<div style="flex:1">'
     +'<div style="font-size:15px;font-weight:700;'+(t.status==='done'?'text-decoration:line-through;color:var(--t3)':'')+'">'+t.title+'</div>'
     +(t.description?'<div style="font-size:13px;color:var(--t2);margin-top:5px;line-height:1.5">'+t.description+'</div>':'')
-    +'<div style="display:flex;align-items:center;gap:10px;margin-top:8px">'
+    +'<div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap">'
     +'<span style="font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;'+(ac==='ta-drew'?'background:var(--gbg);color:var(--gold);border:1px solid var(--gbr)':ac==='ta-jaime'?'background:rgba(96,165,250,.1);color:var(--blu);border:1px solid rgba(96,165,250,.2)':'background:rgba(82,224,154,.08);color:var(--grn);border:1px solid rgba(82,224,154,.2)')+'">'+t.assigned_to+'</span>'
     +(t.due_date?'<span style="font-size:12px;color:var(--t3);font-weight:600">Due '+sfmt(t.due_date)+'</span>':'')
+    +(priv?'<span style="font-size:10px;font-weight:800;color:var(--gold);background:var(--gbg);border:1px solid var(--gbr);padding:2px 8px;border-radius:10px">'+privLabel+'</span>':'')
     +'</div></div>'
     +'<div style="display:flex;gap:6px">'
     +'<button class="btn-sm" onclick="openForm(\'task\',\''+t.id+'\')" style="min-height:38px">Edit</button>'
@@ -1508,15 +1617,34 @@ function renderTask(t){
 
 function rTaskForm(){
   const t=S.editingId?S.tasks.find(t=>t.id===S.editingId):{};
+  const vis=S.taskVis||(t.visibility||'all');
+  const visOpts=[
+    {v:'all',l:'Everyone',s:''},
+    {v:'drew',l:'🔒 Drew only',s:'color:var(--gold)'},
+    {v:'jaime',l:'🔒 Jaime only',s:'color:var(--blu)'},
+    {v:'admin',l:'🔒 Admin only',s:'color:var(--red)'},
+  ];
   return '<div class="card">'
     +'<div class="field"><div class="fl">Title *</div><input class="inp" id="tf-title" value="'+(t.title||'')+'" placeholder="What needs to get done?"></div>'
     +'<div class="field"><div class="fl">Description</div><textarea class="inp" id="tf-desc" rows="3" style="resize:vertical">'+(t.description||'')+'</textarea></div>'
     +'<div class="field"><div class="fl">Assign To</div><div class="assign-row">'
     +['Drew','Jaime','Both'].map(a=>'<button class="ao ao-'+a.toLowerCase()+' '+(((S.taskAssign||t.assigned_to||'Both')===a)?'on':'')+'" onclick="S.taskAssign=\''+a+'\';render()">'+a+'</button>').join('')+'</div></div>'
+    +'<div class="field"><div class="fl">Visibility</div><div style="display:flex;gap:8px;flex-wrap:wrap">'
+    +visOpts.map(o=>'<button onclick="S.taskVis=\''+o.v+'\';render()" style="flex:1;min-width:80px;padding:10px 6px;border-radius:9px;border:1px solid '+(vis===o.v?'var(--gbr)':'var(--b2)')+';background:'+(vis===o.v?'var(--gbg)':'transparent')+';font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer;'+(vis===o.v?'color:var(--gold)':'color:var(--t3)')+';min-height:44px">'+o.l+'</button>').join('')+'</div></div>'
     +'<div class="field"><div class="fl">Due Date</div><input type="date" class="inp" id="tf-due" value="'+(t.due_date||'')+'"></div>'
-    +'<div class="brow"><button class="btnc" onclick="goBack()">Cancel</button><button class="btns" onclick="saveTask()">Save Task</button></div></div>';
+    +'<div class="brow"><button class="btnc" onclick="S.taskVis=null;goBack()">Cancel</button><button class="btns" onclick="saveTask()">Save Task</button></div></div>';
 }
-async function saveTask(){const title=(document.getElementById('tf-title')?.value||'').trim();if(!title)return;const data={title,description:document.getElementById('tf-desc')?.value||'',assigned_to:S.taskAssign||'Both',created_by:S.role,status:'open',due_date:document.getElementById('tf-due')?.value||null};showLoading('Saving...');try{if(S.editingId){await dbUpd('tasks',S.editingId,data);S.tasks=S.tasks.map(t=>t.id===S.editingId?{...t,...data}:t);}else{const r=await dbIns('tasks',data);S.tasks.unshift(r);}S.showForm=null;S.editingId=null;}catch(e){alert('Error: '+e.message);}hideLoading();render();}
+async function saveTask(){
+  const title=(document.getElementById('tf-title')?.value||'').trim();if(!title)return;
+  const data={title,description:document.getElementById('tf-desc')?.value||'',assigned_to:S.taskAssign||'Both',created_by:S.role,status:'open',due_date:document.getElementById('tf-due')?.value||null,visibility:S.taskVis||'all'};
+  showLoading('Saving...');
+  try{
+    if(S.editingId){await dbUpd('tasks',S.editingId,data);S.tasks=S.tasks.map(t=>t.id===S.editingId?{...t,...data}:t);}
+    else{const r=await dbIns('tasks',data);S.tasks.unshift(r);}
+    S.showForm=null;S.editingId=null;S.taskVis=null;
+  }catch(e){alert('Error: '+e.message);}
+  hideLoading();render();
+}
 async function toggleTask(id){const t=S.tasks.find(t=>t.id===id);const status=t?.status==='open'?'done':'open';try{await dbUpd('tasks',id,{status});S.tasks=S.tasks.map(t=>t.id===id?{...t,status}:t);render();}catch(e){alert('Error: '+e.message);}}
 async function deleteTask(id){if(!confirm('Delete task?'))return;try{await dbDel('tasks',id);S.tasks=S.tasks.filter(t=>t.id!==id);render();}catch(e){alert('Error: '+e.message);}}
 
