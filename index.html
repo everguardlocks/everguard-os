@@ -290,6 +290,17 @@ select.inp{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.
 
 /* LABOR DESC TEXTAREA */
 .li-desc-ta{background:var(--s2);border:1px solid var(--b2);border-radius:9px;padding:11px 12px;color:var(--tx);font-size:14px;font-weight:500;outline:none;font-family:var(--f);min-height:52px;}
+
+/* SEARCH OVERLAY */
+.search-ov{position:fixed;inset:0;background:rgba(5,13,8,.97);z-index:400;display:flex;flex-direction:column;max-width:430px;left:50%;transform:translateX(-50%);}
+.search-hdr{padding:calc(14px + var(--sat)) 16px 12px;display:flex;gap:10px;align-items:center;border-bottom:1px solid var(--bd);}
+.search-box{flex:1;background:var(--s2);border:1px solid var(--gbr);border-radius:10px;padding:12px 14px;color:var(--tx);font-size:16px;font-family:var(--f);font-weight:600;outline:none;}
+.search-box::placeholder{color:var(--t3);font-weight:400;}
+.search-results{flex:1;overflow-y:auto;padding:14px;}
+.sr-section{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin:12px 0 8px;}
+.sr-row{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r2);padding:13px 15px;margin-bottom:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;min-height:54px;}
+.sr-row:active{border-color:var(--gbr);}
+.sr-tag{font-size:10px;font-weight:800;padding:3px 8px;border-radius:10px;letter-spacing:.5px;}
 </style>
 </head>
 <body>
@@ -343,6 +354,7 @@ let S = {
   invPrefill:[],
   jobStatusFilter:'active',
   changingPin:null,
+  showSearch:false, searchQ:'',
 };
 
 // ─── UTILS ────────────────────────────────────────────────
@@ -522,6 +534,7 @@ function render(){
   const st=getHdrState();
   const rb=isAdmin()?'<span class="rbadge rb-admin">ADMIN</span>':'<span class="rbadge rb-tech">TECH</span>';
   const gear=!S.showMap?'<button class="ibtn" onclick="S.showForm=\'settings\';render()">⚙</button>':'';
+  const srchBtn='<button class="ibtn" onclick="S.showSearch=true;S.searchQ=\'\';render()" style="font-size:16px">🔍</button>';
   const mapOv=S.showMap?rMapModal():'';
   let hdrLeft='';
   if(st.showBack){
@@ -530,12 +543,14 @@ function render(){
     hdrLeft='<div class="hbrand">EverGuard Lock &amp; Safe</div><div class="htitle">'+st.title+'</div>';
   }
   app.innerHTML='<div class="hdr"><div>'+hdrLeft+(st.showBack?'<div class="htitle" style="margin-top:4px">'+st.title+'</div>':'')+'</div>'
-    +'<div class="hright">'+st.action+gear+' '+rb+'<button class="lout" onclick="logout()">Exit</button></div></div>'
+    +'<div class="hright">'+st.action+srchBtn+gear+' '+rb+'<button class="lout" onclick="logout()">Exit</button></div></div>'
     +'<div class="scroll" id="main">'+rMain()+'</div>'
     +'<nav class="bnav">'+nav+'</nav>'
     +mapOv
-    +(S.winData?rWinFlash():'');
+    +(S.winData?rWinFlash():'')
+    +(S.showSearch?rSearchOverlay():'');
   if(S.showMap)setTimeout(()=>initMap(S.mapAddr),200);
+  if(S.showSearch)setTimeout(()=>{const el=document.getElementById('global-search');if(el)el.focus();},100);
   if(S.invPrefill&&S.invPrefill.length&&document.getElementById('inv-li-con'))setTimeout(prefillInvoiceItems,200);
 }
 
@@ -837,11 +852,10 @@ function autoPartCost(sel,container){
   var opt=sel.options[sel.selectedIndex];
   var sell=parseFloat(sel.value||0);
   var rawCost=parseFloat(opt?opt.getAttribute('data-cost')||0:0);
-  var adjCost=rawCost+0.30*(sell-rawCost);
   if(row){
     var p=row.querySelector('.li-price');var c=row.querySelector('.li-cost');var iv=row.querySelector('.li-inv-id');
     if(p)p.value=sell;
-    if(c)c.value=adjCost>0?adjCost.toFixed(2):'0';
+    if(c)c.value=rawCost.toFixed(2);
     if(iv)iv.value=opt?opt.getAttribute('data-inv-id')||'':'';
   }
   updateTotal(container);
@@ -930,17 +944,28 @@ function updateTotal(containerId){
   const cogs=lineCogs+mileCost;
   const gross=sub-cogs;const marg=sub>0?(gross/sub*100).toFixed(1):0;
   const mc=parseFloat(marg)>=40?'var(--grn)':parseFloat(marg)>=20?'var(--gold)':'var(--red)';
+  // Owner profit: subtract 30% of parts gross as tech overhead
+  const partsTechCost=lis.filter(li=>li.li_type==='part').reduce((s,li)=>s+((li.sell_price||0)-(li.cost_price||0))*(li.qty||1)*0.30,0);
+  const ownerProfit=gross-partsTechCost;
+  const ownerMarg=sub>0?(ownerProfit/sub*100).toFixed(1):0;
+  const oc=parseFloat(ownerMarg)>=40?'var(--grn)':parseFloat(ownerMarg)>=20?'var(--gold)':'var(--red)';
   const total=sub+tax;
   const tid=containerId+'-total';const t=document.getElementById(tid);
   if(t){
     if(sub===0){t.innerHTML='';return;}
     t.innerHTML='<div class="profit-hero">'
       +'<div class="ph-row">'
-      +'<div><div style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:4px">Est. Profit</div>'
+      +'<div><div style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:4px">Gross Profit</div>'
       +'<div style="font-size:32px;font-weight:800;letter-spacing:-1px;color:'+mc+'">'+fmt(gross)+'</div></div>'
       +'<div style="text-align:right"><div style="font-size:26px;font-weight:800;color:'+mc+'">'+marg+'%</div>'
       +'<div style="font-size:10px;color:var(--t3);font-weight:700;margin-top:2px;letter-spacing:1px">MARGIN</div></div>'
       +'</div>'
+      +(partsTechCost>0?'<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding:10px 12px;background:rgba(82,224,154,0.04);border:1px solid rgba(82,224,154,0.15);border-radius:9px">'
+        +'<div><div style="font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)">After Tech Cost</div>'
+        +'<div style="font-size:20px;font-weight:800;color:'+oc+';margin-top:2px">'+fmt(ownerProfit)+'</div></div>'
+        +'<div style="text-align:right"><div style="font-size:18px;font-weight:800;color:'+oc+'">'+ownerMarg+'%</div>'
+        +'<div style="font-size:10px;color:var(--t3);font-weight:600;margin-top:1px">Owner Margin</div></div>'
+        +'</div>':'')
       +'<div class="ph-sub">'
       +'<div><div class="ph-item-v" style="color:var(--gold)">'+fmt2(total)+'</div><div class="ph-item-l">Total</div></div>'
       +(lineCogs>0?'<div><div class="ph-item-v" style="color:var(--t2)">'+fmt2(lineCogs)+'</div><div class="ph-item-l">Parts/Labor</div></div>':'')
@@ -1634,11 +1659,12 @@ async function saveLabor(){const name=(document.getElementById('lf-n')?.value||'
 async function deleteLabor(id){if(!confirm('Delete labor type?'))return;try{await dbDel('labor_catalog',id);S.laborCatalog=S.laborCatalog.filter(l=>l.id!==id);render();}catch(e){alert('Error: '+e.message);}}
 
 // PO
-function rPOForm(){const po=S.editingId?S.purchaseOrders.find(p=>p.id===S.editingId):{};return '<div class="card"><div class="po-number" id="po-preview">'+(po.po_number||nextPO())+'</div>'+(!po.po_number?'<div style="text-align:center;margin-bottom:16px"><button class="btn-sm" onclick="document.getElementById(\'po-preview\').textContent=nextPO()">Regenerate #</button></div>':'')+'<div class="field"><div class="fl">Vendor (optional)</div><select class="inp" id="po-ven"><option value="">Select vendor...</option>'+S.vendors.map(v=>'<option value="'+v.id+'"'+(v.id===po.vendor_id?' selected':'')+'>'+v.name+'</option>').join('')+'</select></div><div class="field"><div class="fl">Amount ($)</div><input type="number" class="inp" id="po-amt" value="'+(po.amount||'')+'" placeholder="0.00"></div><div class="field"><div class="fl">Notes</div><input class="inp" id="po-notes" value="'+(po.notes||'')+'" placeholder="Optional"></div><div class="brow"><button class="btnc" onclick="goBack()">Cancel</button><button class="btns" onclick="savePO()">Save PO</button></div></div>';}
-async function savePO(){const num=document.getElementById('po-preview')?.textContent||nextPO();const data={po_number:num,vendor_id:document.getElementById('po-ven')?.value||null,amount:parseFloat(document.getElementById('po-amt')?.value||0),notes:document.getElementById('po-notes')?.value||'',status:'Open'};showLoading('Saving...');try{if(S.editingId){await dbUpd('purchase_orders',S.editingId,data);S.purchaseOrders=S.purchaseOrders.map(p=>p.id===S.editingId?{...p,...data}:p);}else{const r=await dbIns('purchase_orders',data);S.purchaseOrders.unshift(r);S.poId=r.id;}S.showForm=null;S.editingId=null;S.esub='pos';}catch(e){alert('Error: '+e.message);}hideLoading();render();}
+function rPOForm(){const po=S.editingId?S.purchaseOrders.find(p=>p.id===S.editingId):{};return '<div class="card"><div class="po-number" id="po-preview">'+(po.po_number||nextPO())+'</div>'+(!po.po_number?'<div style="text-align:center;margin-bottom:16px"><button class="btn-sm" onclick="document.getElementById(\'po-preview\').textContent=nextPO()">Regenerate #</button></div>':'')+'<div class="field"><div class="fl">Date</div><input type="date" class="inp" id="po-date" value="'+(po.date||td())+'"></div><div class="field"><div class="fl">Vendor (optional)</div><select class="inp" id="po-ven"><option value="">Select vendor...</option>'+S.vendors.map(v=>'<option value="'+v.id+'"'+(v.id===po.vendor_id?' selected':'')+'>'+v.name+'</option>').join('')+'</select></div><div class="field"><div class="fl">Amount ($)</div><input type="number" class="inp" id="po-amt" value="'+(po.amount||'')+'" placeholder="0.00"></div><div class="field"><div class="fl">Notes</div><input class="inp" id="po-notes" value="'+(po.notes||'')+'" placeholder="Optional"></div><div class="brow"><button class="btnc" onclick="goBack()">Cancel</button><button class="btns" onclick="savePO()">Save PO</button></div></div>';}
+async function savePO(){const num=document.getElementById('po-preview')?.textContent||nextPO();const data={po_number:num,date:document.getElementById('po-date')?.value||td(),vendor_id:document.getElementById('po-ven')?.value||null,amount:parseFloat(document.getElementById('po-amt')?.value||0),notes:document.getElementById('po-notes')?.value||'',status:'Open'};showLoading('Saving...');try{if(S.editingId){await dbUpd('purchase_orders',S.editingId,data);S.purchaseOrders=S.purchaseOrders.map(p=>p.id===S.editingId?{...p,...data}:p);}else{const r=await dbIns('purchase_orders',data);S.purchaseOrders.unshift(r);S.poId=r.id;}S.showForm=null;S.editingId=null;S.esub='pos';}catch(e){alert('Error: '+e.message);}hideLoading();render();}
 
 function rPODetail(){const po=S.purchaseOrders.find(p=>p.id===S.poId);if(!po)return'';const v=po.vendor_id?S.vendors.find(v=>v.id===po.vendor_id):null;const j=po.job_id?getJ(po.job_id):null;const c=j?getC(j.client_id):null;
 let h='<div class="po-number">#'+po.po_number+'</div><div class="card">'
+  +'<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2);font-weight:600">Date</span><span style="font-weight:700">'+(po.date?dfmt(po.date):'—')+'</span></div>'
   +'<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2);font-weight:600">Vendor</span><span style="font-weight:700">'+(v?v.name:'None')+'</span></div>'
   +'<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2);font-weight:600">Amount</span><span style="font-weight:800;color:var(--gold)">'+fmt(po.amount||0)+'</span></div>'
   +'<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2);font-weight:600">Status</span><span class="sbadge sb-'+(po.status||'open').toLowerCase()+'">'+po.status+'</span></div>'
@@ -1667,7 +1693,14 @@ function rReport(){
   const ytdDraws=S.draws.filter(d=>new Date(d.date+'T00:00:00').getFullYear()===y).reduce((sum,d)=>sum+d.amount,0);
   const retained=s.net-ytdDraws;
   const ar=S.invoices.filter(i=>i.status==='Sent'||i.status==='Partial'||i.status==='Overdue').reduce((sum,i)=>sum+(i.total||0)-(i.amt_received||0),0);
-  // Job margin stats from invoices with COGS data
+  // Parts breakdown
+  const paidInvs=ytdInvs.filter(i=>i.status==='Paid'||i.status==='Partial');
+  const partsRev=paidInvs.reduce((s,i)=>s+(i.line_items||[]).filter(li=>li.li_type==='part').reduce((ps,li)=>ps+(li.sell_price||0)*(li.qty||1),0),0);
+  const partsCostYTD=paidInvs.reduce((s,i)=>s+(i.line_items||[]).filter(li=>li.li_type==='part').reduce((ps,li)=>ps+(li.cost_price||0)*(li.qty||1),0),0);
+  const partsSold=paidInvs.reduce((s,i)=>s+(i.line_items||[]).filter(li=>li.li_type==='part').reduce((ps,li)=>ps+(li.qty||1),0),0);
+  const partsGross=partsRev-partsCostYTD;
+  const partsMargin=partsRev>0?(partsGross/partsRev*100).toFixed(1):0;
+  const pmc=parseFloat(partsMargin)>=40?'var(--grn)':parseFloat(partsMargin)>=20?'var(--gold)':'var(--red)';
   const paidWithCOGS=ytdInvs.filter(i=>(i.status==='Paid'||i.status==='Partial')&&(i.line_items||[]).some(li=>li.cost_price>0));
   const avgMargin=paidWithCOGS.length?paidWithCOGS.reduce((s,i)=>s+jobMargin(i).pct,0)/paidWithCOGS.length:0;
   const amc=avgMargin>=40?'var(--grn)':avgMargin>=20?'var(--gold)':'var(--red)';
@@ -1697,6 +1730,19 @@ function rReport(){
     +'<tr><td class="lb sb2">Owner Draws</td><td style="color:var(--t2)">-'+fmt(ytdDraws)+'</td></tr>'
     +'<tr class="total-row"><td>Retained Earnings</td><td style="color:'+(retained>=0?'var(--grn)':'var(--red)')+'">'+fmtS(retained)+'</td></tr>'
     +'</table></div>';
+  // Parts summary card
+  if(partsSold>0){
+    h+='<div class="sl">Parts Summary — '+y+'</div><div class="card">'
+      +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">'
+      +'<div style="text-align:center;padding:12px;background:var(--bg);border-radius:10px"><div style="font-size:22px;font-weight:800;color:var(--gold)">'+partsSold+'</div><div style="font-size:10px;color:var(--t3);font-weight:700;margin-top:3px;letter-spacing:.5px">UNITS SOLD</div></div>'
+      +'<div style="text-align:center;padding:12px;background:var(--bg);border-radius:10px"><div style="font-size:22px;font-weight:800;color:var(--gold)">'+fmt(partsRev)+'</div><div style="font-size:10px;color:var(--t3);font-weight:700;margin-top:3px;letter-spacing:.5px">REVENUE</div></div>'
+      +'<div style="text-align:center;padding:12px;background:var(--bg);border-radius:10px"><div style="font-size:22px;font-weight:800;color:'+pmc+'">'+partsMargin+'%</div><div style="font-size:10px;color:var(--t3);font-weight:700;margin-top:3px;letter-spacing:.5px">MARGIN</div></div>'
+      +'</div>'
+      +'<table class="yt">'
+      +'<tr><td class="lb">Parts Revenue</td><td style="color:var(--gold)">'+fmt(partsRev)+'</td></tr>'
+      +'<tr><td class="lb">Parts Cost</td><td style="color:var(--t2)">-'+fmt(partsCostYTD)+'</td></tr>'
+      +'<tr class="total-row"><td>Parts Gross Profit</td><td style="color:'+pmc+'">'+fmt(partsGross)+'</td></tr>'
+      +'</table></div>';}
   // Per-job margin table (paid invoices with cost data)
   if(paidWithCOGS.length){
     h+='<div class="sl" style="margin-top:4px">Job Margins ('+paidWithCOGS.length+' jobs with cost data)</div><div class="card" style="padding:0;overflow:hidden">'
@@ -1837,6 +1883,79 @@ function previewMap(){const a=(document.getElementById('cf-addr')?.value||'').tr
 function openMap(addr){S.showMap=true;S.mapAddr=addr;render();}
 function loadLeaflet(){return new Promise(res=>{if(window.L){res();return;}const css=document.createElement('link');css.rel='stylesheet';css.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';document.head.appendChild(css);const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';s.onload=res;document.head.appendChild(s);});}
 async function initMap(addr){const mc=document.getElementById('map-container');if(!mc)return;mc.innerHTML='<div style="color:var(--t2);font-size:14px;font-weight:600;margin:auto">Locating...</div>';try{await loadLeaflet();const geo=await fetch('https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(addr)+'&limit=1',{headers:{'User-Agent':'EverGuardOS/1.0'}});const gd=await geo.json();if(!gd.length){mc.innerHTML='<div style="color:var(--red);font-size:14px;margin:auto">Address not found</div>';return;}const clat=parseFloat(gd[0].lat),clng=parseFloat(gd[0].lon);mc.innerHTML='';const map=L.map(mc).setView([clat,clng],13);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM'}).addTo(map);const ci=L.divIcon({html:'<div style="background:#DBB183;border:3px solid #050d08;border-radius:50%;width:18px;height:18px;"></div>',iconSize:[18,18],iconAnchor:[9,9]});L.marker([clat,clng],{icon:ci}).addTo(map).bindPopup(addr).openPopup();navigator.geolocation.getCurrentPosition(async pos=>{const ulat=pos.coords.latitude,ulng=pos.coords.longitude;const ui=L.divIcon({html:'<div style="background:#60a5fa;border:3px solid #050d08;border-radius:50%;width:18px;height:18px;"></div>',iconSize:[18,18],iconAnchor:[9,9]});L.marker([ulat,ulng],{icon:ui}).addTo(map).bindPopup('You');map.fitBounds([[ulat,ulng],[clat,clng]],{padding:[30,30]});try{const rt=await fetch('https://router.project-osrm.org/route/v1/driving/'+ulng+','+ulat+';'+clng+','+clat+'?overview=full&geometries=geojson');const rd=await rt.json();if(rd.routes?.length){L.geoJSON(rd.routes[0].geometry,{style:{color:'#DBB183',weight:5,opacity:.8}}).addTo(map);const mins=Math.round(rd.routes[0].duration/60);const mi=(rd.routes[0].distance*0.000621371).toFixed(1);const ev=document.getElementById('eta-val'),dv=document.getElementById('dist-val');if(ev)ev.textContent=mins<60?mins+' min':Math.floor(mins/60)+'h '+mins%60+'m';if(dv)dv.textContent=mi+' mi';}}catch(e){}map.invalidateSize();},()=>map.invalidateSize(),{timeout:8000});}catch(e){const mc2=document.getElementById('map-container');if(mc2)mc2.innerHTML='<div style="color:var(--red);font-size:14px;margin:auto">Map unavailable</div>';}}
+
+// ─── GLOBAL SEARCH ────────────────────────────────────────
+function rSearchOverlay(){
+  return '<div class="search-ov">'
+    +'<div class="search-hdr">'
+    +'<input class="search-box" id="global-search" placeholder="Client, PO #, invoice #..." value="'+S.searchQ+'" oninput="renderSearch()" autocomplete="off">'
+    +'<button class="backbtn" onclick="S.showSearch=false;S.searchQ=\'\';render()">Cancel</button>'
+    +'</div>'
+    +'<div class="search-results"><div style="text-align:center;padding:48px 20px;color:var(--t3);font-size:14px;font-weight:600;line-height:1.8">Search by client name,<br>PO number, or invoice #</div></div>'
+    +'</div>';
+}
+
+function renderSearch(){
+  S.searchQ=document.getElementById('global-search')?.value||'';
+  const ov=document.querySelector('.search-ov');if(!ov)return;
+  const res=ov.querySelector('.search-results');if(!res)return;
+  const q=S.searchQ.toLowerCase().trim();
+  let html='';
+  if(q.length>=1){
+    const clients=S.clients.filter(c=>(c.name+' '+(c.company||'')+' '+(c.phone||'')+' '+(c.address||'')).toLowerCase().includes(q));
+    if(clients.length){
+      html+='<div class="sr-section">Clients</div>';
+      clients.slice(0,5).forEach(c=>{
+        const jobs=S.jobs.filter(j=>j.client_id===c.id).length;
+        const billed=S.invoices.filter(i=>i.client_id===c.id).reduce((s,i)=>s+(i.total||0),0);
+        html+='<div class="sr-row" onclick="searchNav(\'client\',\''+c.id+'\')">'
+          +'<div><div style="font-size:15px;font-weight:700">'+c.name+'</div>'
+          +(c.company?'<div style="font-size:12px;color:var(--t2);margin-top:2px">'+c.company+'</div>':'')
+          +(c.address?'<div style="font-size:11px;color:var(--t3);margin-top:2px">📍 '+c.address+'</div>':'')+'</div>'
+          +'<div style="text-align:right;flex-shrink:0;margin-left:10px"><div style="font-size:13px;font-weight:700;color:var(--gold)">'+fmt(billed)+'</div>'
+          +'<div style="font-size:11px;color:var(--t3);margin-top:2px">'+jobs+' job'+(jobs!==1?'s':'')+'</div></div></div>';
+      });
+    }
+    const pos=S.purchaseOrders.filter(p=>(p.po_number||'').toLowerCase().includes(q));
+    if(pos.length){
+      html+='<div class="sr-section">Purchase Orders</div>';
+      pos.slice(0,5).forEach(p=>{
+        const inv=S.invoices.find(i=>i.po_id===p.id);
+        const v=p.vendor_id?S.vendors.find(v=>v.id===p.vendor_id):null;
+        html+='<div class="sr-row" onclick="searchNav(\'po\',\''+p.id+'\')">'
+          +'<div><div style="font-size:15px;font-weight:700">#'+p.po_number+'</div>'
+          +'<div style="font-size:12px;color:var(--t2);margin-top:2px">'+(v?v.name:'No vendor')+(p.date?' · '+sfmt(p.date):'')+'</div></div>'
+          +'<div style="text-align:right">'
+          +(inv?'<div style="font-size:12px;font-weight:700;color:var(--grn)">'+inv.number+'</div><div style="font-size:11px;color:var(--t3);margin-top:2px">Invoice linked</div>':'<span class="sbadge sb-'+(p.status||'open').toLowerCase()+'">'+p.status+'</span>')
+          +'</div></div>';
+      });
+    }
+    const invs=S.invoices.filter(i=>(i.number||'').toLowerCase().includes(q));
+    if(invs.length){
+      html+='<div class="sr-section">Invoices</div>';
+      invs.slice(0,5).forEach(i=>{
+        const c=getC(i.client_id);
+        html+='<div class="sr-row" onclick="searchNav(\'invoice\',\''+i.id+'\')">'
+          +'<div><div style="font-size:15px;font-weight:700">'+i.number+'</div>'
+          +'<div style="font-size:12px;color:var(--t2);margin-top:2px">'+(c?c.name:'Unknown')+'</div></div>'
+          +'<div style="text-align:right"><div style="font-size:13px;font-weight:700;color:var(--gold)">'+fmt2(i.total||0)+'</div>'
+          +'<span class="sbadge sb-'+((i.status||'draft').toLowerCase())+'" style="margin-top:4px;display:block">'+i.status+'</span></div></div>';
+      });
+    }
+    if(!html)html='<div style="text-align:center;padding:48px 20px;color:var(--t3);font-size:14px;font-weight:600">No results for "'+S.searchQ+'"</div>';
+  } else {
+    html='<div style="text-align:center;padding:48px 20px;color:var(--t3);font-size:14px;font-weight:600;line-height:1.8">Search by client name,<br>PO number, or invoice #</div>';
+  }
+  res.innerHTML=html;
+}
+
+function searchNav(type,id){
+  S.showSearch=false;S.searchQ='';
+  if(type==='client'){S.tab='clients';S.clientId=id;S.clientTab='info';S.showForm=null;}
+  else if(type==='po'){S.tab='finance';S.fsub='pos';S.poId=id;S.showForm=null;}
+  else if(type==='invoice'){S.tab='finance';S.fsub='invoices';S.invId=id;S.showForm=null;}
+  render();
+}
 
 // ─── INIT ─────────────────────────────────────────────────
 render();
