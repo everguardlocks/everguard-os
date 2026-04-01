@@ -461,7 +461,7 @@ async function loadAll(){
     S.quoteN=(qtNums.length?Math.max(...qtNums):0)+1;
     S.goal=parseInt(localStorage.getItem('eg_goal'))||5000;
     await checkRecurring();
-  }catch(e){console.error('Load error:',e);}
+  }catch(e){console.error('Load error:',e);alert('Load error: '+e.message);}
   hideLoading();render();
 }
 
@@ -924,7 +924,10 @@ function getLIs(containerId){
 function updateTotal(containerId){
   const lis=getLIs(containerId);
   const{sub,taxable,tax}=calcInvTotal(lis,AZ_TAX,true);
-  const cogs=lis.reduce((s,i)=>s+(i.cost_price||0)*(i.qty||1),0);
+  const lineCogs=lis.reduce((s,i)=>s+(i.cost_price||0)*(i.qty||1),0);
+  const job=S.formJobId?getJ(S.formJobId):null;
+  const mileCost=(job?.miles||0)*IRS;
+  const cogs=lineCogs+mileCost;
   const gross=sub-cogs;const marg=sub>0?(gross/sub*100).toFixed(1):0;
   const mc=parseFloat(marg)>=40?'var(--grn)':parseFloat(marg)>=20?'var(--gold)':'var(--red)';
   const total=sub+tax;
@@ -940,7 +943,8 @@ function updateTotal(containerId){
       +'</div>'
       +'<div class="ph-sub">'
       +'<div><div class="ph-item-v" style="color:var(--gold)">'+fmt2(total)+'</div><div class="ph-item-l">Total</div></div>'
-      +(cogs>0?'<div><div class="ph-item-v" style="color:var(--t2)">'+fmt2(cogs)+'</div><div class="ph-item-l">Cost</div></div>':'')
+      +(lineCogs>0?'<div><div class="ph-item-v" style="color:var(--t2)">'+fmt2(lineCogs)+'</div><div class="ph-item-l">Parts/Labor</div></div>':'')
+      +(mileCost>0?'<div><div class="ph-item-v" style="color:var(--t2)">'+fmt2(mileCost)+'</div><div class="ph-item-l">Mileage</div></div>':'')
       +(tax>0?'<div><div class="ph-item-v" style="color:var(--t2)">'+fmt2(tax)+'</div><div class="ph-item-l">Tax</div></div>':'')
       +'</div>'
       +'</div>';
