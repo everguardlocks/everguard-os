@@ -304,8 +304,9 @@ function liT(li){return (li||[]).reduce((s,i)=>s+(i.qty*i.sell_price),0);}
 function jobRevenue(j){return j.revenue||0;}
 function cc(m){return m>=40?'var(--grn)':m>=20?'var(--gold)':'var(--red)';}
 
-function calcStats(jobs, exps){
-  const rev = jobs.reduce((s,j)=>s+(j.revenue||0),0);
+function calcStats(jobs, exps, invs){
+  const paidInvs=(invs||S.invoices).filter(i=>i.status==='Paid'||i.status==='Partial');
+  const rev=paidInvs.reduce((s,i)=>s+(i.status==='Paid'?(i.total||0):(i.amt_received||0)),0);
   const mat = jobs.reduce((s,j)=>s+(j.materials_cost||0),0);
   const lab = jobs.reduce((s,j)=>s+(j.labor_cost||0),0);
   const mil = jobs.reduce((s,j)=>s+(j.mileage_amt||0),0);
@@ -762,6 +763,9 @@ function addQtLI(type){
     desc=`<select class="li-desc" onchange="this.parentElement.querySelector('.li-price').value=this.value;updateDocTotal('qt-total','qt-li-con')"><option value="">Select part...</option>${opts}</select>`;
   } else if(type==='svcall'){
     desc=`<input class="li-desc" placeholder="Service Call fee" value="Service Call" oninput="updateDocTotal('qt-total','qt-li-con')">`;
+  } else if(type==='svcall'){
+    d.dataset.litype='svcall';
+    desc=`<input class="li-desc" placeholder="Service Call" value="Service Call" oninput="updateDocTotal('qt-total','qt-li-con')">`;
   } else {
     desc=`<input class="li-desc" placeholder="Description" oninput="updateDocTotal('qt-total','qt-li-con')">`;
   }
@@ -771,20 +775,18 @@ function addQtLI(type){
 
 function updateDocTotal(totalId,conId){
   const rows=document.querySelectorAll(`#${conId} .li-row`);
-  let sub=0,taxableSub=0;
+  let sub=0,taxable=0;
   rows.forEach(r=>{
     const qty=parseFloat(r.querySelector('.li-qty')?.value)||1;
     const price=parseFloat(r.querySelector('.li-price')?.value)||0;
-    const amt=qty*price;
-    sub+=amt;
-    // Tax applies to parts/materials only, not labor or service calls
+    const amt=qty*price;sub+=amt;
     const desc=(r.querySelector('.li-desc')?.value||'').toLowerCase();
-    const isLabor=r.dataset.type==='labor'||desc.includes('labor')||desc.includes('service call');
-    if(!isLabor)taxableSub+=amt;
+    const isNonTaxable=r.dataset.litype==='labor'||r.dataset.litype==='svcall'||desc==='service call'||desc.includes('labor');
+    if(!isNonTaxable)taxable+=amt;
   });
-  const tax=S.taxEnabled?taxableSub*S.taxRate/100:0;
+  const tax=S.taxEnabled?taxable*S.taxRate/100:0;
   const t=document.getElementById(totalId);
-  if(t)t.textContent=`Total: ${fmt2(sub+tax)}${S.taxEnabled&&tax>0?` (tax on $${fmt2(taxableSub)} materials)`:''}`;
+  if(t)t.textContent=`Total: ${fmt2(sub+tax)}${S.taxEnabled&&tax>0?` (tax on ${fmt2(taxable)} materials)`:''}`;
 }
 
 function getLIsFromDOM(conId){
@@ -1026,7 +1028,7 @@ function rAddInvoiceForm(){
   if(c){h+='<div style="font-size:12px;color:var(--t2);font-weight:600;margin-bottom:14px">Client: <strong style="color:var(--gold)">'+c.name+'</strong>'+(c.tax_exempt?'<span style="font-size:10px;color:var(--pur);font-weight:800;background:rgba(167,139,250,.1);padding:2px 6px;border-radius:6px;margin-left:6px">TAX EXEMPT</span>':'')+'</div>';}
   if(!clientId){h+='<div class="field"><div class="fl">Client</div><select class="inp" id="inv-client" style="background:var(--s2)"><option value="">Select...</option>'+clientOpts+'</select></div>';}
   h+='<div class="two"><div class="field"><div class="fl">Invoice Date</div><input type="date" class="inp" id="if-date" value="'+td()+'"></div><div class="field"><div class="fl">Due Date</div><input type="date" class="inp" id="if-due" value="'+dueStr+'"></div></div>';
-  h+='<div class="field"><div class="fl">Line Items</div><div style="display:flex;gap:6px;margin-bottom:4px"><span style="flex:1;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase">Description</span><span style="width:54px;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;text-align:center">Qty</span><span style="width:70px;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;text-align:center">Price ($)</span><span style="width:28px"></span></div><div id="inv-li-con"></div><div style="display:flex;gap:6px;margin-top:6px"><button class="ali-btn" style="flex:1" onclick="addInvLI(0)">+ Part</button><button class="ali-btn" style="flex:1" onclick="addInvLI(1)">+ Labor</button><button class="ali-btn" style="flex:1" onclick="addInvLI(2)">+ Custom</button></div></div>';
+  h+='<div class="field"><div class="fl">Line Items</div><div style="display:flex;gap:6px;margin-bottom:4px"><span style="flex:1;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase">Description</span><span style="width:54px;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;text-align:center">Qty</span><span style="width:70px;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;text-align:center">Price ($)</span><span style="width:28px"></span></div><div id="inv-li-con"></div><div style="display:flex;gap:6px;margin-top:6px"><button class="ali-btn" style="flex:1" onclick="addInvLI(0)">+ Part</button><button class="ali-btn" style="flex:1" onclick="addInvLI(1)">+ Labor</button><button class="ali-btn" style="flex:1" onclick="addInvLI(3)">+ Svc Call</button><button class="ali-btn" style="flex:1" onclick="addInvLI(2)">+ Custom</button></div></div>';
   if(!c||!c.tax_exempt){h+='<div class="tax-row"><span style="font-size:13px;font-weight:600;color:var(--tx)">Sales Tax ('+AZ_TAX+'%)</span><button class="toggle '+(taxEnabled?'on':'')+'" onclick="S.taxEnabled=!S.taxEnabled;render()"></button></div>';}
   h+='<div id="inv-total" style="text-align:right;margin-top:10px;font-size:14px;font-weight:700;color:var(--gold)"></div><div class="two" style="margin-top:12px"><div class="field"><div class="fl">Payment Method</div><select class="inp" id="if-method" style="background:var(--s2)">'+pmOpts+'</select></div><div class="field"></div></div><div class="field"><div class="fl">Notes</div><textarea class="inp" id="if-notes" rows="2" style="resize:vertical">Net 30 - Payment due within 30 days</textarea></div><div class="brow"><button class="btnc" onclick="goBack()">Cancel</button><button class="btns" onclick="saveInvoice()">Save Invoice</button></div></div>';
   return h;
@@ -1045,6 +1047,9 @@ function addInvLI(typeNum){
     desc='<select class="li-desc" onchange="this.parentElement.querySelector(\'.li-price\').value=this.value;updateDocTotal(\'inv-total\',\'inv-li-con\')"><option value="">Select part...</option>'+opts+'</select>';
   } else if(typeNum===3){
     desc='<input class="li-desc" placeholder="Service Call fee" value="Service Call">';
+  } else if(typeNum===3){
+    const d2=document.createElement('div');d2.dataset.litype='svcall';
+    desc='<input class="li-desc" placeholder="Service Call" value="Service Call">';
   } else {
     desc='<input class="li-desc" placeholder="Description" oninput="updateDocTotal(\'inv-total\',\'inv-li-con\')">';
   }
