@@ -402,12 +402,14 @@ function calcStats(jobs,exps,invs){
   return{rev,partsCost,laborCost,otherCost,cogs,fixed,variable,onetime,ovh,gross,net,
     grossMargin:rev>0?gross/rev*100:0,netMargin:rev>0?net/rev*100:0,cnt:jobs.length};
 }
-function jobMargin(inv){
-  if(!inv)return{rev:0,cogs:0,gross:0,pct:0};
+function jobMargin(inv,job){
+  if(!inv)return{rev:0,cogs:0,gross:0,pct:0,mileCost:0};
+  const j=job||(inv.job_id?getJ(inv.job_id):null);
   const rev=inv.status==='Paid'?(inv.total||0):inv.status==='Partial'?(inv.amt_received||0):(inv.total||0);
-  const cogs=(inv.line_items||[]).reduce((s,li)=>s+(li.cost_price||0)*(li.qty||1),0);
+  const mileCost=(j?.miles||0)*IRS;
+  const cogs=(inv.line_items||[]).reduce((s,li)=>s+(li.cost_price||0)*(li.qty||1),0)+mileCost;
   const gross=rev-cogs;
-  return{rev,cogs,gross,pct:rev>0?gross/rev*100:0};
+  return{rev,cogs,gross,pct:rev>0?gross/rev*100:0,mileCost};
 }
 
 // ─── AUTH ─────────────────────────────────────────────────
@@ -519,7 +521,7 @@ function render(){
     +'<span class="ni">'+ti[t]+'</span><span class="nl">'+tl[t]+'</span></button>').join('');
   const st=getHdrState();
   const rb=isAdmin()?'<span class="rbadge rb-admin">ADMIN</span>':'<span class="rbadge rb-tech">TECH</span>';
-  const gear=isAdmin()&&!S.showMap?'<button class="ibtn" onclick="S.showForm=\'settings\';render()">⚙</button>':'';
+  const gear=!S.showMap?'<button class="ibtn" onclick="S.showForm=\'settings\';render()">⚙</button>':'';
   const mapOv=S.showMap?rMapModal():'';
   let hdrLeft='';
   if(st.showBack){
@@ -823,12 +825,33 @@ function rQuoteForm(){
     +'<div class="brow"><button class="btnc" onclick="goBack()">Cancel</button><button class="btns" onclick="saveQuote()">Save Quote</button></div></div>';
 }
 
+// ─── COST AUTO-FILL HELPERS ───────────────────────────────
+function autoCost20(el,container){
+  var row=el.closest('.li-row');
+  var c=row?row.querySelector('.li-cost'):null;
+  if(c)c.value=(parseFloat(el.value||0)*0.20).toFixed(2);
+  updateTotal(container);
+}
+function autoPartCost(sel,container){
+  var row=sel.closest('.li-row')||sel.parentElement;
+  var opt=sel.options[sel.selectedIndex];
+  var sell=parseFloat(sel.value||0);
+  var rawCost=parseFloat(opt?opt.getAttribute('data-cost')||0:0);
+  var adjCost=rawCost+0.30*(sell-rawCost);
+  if(row){
+    var p=row.querySelector('.li-price');var c=row.querySelector('.li-cost');var iv=row.querySelector('.li-inv-id');
+    if(p)p.value=sell;
+    if(c)c.value=adjCost>0?adjCost.toFixed(2):'0';
+    if(iv)iv.value=opt?opt.getAttribute('data-inv-id')||'':'';
+  }
+  updateTotal(container);
+}
+
 function addLI(container,type){
   const con=document.getElementById(container+'-con');if(!con)return;
   const id='li'+Date.now();const d=document.createElement('div');d.className='li-row';d.id=id;
   const taxed=type==='part'||type==='custom';
   const cs='width:64px;background:var(--s2);border:1px solid var(--b2);border-radius:9px;padding:11px 6px;color:var(--t3);font-size:13px;font-weight:600;outline:none;text-align:center;min-height:44px;';
-  const autoC='var _c=this.closest(".li-row").querySelector(".li-cost");if(_c)_c.value=(parseFloat(this.value||0)*0.20).toFixed(2);updateTotal("'+container+'")';
   if(type==='labor'){
     const presets=S.laborCatalog.filter(l=>l.is_active!==false);
     const pb=presets.length?'<button type="button" style="flex-shrink:0;background:var(--gbg);border:1px solid var(--gbr);color:var(--gold);border-radius:8px;padding:0 12px;font-size:11px;font-weight:800;cursor:pointer;min-height:44px;align-self:flex-start" onclick="pickLaborPreset(\''+id+'\',\''+container+'\')">Rate ▾</button>':'';
@@ -839,7 +862,7 @@ function addLI(container,type){
       +pb+'</div>'
       +'<div style="display:flex;gap:6px;align-items:center">'
       +'<input class="li-qty" type="number" value="1" oninput="updateTotal(\''+container+'\')">'
-      +'<input class="li-price" type="number" value="0" placeholder="Sell" oninput="'+autoC+'">'
+      +'<input class="li-price" type="number" value="0" placeholder="Sell" oninput="autoCost20(this,\''+container+'\')">'
       +'<input class="li-cost" type="number" value="0" placeholder="Cost" style="'+cs+'" oninput="updateTotal(\''+container+'\')">'
       +'<input type="hidden" class="li-type" value="labor">'
       +'<input type="hidden" class="li-inv-id" value="">'
@@ -848,16 +871,15 @@ function addLI(container,type){
       +'</div>';
   } else {
     let descHTML='',costVal='0';
-    let priceOninput='updateTotal("'+container+'")';
     if(type==='part'){
       const opts=S.inventory.filter(i=>i.is_active!==false).map(i=>'<option value="'+i.sell_price+'" data-cost="'+(i.cost_price||0)+'" data-desc="'+i.name+'" data-inv-id="'+i.id+'">'+i.name+' ('+i.qty_on_hand+' on hand)</option>').join('');
-      descHTML='<select class="li-desc" onchange="var r=this.parentElement;var opt=this.options[this.selectedIndex];r.querySelector(\'.li-price\').value=this.value;r.querySelector(\'.li-cost\').value=opt.getAttribute(\'data-cost\')||0;r.querySelector(\'.li-inv-id\').value=opt.getAttribute(\'data-inv-id\')||\'\';;updateTotal(\''+container+'\')"><option value="">Select part...</option>'+opts+'</select>';
+      descHTML='<select class="li-desc" onchange="autoPartCost(this,\''+container+'\')"><option value="">Select part...</option>'+opts+'</select>';
     }else if(type==='svcall'){
       descHTML='<input class="li-desc" value="Service Call" oninput="updateTotal(\''+container+'\')">';
-      priceOninput=autoC;
     }else{
       descHTML='<input class="li-desc" placeholder="Description" oninput="updateTotal(\''+container+'\')">';
     }
+    const priceOninput=type==='svcall'?'autoCost20(this,\''+container+'\')':'updateTotal(\''+container+'\')';
     d.innerHTML=descHTML
       +'<input class="li-qty" type="number" value="1" oninput="updateTotal(\''+container+'\')">'
       +'<input class="li-price" type="number" value="0" placeholder="Sell" oninput="'+priceOninput+'">'
@@ -1077,6 +1099,13 @@ function rJobDetail(){
     +(j.notes?'<div style="font-size:14px;color:var(--t2);padding-top:12px;border-top:1px solid var(--bd);line-height:1.6">'+j.notes+'</div>':'')+'</div>';
   h+='<div class="card"><div class="sl">Update Status</div><div class="status-btns">'
     +JOB_STATUS.map(s=>'<button class="status-btn '+(j.status===s?'on':'')+'" onclick="updateJobStatus(\''+j.id+'\',\''+s+'\')">'+s+'</button>').join('')+'</div></div>';
+  h+='<div class="card"><div class="sl">Mileage</div>'
+    +'<div style="display:flex;gap:10px;align-items:center">'
+    +'<input type="number" class="inp" id="miles-inp" value="'+(j.miles||'')+'" placeholder="0 mi" style="width:90px;text-align:center;font-size:18px;font-weight:800">'
+    +'<div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--t2)">'+(j.miles?j.miles+' mi × $'+IRS+' = <strong style="color:var(--gold)">'+fmt2((j.miles||0)*IRS)+'</strong>':'Enter miles to this job')+'</div>'
+    +'<div style="font-size:11px;color:var(--t3);margin-top:3px;font-weight:600">Internal COGS only · not billed to client</div></div>'
+    +'<button class="btn-gold" onclick="saveMiles(\''+j.id+'\')" style="min-height:44px;flex-shrink:0">Save</button>'
+    +'</div></div>';
   const linkedInv=S.invoices.find(i=>i.job_id===j.id);
   if(linkedInv){h+='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:14px;font-weight:700">Invoice '+linkedInv.number+'</div><button class="btn-gold" onclick="S.fsub=\'invoices\';S.invId=\''+linkedInv.id+'\';S.tab=\'finance\';render()">View →</button></div></div>';}
   else if(j.status==='Complete'){h+='<div class="card"><div style="font-size:14px;color:var(--t2);margin-bottom:12px">Job complete. Create an invoice to bill this job.</div><button class="btns" style="width:100%" onclick="triggerInvoiceFromJob(\''+j.id+'\')">+ Create Invoice</button></div>';}
@@ -1112,6 +1141,13 @@ function rCompletedJobDetail(){
       +'<button class="btn-gold" style="width:100%;min-height:46px" onclick="S.fsub=\'invoices\';S.invId=\''+linkedInv.id+'\';S.tab=\'finance\';render()">View Invoice →</button></div>';
   }else{h+='<div class="card"><div style="font-size:14px;color:var(--t2);margin-bottom:12px">Job complete. Create invoice to bill this job and track margin.</div><button class="btns" style="width:100%" onclick="triggerInvoiceFromJob(\''+j.id+'\')">+ Create Invoice</button></div>';}
   if(isAdmin()&&!j.archived)h+='<button onclick="archiveJob(\''+j.id+'\')" class="btnd" style="margin-top:4px;width:100%">Archive Job</button>';
+  h+='<div class="card"><div class="sl">Mileage</div>'
+    +'<div style="display:flex;gap:10px;align-items:center">'
+    +'<input type="number" class="inp" id="miles-inp" value="'+(j.miles||'')+'" placeholder="0 mi" style="width:90px;text-align:center;font-size:18px;font-weight:800">'
+    +'<div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--t2)">'+(j.miles?j.miles+' mi × $'+IRS+' = <strong style="color:var(--red)">−'+fmt2((j.miles||0)*IRS)+'</strong> COGS':'Enter miles to this job')+'</div>'
+    +'<div style="font-size:11px;color:var(--t3);margin-top:3px;font-weight:600">Internal COGS only · not billed to client</div></div>'
+    +'<button class="btn-gold" onclick="saveMiles(\''+j.id+'\')" style="min-height:44px;flex-shrink:0">Save</button>'
+    +'</div></div>';
   return h;
 }
 
@@ -1138,6 +1174,14 @@ async function archiveJob(id){
   if(!confirm('Archive this job? It will be hidden from active views but kept in financial records.'))return;
   try{await dbUpd('jobs',id,{archived:true});S.jobs=S.jobs.map(j=>j.id===id?{...j,archived:true}:j);render();}
   catch(e){alert('Error: '+e.message);}
+}
+async function saveMiles(id){
+  const v=parseFloat(document.getElementById('miles-inp')?.value||0);
+  try{
+    await dbUpd('jobs',id,{miles:v});
+    S.jobs=S.jobs.map(j=>j.id===id?{...j,miles:v}:j);
+    render();
+  }catch(e){alert('Error saving mileage: '+e.message);}
 }
 async function deleteJob(id){
   if(!confirm('Permanently delete this job? This cannot be undone.'))return;
@@ -1707,6 +1751,7 @@ function rTasks(){
 function renderTask(t){
   const ac=t.assigned_to==='Drew'?'ta-drew':t.assigned_to==='Jaime'?'ta-jaime':'ta-both';
   const canDel=isAdmin()||(t.created_by===S.role);
+  const canEdit=isAdmin()||(t.created_by===S.role);
   const priv=t.visibility&&t.visibility!=='all';
   const meVal=S.role==='tech1'?'drew':S.role==='tech2'?'jaime':'admin';
   const privLabel=priv?(t.visibility===meVal?'🔒 Only Me':'🔒 Private'):'';
@@ -1722,7 +1767,7 @@ function renderTask(t){
     +(priv?'<span style="font-size:10px;font-weight:800;color:var(--gold);background:var(--gbg);border:1px solid var(--gbr);padding:2px 8px;border-radius:10px">'+privLabel+'</span>':'')
     +'</div></div>'
     +'<div style="display:flex;gap:6px">'
-    +'<button class="btn-sm" onclick="openForm(\'task\',\''+t.id+'\')" style="min-height:38px">Edit</button>'
+    +(canEdit?'<button class="btn-sm" onclick="openForm(\'task\',\''+t.id+'\')" style="min-height:38px">Edit</button>':'')
     +(canDel?'<button class="del-btn" onclick="deleteTask(\''+t.id+'\')">✕</button>':'')
     +'</div></div></div>';
 }
@@ -1744,6 +1789,10 @@ function rTaskForm(){
 }
 async function saveTask(){
   const title=(document.getElementById('tf-title')?.value||'').trim();if(!title)return;
+  if(S.editingId){
+    const orig=S.tasks.find(t=>t.id===S.editingId);
+    if(orig&&orig.created_by!==S.role&&!isAdmin()){alert('You can only edit your own tasks.');return;}
+  }
   const data={title,description:document.getElementById('tf-desc')?.value||'',assigned_to:S.taskAssign||'Both',created_by:S.role,status:'open',due_date:document.getElementById('tf-due')?.value||null,visibility:S.taskVis||'all'};
   showLoading('Saving...');
   try{
@@ -1754,18 +1803,29 @@ async function saveTask(){
   hideLoading();render();
 }
 async function toggleTask(id){const t=S.tasks.find(t=>t.id===id);const status=t?.status==='open'?'done':'open';try{await dbUpd('tasks',id,{status});S.tasks=S.tasks.map(t=>t.id===id?{...t,status}:t);render();}catch(e){alert('Error: '+e.message);}}
-async function deleteTask(id){if(!confirm('Delete task?'))return;try{await dbDel('tasks',id);S.tasks=S.tasks.filter(t=>t.id!==id);render();}catch(e){alert('Error: '+e.message);}}
+async function deleteTask(id){
+  const t=S.tasks.find(t=>t.id===id);
+  if(t&&t.created_by!==S.role&&!isAdmin()){alert('You can only delete your own tasks.');return;}
+  if(!confirm('Delete task?'))return;
+  try{await dbDel('tasks',id);S.tasks=S.tasks.filter(t=>t.id!==id);render();}catch(e){alert('Error: '+e.message);}
+}
 
 // ─── SETTINGS ─────────────────────────────────────────────
 function rSettings(){
   const pins=getPins();
-  return '<div class="scroll"><div class="sl">User Accounts</div><div class="card">'
-    +Object.entries(USERS).map(([k,name])=>'<div class="settings-row"><div><div style="font-size:15px;font-weight:700">'+name+'</div><div style="font-size:12px;color:var(--t3);margin-top:3px">'+(k==='admin'?'Full access · Financial deletions':'Tech · Field operations')+'</div></div><div style="display:flex;gap:10px;align-items:center"><span class="sbadge '+(k==='admin'?'sb-admin':'rb-tech')+'">'+(k==='admin'?'ADMIN':'TECH')+'</span><button class="btn-sm" onclick="S.changingPin=\''+k+'\';render()">PIN</button></div></div>').join('')
+  const visibleUsers=isAdmin()?Object.entries(USERS):Object.entries(USERS).filter(([k])=>k===S.role);
+  return '<div class="scroll"><div class="sl">Account</div><div class="card">'
+    +visibleUsers.map(([k,name])=>'<div class="settings-row"><div><div style="font-size:15px;font-weight:700">'+name+'</div><div style="font-size:12px;color:var(--t3);margin-top:3px">'+(k==='admin'?'Full access · Financial deletions':'Tech · Field operations')+'</div></div><div style="display:flex;gap:10px;align-items:center"><span class="sbadge '+(k==='admin'?'sb-admin':'rb-tech')+'">'+(k==='admin'?'ADMIN':'TECH')+'</span><button class="btn-sm" onclick="S.changingPin=\''+k+'\';render()">Change PIN</button></div></div>').join('')
     +'</div>'
     +(S.changingPin?'<div class="card"><div class="fl" style="margin-bottom:10px">New PIN for '+USERS[S.changingPin]+'</div><input type="number" class="inp" id="np" placeholder="4 digits" style="letter-spacing:8px;font-size:24px;text-align:center;margin-bottom:14px"><div class="brow"><button class="btnc" onclick="S.changingPin=null;render()">Cancel</button><button class="btns" onclick="doChangePin()">Save PIN</button></div></div>':'')
     +'<div class="sl" style="margin-top:4px">Sync Status</div><div class="card"><div style="display:flex;align-items:center;gap:10px"><div style="width:10px;height:10px;border-radius:50%;background:var(--grn)"></div><div><div style="font-size:14px;font-weight:700;color:var(--grn)">Connected</div><div style="font-size:12px;color:var(--t3);margin-top:2px">Supabase · West US (Oregon)</div></div></div></div></div>';
 }
-function doChangePin(){const v=(document.getElementById('np')?.value||'').trim();if(v.length!==4||isNaN(v)){alert('Enter a 4-digit PIN');return;}const pins=getPins();pins[S.changingPin]=v;savePins(pins);S.changingPin=null;render();}
+function doChangePin(){
+  if(!isAdmin()&&S.changingPin!==S.role){alert('You can only change your own PIN.');S.changingPin=null;render();return;}
+  const v=(document.getElementById('np')?.value||'').trim();
+  if(v.length!==4||isNaN(v)){alert('Enter a 4-digit PIN');return;}
+  const pins=getPins();pins[S.changingPin]=v;savePins(pins);S.changingPin=null;render();
+}
 
 // ─── MAP ──────────────────────────────────────────────────
 function rMapModal(){return'<div class="modal-ov"><div class="modal-hdr"><div style="font-size:17px;font-weight:800">Client Location</div><button class="close-btn" onclick="S.showMap=false;render()">×</button></div><div id="map-container" style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;"><div style="color:var(--t2);font-size:14px;font-weight:600">Loading map...</div></div><div class="map-info"><div style="display:flex;gap:24px"><div><div class="map-stat-v" id="eta-val">—</div><div class="map-stat-l">ETA</div></div><div><div class="map-stat-v" id="dist-val">—</div><div class="map-stat-l">Distance</div></div></div><div style="font-size:13px;color:var(--t2);margin-top:8px">'+S.mapAddr+'</div></div></div>';}
