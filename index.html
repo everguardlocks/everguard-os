@@ -12,9 +12,19 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-:root{--bg:#050d08;--sf:#0b1710;--s2:#112A25;--s3:#1a3a2a;--bd:#1c3224;--b2:#2a4a38;--gold:#DBB183;--g2:#9C6D32;--gbg:rgba(219,177,131,0.09);--gbr:rgba(219,177,131,0.2);--grn:#52e09a;--red:#f87171;--blu:#60a5fa;--tx:#e6ede8;--t2:#7a9e8c;--t3:#3a5a48;--f:'Manrope',sans-serif;}
+:root{
+  --bg:#050d08;--sf:#0b1710;--s2:#112A25;--s3:#1a3a2a;
+  --bd:#1c3224;--b2:#2a4a38;
+  --gold:#DBB183;--g2:#9C6D32;
+  --gbg:rgba(219,177,131,0.09);--gbr:rgba(219,177,131,0.2);
+  --grn:#52e09a;--red:#f87171;--blu:#60a5fa;--pur:#a78bfa;
+  --tx:#e6ede8;--t2:#7a9e8c;--t3:#3a5a48;
+  --f:'Manrope',sans-serif;
+  --sat:env(safe-area-inset-top);
+  --sab:env(safe-area-inset-bottom);
+}
 body{background:var(--bg);color:var(--tx);font-family:var(--f);font-size:14px;min-height:100vh;}
-#app{max-width:430px;margin:0 auto;min-height:100vh;position:relative;padding-bottom:80px;}
+#app{max-width:430px;margin:0 auto;min-height:100vh;position:relative;padding-bottom:calc(80px + var(--sab));}
 .login{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;}
 .lcard{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:28px 24px;width:100%;}
 .llbl{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:10px;}
@@ -30,7 +40,7 @@ body{background:var(--bg);color:var(--tx);font-family:var(--f);font-size:14px;mi
 .nkey.del{font-size:15px;color:var(--t2);}
 .nkey.emp{background:transparent;border-color:transparent;cursor:default;}
 .lerr{color:var(--red);font-size:12px;font-weight:700;text-align:center;margin-top:12px;min-height:18px;}
-.hdr{background:var(--s2);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;border-bottom:1px solid var(--gbr);}
+.hdr{background:var(--s2);padding:calc(13px + var(--sat)) 16px 13px;display:flex;align-items:flex-end;justify-content:space-between;position:sticky;top:0;z-index:50;border-bottom:1px solid var(--gbr);}
 .hbrand{font-size:9px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:2px;font-weight:700;}
 .htitle{font-size:18px;font-weight:800;color:var(--tx);}
 .hright{display:flex;align-items:center;gap:6px;}
@@ -41,9 +51,9 @@ body{background:var(--bg);color:var(--tx);font-family:var(--f);font-size:14px;mi
 .rbadge{font-size:9px;font-weight:800;padding:3px 8px;border-radius:20px;letter-spacing:1px;}
 .rb-own{background:var(--gbg);color:var(--gold);border:1px solid var(--gbr);}
 .rb-par{background:rgba(96,165,250,.1);color:var(--blu);border:1px solid rgba(96,165,250,.2);}
-.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--s2);border-top:1px solid var(--gbr);display:flex;z-index:50;}
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--s2);border-top:1px solid var(--gbr);display:flex;z-index:50;padding-bottom:var(--sab);}
 .nb{flex:1;padding:10px 0 13px;background:transparent;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;}
-.ni{font-size:16px;}.nl{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);}
+.ni{font-size:15px;}.nl{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3);}
 .nb.on .nl{color:var(--gold);}
 .scroll{padding:14px;padding-bottom:16px;}
 .sl{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:8px;margin-top:2px;}
@@ -54,9 +64,11 @@ body{background:var(--bg);color:var(--tx);font-family:var(--f);font-size:14px;mi
 .inp:focus{border-color:rgba(219,177,131,.4);}
 .inp::placeholder{color:var(--t3);font-weight:400;}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
 .brow{display:flex;gap:8px;margin-top:14px;}
 .btnc{flex:1;padding:11px;border-radius:8px;border:1px solid var(--b2);background:transparent;color:var(--t2);font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer;}
 .btns{flex:2;padding:11px;border-radius:8px;border:none;background:var(--gold);color:#050d08;font-family:var(--f);font-size:13px;font-weight:800;cursor:pointer;}
+.btnd{flex:1;padding:11px;border-radius:8px;border:none;background:rgba(248,113,113,.15);color:var(--red);font-family:var(--f);font-size:13px;font-weight:700;cursor:pointer;}
 .del{background:none;border:none;color:var(--t3);cursor:pointer;font-size:14px;padding:4px;flex-shrink:0;}
 .del:hover{color:var(--red);}
 .empty{text-align:center;padding:40px 16px;color:var(--t3);font-size:13px;font-weight:600;}
@@ -68,7 +80,27 @@ body{background:var(--bg);color:var(--tx);font-family:var(--f);font-size:14px;mi
 .cinp::placeholder{color:var(--t3);font-weight:400;}
 .cinp:focus{border-color:rgba(219,177,131,.4);}
 .prog-bg{background:var(--bd);border-radius:4px;height:4px;overflow:hidden;}
-.prog-fill{height:100%;background:linear-gradient(90deg,var(--g2),var(--gold));border-radius:4px;transition:width .4s ease;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--g2),var(--gold));border-radius:4px;}
+.stabs{display:flex;background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:3px;margin-bottom:12px;}
+.stab{flex:1;padding:7px 4px;text-align:center;font-size:10px;font-weight:700;border-radius:8px;cursor:pointer;color:var(--t3);border:none;background:transparent;font-family:var(--f);}
+.stab.on{background:var(--s2);color:var(--gold);}
+.datesub{font-size:12px;color:var(--t3);margin-bottom:12px;font-weight:500;}
+.sbadge{font-size:9px;font-weight:800;padding:2px 8px;border-radius:20px;letter-spacing:.5px;display:inline-block;}
+.sb-draft{background:rgba(96,165,250,.1);color:var(--blu);border:1px solid rgba(96,165,250,.2);}
+.sb-sent{background:rgba(167,139,250,.1);color:var(--pur);border:1px solid rgba(167,139,250,.2);}
+.sb-accepted{background:rgba(82,224,154,.1);color:var(--grn);border:1px solid rgba(82,224,154,.2);}
+.sb-declined{background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.2);}
+.sb-scheduled{background:rgba(96,165,250,.1);color:var(--blu);border:1px solid rgba(96,165,250,.2);}
+.sb-inprogress{background:rgba(219,177,131,.1);color:var(--gold);border:1px solid var(--gbr);}
+.sb-complete{background:rgba(82,224,154,.1);color:var(--grn);border:1px solid rgba(82,224,154,.2);}
+.sb-paid{background:rgba(82,224,154,.12);color:var(--grn);border:1px solid rgba(82,224,154,.25);}
+.sb-partial{background:var(--gbg);color:var(--gold);border:1px solid var(--gbr);}
+.sb-unpaid{background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.2);}
+.sb-overdue{background:rgba(248,113,113,.15);color:var(--red);border:1px solid rgba(248,113,113,.3);}
+.sb-open{background:rgba(96,165,250,.1);color:var(--blu);border:1px solid rgba(96,165,250,.2);}
+.sb-done{background:rgba(82,224,154,.1);color:var(--grn);border:1px solid rgba(82,224,154,.2);}
+.sb-attached{background:rgba(82,224,154,.1);color:var(--grn);border:1px solid rgba(82,224,154,.2);}
+.sb-closed{background:rgba(58,90,72,.3);color:var(--t2);border:1px solid var(--bd);}
 .plb{background:var(--s2);border:1px solid var(--gbr);border-radius:14px;padding:16px 18px;margin-bottom:10px;position:relative;overflow:hidden;}
 .plb::after{content:'';position:absolute;bottom:-30px;right:-20px;width:100px;height:100px;background:rgba(219,177,131,.04);border-radius:50%;}
 .pll{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
@@ -76,7 +108,7 @@ body{background:var(--bg);color:var(--tx);font-family:var(--f);font-size:14px;mi
 .plm{font-size:12px;color:var(--t2);margin-top:4px;font-weight:600;}
 .plr{display:flex;gap:16px;margin-top:12px;padding-top:12px;border-top:1px solid var(--bd);}
 .pli-v{font-size:14px;font-weight:800;color:var(--tx);}
-.pli-l{font-size:9px;color:var(--t3);margin-top:2px;font-weight:600;letter-spacing:.3px;}
+.pli-l{font-size:9px;color:var(--t3);margin-top:2px;font-weight:600;}
 .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
 .sc{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:13px;border-left:3px solid var(--bd);}
 .sc.g{border-left-color:var(--gold);}
@@ -86,68 +118,59 @@ body{background:var(--bg);color:var(--tx);font-family:var(--f);font-size:14px;mi
 .sc-v{font-size:20px;font-weight:800;color:var(--tx);letter-spacing:-.5px;}
 .sc-l{font-size:10px;color:var(--t3);margin-top:3px;font-weight:600;}
 .goal-bar{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:13px;margin-bottom:10px;}
-.goal-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.client-row{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:13px;margin-bottom:8px;cursor:pointer;}
+.client-row:hover{border-color:var(--gbr);}
+.search-inp{width:100%;background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:10px 14px;color:var(--tx);font-size:13px;font-family:var(--f);font-weight:500;outline:none;margin-bottom:12px;}
+.search-inp::placeholder{color:var(--t3);}
+.search-inp:focus{border-color:var(--gbr);}
+.client-hdr{background:var(--s2);border:1px solid var(--gbr);border-radius:12px;padding:16px;margin-bottom:12px;}
+.doc-row{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;}
+.doc-row:hover{border-color:var(--gbr);}
 .jrow{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:8px;}
-.jtop{display:flex;justify-content:space-between;align-items:flex-start;}
-.jn{font-size:14px;font-weight:700;color:var(--tx);}
-.jt{font-size:11px;color:var(--t2);margin-top:2px;font-weight:500;}
-.jr{font-size:15px;font-weight:800;color:var(--gold);}
-.jchip{font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;margin-top:3px;display:inline-block;}
-.cg{background:rgba(82,224,154,.1);color:var(--grn);}
-.co{background:var(--gbg);color:var(--gold);}
-.cl{background:rgba(248,113,113,.1);color:var(--red);}
 .jcosts{margin-top:8px;padding-top:8px;border-top:1px solid var(--bd);}
-.jcr{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;}
-.jcl{font-size:9px;color:var(--t3);font-weight:600;margin-bottom:2px;letter-spacing:.3px;}
-.jcv{font-size:12px;color:var(--t2);font-weight:700;}
-.ml2{margin-top:3px;}
-.mi{font-size:11px;color:var(--t3);display:flex;justify-content:space-between;}
-.mt{font-size:12px;color:var(--t2);font-weight:700;border-top:1px solid var(--bd);margin-top:3px;padding-top:3px;}
-.pay-chip{font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;display:inline-block;letter-spacing:.5px;}
-.pay-paid{background:rgba(82,224,154,.12);color:var(--grn);border:1px solid rgba(82,224,154,.25);}
-.pay-unpaid{background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.2);}
-.pay-partial{background:var(--gbg);color:var(--gold);border:1px solid var(--gbr);}
-.draft-badge{font-size:9px;font-weight:800;padding:2px 8px;border-radius:20px;background:rgba(96,165,250,.1);color:var(--blu);border:1px solid rgba(96,165,250,.2);letter-spacing:.5px;}
-.fin-btn{background:var(--blu);color:#050d08;border:none;border-radius:6px;padding:5px 10px;font-family:var(--f);font-size:11px;font-weight:800;cursor:pointer;margin-top:6px;}
 .erow{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:11px 12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
-.recbadge{font-size:9px;background:rgba(219,177,131,.08);color:var(--gold);border:1px solid var(--gbr);padding:1px 6px;border-radius:10px;margin-left:6px;font-weight:700;}
-.stabs{display:flex;background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:3px;margin-bottom:12px;}
-.stab{flex:1;padding:8px 4px;text-align:center;font-size:11px;font-weight:700;border-radius:8px;cursor:pointer;color:var(--t3);border:none;background:transparent;font-family:var(--f);}
-.stab.on{background:var(--s2);color:var(--gold);}
-.pri-row{display:flex;gap:8px;}
-.pri-opt{flex:1;padding:9px;border-radius:8px;border:1px solid var(--b2);background:transparent;color:var(--t3);font-family:var(--f);font-weight:700;font-size:12px;cursor:pointer;}
-.pri-low.on{border-color:var(--grn);background:rgba(82,224,154,.08);color:var(--grn);}
-.pri-norm.on{border-color:var(--gold);background:var(--gbg);color:var(--gold);}
-.pri-urg.on{border-color:var(--red);background:rgba(248,113,113,.08);color:var(--red);}
-.intake-card{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:13px;margin-bottom:8px;}
-.ic-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
-.ic-name{font-size:14px;font-weight:800;color:var(--tx);}
-.ic-type{font-size:11px;color:var(--t2);font-weight:500;margin-top:2px;}
-.ic-addr{font-size:12px;color:var(--t3);margin-top:4px;font-weight:500;}
-.ic-scope{font-size:12px;color:var(--t2);margin-top:6px;padding-top:6px;border-top:1px solid var(--bd);}
-.map-btn{background:var(--s2);border:1px solid var(--gbr);color:var(--gold);border-radius:8px;padding:6px 12px;font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;margin-top:6px;}
-.modal-ov{position:fixed;inset:0;background:rgba(5,13,8,.95);z-index:200;display:flex;flex-direction:column;max-width:430px;left:50%;transform:translateX(-50%);}
-.modal-hdr{background:var(--s2);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--gbr);flex-shrink:0;}
-.modal-title{font-size:16px;font-weight:800;color:var(--tx);}
-.close-btn{background:transparent;border:none;color:var(--t2);font-size:22px;cursor:pointer;padding:2px 6px;line-height:1;}
-#map-container{flex:1;min-height:0;background:var(--s2);}
-.map-info{background:var(--s2);padding:14px 16px;border-top:1px solid var(--gbr);flex-shrink:0;}
-.map-eta-row{display:flex;gap:20px;}
-.map-stat-v{font-size:20px;font-weight:800;color:var(--tx);}
-.map-stat-l{font-size:10px;color:var(--t3);font-weight:600;margin-top:2px;}
-.map-addr-lbl{font-size:12px;color:var(--t2);margin-top:8px;font-weight:500;}
-.mrf{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
-.mrf .mn{flex:1;background:var(--s2);border:1px solid var(--b2);border-radius:8px;padding:8px 10px;color:var(--tx);font-size:13px;font-family:var(--f);font-weight:500;outline:none;}
-.mrf .mn:focus{border-color:rgba(219,177,131,.4);}
-.mrf .mn::placeholder{color:var(--t3);}
-.mrf .mc{width:78px;background:var(--s2);border:1px solid var(--b2);border-radius:8px;padding:8px 10px;color:var(--tx);font-size:13px;font-family:var(--f);font-weight:600;outline:none;}
-.amb{background:transparent;border:1px dashed var(--b2);border-radius:8px;color:var(--t2);font-family:var(--f);font-size:12px;font-weight:700;padding:7px;cursor:pointer;width:100%;margin-top:3px;}
+.exp-type-badge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:10px;letter-spacing:.5px;}
+.et-fixed{background:rgba(96,165,250,.1);color:var(--blu);border:1px solid rgba(96,165,250,.2);}
+.et-var{background:var(--gbg);color:var(--gold);border:1px solid var(--gbr);}
+.et-once{background:rgba(167,139,250,.1);color:var(--pur);border:1px solid rgba(167,139,250,.2);}
+.recbadge{font-size:9px;background:rgba(82,224,154,.08);color:var(--grn);border:1px solid rgba(82,224,154,.2);padding:1px 6px;border-radius:10px;margin-left:5px;font-weight:700;}
+.share-row{display:flex;gap:8px;margin-top:12px;}
+.share-email{flex:1;background:var(--s2);border:1px solid var(--gbr);color:var(--gold);border-radius:8px;padding:10px;font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer;text-align:center;}
+.share-sms{flex:1;background:var(--s2);border:1px solid rgba(82,224,154,.25);color:var(--grn);border-radius:8px;padding:10px;font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer;text-align:center;}
+.chart-wrap{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:10px;overflow:hidden;}
+.chart-legend{display:flex;gap:16px;margin-bottom:12px;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2);font-weight:600;}
+.legend-dot{width:10px;height:10px;border-radius:50%;}
+.task-row{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:8px;}
+.chk{width:22px;height:22px;border-radius:50%;border:2px solid var(--b2);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;background:transparent;transition:all .2s;}
+.chk.dn{background:var(--gold);border-color:var(--gold);}
+.task-assign{font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;margin-top:4px;display:inline-block;}
+.ta-drew{background:var(--gbg);color:var(--gold);border:1px solid var(--gbr);}
+.ta-jaime{background:rgba(96,165,250,.1);color:var(--blu);border:1px solid rgba(96,165,250,.2);}
+.ta-both{background:rgba(82,224,154,.08);color:var(--grn);border:1px solid rgba(82,224,154,.2);}
+.assign-row{display:flex;gap:8px;}
+.assign-opt{flex:1;padding:9px 6px;border-radius:8px;border:1px solid var(--b2);background:transparent;color:var(--t3);font-family:var(--f);font-weight:700;font-size:11px;cursor:pointer;text-align:center;}
+.ao-drew.on{border-color:var(--gold);background:var(--gbg);color:var(--gold);}
+.ao-jaime.on{border-color:var(--blu);background:rgba(96,165,250,.08);color:var(--blu);}
+.ao-both.on{border-color:var(--grn);background:rgba(82,224,154,.08);color:var(--grn);}
+.li-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+.li-desc{flex:1;background:var(--s2);border:1px solid var(--b2);border-radius:8px;padding:8px 10px;color:var(--tx);font-size:13px;font-family:var(--f);font-weight:500;outline:none;}
+.li-desc::placeholder{color:var(--t3);}
+.li-desc:focus{border-color:rgba(219,177,131,.4);}
+.li-qty,.li-price{width:68px;background:var(--s2);border:1px solid var(--b2);border-radius:8px;padding:8px 8px;color:var(--tx);font-size:13px;font-family:var(--f);font-weight:600;outline:none;text-align:center;}
+.ali-btn{background:transparent;border:1px dashed var(--b2);border-radius:8px;color:var(--t2);font-family:var(--f);font-size:12px;font-weight:700;padding:7px;cursor:pointer;width:100%;margin-top:3px;}
+.tax-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--s2);border-radius:8px;margin-top:8px;}
+.toggle{width:44px;height:24px;border-radius:12px;background:var(--bd);border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;}
+.toggle.on{background:var(--gold);}
+.toggle::after{content:'';width:18px;height:18px;background:white;border-radius:50%;position:absolute;top:3px;left:3px;transition:left .2s;}
+.toggle.on::after{left:23px;}
 .yt{width:100%;border-collapse:collapse;}
 .yt td{padding:7px 4px;font-size:12px;border-bottom:1px solid var(--bd);}
 .yt tr:last-child td{border-bottom:none;}
 .yt td:last-child{text-align:right;font-weight:700;}
 .yt .lb{color:var(--t2);font-weight:600;}
-.yt .sb{color:var(--t3);font-weight:500;font-size:11px;padding-left:10px;}
+.yt .sb2{color:var(--t3);font-weight:500;font-size:11px;padding-left:10px;}
+.yt .total-row td{font-weight:800;font-size:13px;padding-top:10px;border-top:1px solid var(--bd);border-bottom:none;}
 .mrow{display:flex;align-items:center;padding:6px 0;border-bottom:1px solid var(--bd);}
 .mrow:last-child{border-bottom:none;}
 .mn2{width:28px;font-size:11px;font-weight:700;color:var(--t2);}
@@ -157,365 +180,1160 @@ body{background:var(--bg);color:var(--tx);font-family:var(--f);font-size:14px;mi
 .mpr{font-size:10px;width:50px;text-align:right;font-weight:600;}
 .trow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd);}
 .trow:last-child{border-bottom:none;}
-.techrow{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd);}
-.techrow:last-child{border-bottom:none;}
-.mbtn{width:100%;background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer;text-align:left;display:flex;align-items:center;justify-content:space-between;}
-.mbtn:hover{border-color:var(--gbr);}
-.lrow2{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:8px;}
-.ltop{display:flex;align-items:center;gap:10px;cursor:pointer;}
-.chk{width:22px;height:22px;border-radius:50%;border:2px solid var(--b2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;cursor:pointer;background:transparent;}
-.chk.dn{background:var(--gold);border-color:var(--gold);}
-.lt{flex:1;font-size:13px;font-weight:600;color:var(--tx);}
-.lt.dn{color:var(--t3);text-decoration:line-through;}
-.nta{width:100%;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;color:var(--t2);font-size:12px;font-family:var(--f);resize:vertical;min-height:65px;outline:none;margin-top:8px;}
-.datesub{font-size:12px;color:var(--t3);margin-bottom:12px;font-weight:500;}
+.modal-ov{position:fixed;inset:0;background:rgba(5,13,8,.95);z-index:200;display:flex;flex-direction:column;max-width:430px;left:50%;transform:translateX(-50%);}
+.modal-hdr{background:var(--s2);padding:calc(14px + var(--sat)) 16px 14px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid var(--gbr);flex-shrink:0;}
+.modal-title{font-size:16px;font-weight:800;color:var(--tx);}
+.close-btn{background:transparent;border:none;color:var(--t2);font-size:22px;cursor:pointer;padding:2px 6px;line-height:1;}
+#map-container{flex:1;min-height:0;background:var(--s2);}
+.map-info{background:var(--s2);padding:14px 16px;border-top:1px solid var(--gbr);flex-shrink:0;padding-bottom:calc(14px + var(--sab));}
+.map-stat-v{font-size:20px;font-weight:800;color:var(--tx);}
+.map-stat-l{font-size:10px;color:var(--t3);font-weight:600;margin-top:2px;}
+.mrf{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+.mrf .mn{flex:1;background:var(--s2);border:1px solid var(--b2);border-radius:8px;padding:8px 10px;color:var(--tx);font-size:13px;font-family:var(--f);font-weight:500;outline:none;}
+.mrf .mn::placeholder{color:var(--t3);}
+.mrf .mc{width:78px;background:var(--s2);border:1px solid var(--b2);border-radius:8px;padding:8px 10px;color:var(--tx);font-size:13px;font-family:var(--f);font-weight:600;outline:none;}
+.amb{background:transparent;border:1px dashed var(--b2);border-radius:8px;color:var(--t2);font-family:var(--f);font-size:12px;font-weight:700;padding:7px;cursor:pointer;width:100%;margin-top:3px;}
+.settings-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--bd);}
+.settings-row:last-child{border-bottom:none;}
+.inv-alert{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
+.loading{display:flex;align-items:center;justify-content:center;padding:60px 20px;flex-direction:column;gap:12px;}
+.spin{width:32px;height:32px;border:3px solid var(--bd);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+/* CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:12px;}
+.cal-day-lbl{text-align:center;font-size:10px;font-weight:700;color:var(--t3);padding:6px 0;letter-spacing:.5px;}
+.cal-day{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;font-size:13px;font-weight:600;color:var(--t2);}
+.cal-day.has-jobs{color:var(--tx);}
+.cal-day.today{background:var(--s2);color:var(--gold);}
+.cal-day.selected{background:var(--gbg);border:1px solid var(--gbr);}
+.cal-day.other-month{opacity:.3;}
+.job-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);position:absolute;bottom:3px;}
+.cal-job-row{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:11px 12px;margin-bottom:8px;cursor:pointer;}
+.cal-job-row:hover{border-color:var(--gbr);}
+/* PO */
+.po-number{font-size:28px;font-weight:800;color:var(--gold);letter-spacing:2px;text-align:center;padding:20px;background:var(--s2);border-radius:12px;border:1px solid var(--gbr);margin-bottom:12px;}
+/* INVENTORY ALERT */
+.low-stock{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:8px;padding:8px 12px;margin-bottom:8px;font-size:12px;color:var(--red);font-weight:600;}
+/* DRAW COMPARISON */
+.compare-card{background:var(--s2);border:1px solid var(--gbr);border-radius:14px;padding:18px;margin-bottom:12px;}
+.compare-person{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--bd);}
+.compare-person:last-child{border-bottom:none;}
 </style>
 </head>
 <body>
 <div id="app"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const IRS=0.70;
-const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const JTYPES=['Commercial Locksmith','Access Control','Master Key System','Safe Service','Security Consulting','Residential','Emergency Call-Out','PDK Badge System','Other'];
-const ECATS=['Fuel & Gas','Materials / Supply','Tools & Equipment','Vehicle','Insurance','Phone & Admin','Marketing','Other'];
-const TECHS=['Drew','Jaime','Both'];
-const FREQS=['Weekly','Monthly','Quarterly'];
+// ─── SUPABASE CONFIG — REPLACE THESE TWO LINES ───────────
+const SUPA_URL = 'https://supabase.com/dashboard/project/dazqksempesnpxmgllfl/sql/37166c4e-1dda-42d6-88a5-df0437ec5675';
+const SUPA_KEY = 'sb_publishable_2VtmuxS5wkSMt5NCni40yA_MXprdrTo';
+// ─────────────────────────────────────────────────────────
 
-const CUR=[
-  {id:'fin',title:'Financial Fluency',icon:'💰',lessons:[{id:'f1',title:'Understanding Your Cost Floor'},{id:'f2',title:'Pricing Strategy Fundamentals'},{id:'f3',title:'Reading a P&L Statement'},{id:'f4',title:'Cash Flow vs. Profit'},{id:'f5',title:'SBA Loan Prep Basics'},{id:'f6',title:'QuickBooks Reconciliation'}]},
-  {id:'sal',title:'Sales & Persuasion',icon:'🤝',lessons:[{id:'s1',title:'Commercial Sales Psychology'},{id:'s2',title:'Objection Handling'},{id:'s3',title:'Proposal Writing'},{id:'s4',title:'Follow-Up Systems'},{id:'s5',title:'Closing Techniques'}]},
-  {id:'exc',title:'Executive Communication',icon:'🎯',lessons:[{id:'e1',title:'High-Stakes Conversations'},{id:'e2',title:'Writing for Decision Makers'},{id:'e3',title:'Presenting Ideas Structurally'},{id:'e4',title:'Negotiation Fundamentals'}]},
-  {id:'cog',title:'Business Owner Cognition',icon:'🧠',lessons:[{id:'m1',title:'Systems Thinking for Owners'},{id:'m2',title:'Decision Making Under Uncertainty'},{id:'m3',title:'Managing Cognitive Load'},{id:'m4',title:'Identity & Authority'}]},
-  {id:'lnx',title:'Linux & Tech',icon:'⚡',lessons:[{id:'l1',title:'Fedora Filesystem & Shell Basics'},{id:'l2',title:'System Hardening (Lynis, Fail2ban)'},{id:'l3',title:'Network Security Fundamentals'},{id:'l4',title:'Automation with Python & Cron'},{id:'l5',title:'Tailscale & Home Network'},{id:'l6',title:'Wireshark & Traffic Analysis'}]},
-  {id:'sec',title:'Security & EverGuard',icon:'🔐',lessons:[{id:'sg1',title:'Access Control Systems'},{id:'sg2',title:'Master Key System Design'},{id:'sg3',title:'Physical Security Assessment'},{id:'sg4',title:'Digital + Physical Convergence'}]}
-];
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
-let S={li:false,role:null,pins:{owner:'1111',partner:'2222'},su:'owner',pin:'',perr:'',tab:'dash',fsub:'jobs',jobs:[],expenses:[],recurring:[],drafts:[],lessons:{},custMod:[],custLes:{},goal:5000,showAddJob:false,showAddExp:false,showAddRec:false,showAddIntake:false,showAddMod:false,showAddLes:false,showSettings:false,showMap:false,mapAddr:'',mapErr:'',changingPin:null,priority:'Normal',payStatus:'unpaid',finalizingDraft:null,editingGoal:false};
+// ─── CONSTANTS ───────────────────────────────────────────
+const IRS = 0.70;
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const AZ_TAX = 8.6;
+const JOB_STATUS = ['Scheduled','In Progress','Complete'];
+const INV_STATUS = ['Draft','Sent','Paid','Partial','Overdue'];
+const QUOTE_STATUS = ['Draft','Sent','Accepted','Declined'];
+const PO_STATUS = ['Open','Attached','Closed'];
+const ETYPES = ['Fixed','Variable','One-Time'];
+const FREQS = ['Weekly','Monthly','Quarterly'];
+const PAY_METHODS = ['Cash','Check','Zelle','Credit Card','ACH','Other'];
+const LOCAL_PINS = {owner:'1111',partner:'2222'};
 
-const today=()=>new Date().toISOString().split('T')[0];
-const fmt=n=>'$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});
-const fmtS=n=>(n<0?'-':'+')+fmt(n);
-const pct=n=>n.toFixed(1)+'%';
-const matT=ms=>(ms||[]).reduce((s,m)=>s+m.cost,0);
-const cc=m=>m>=40?'cg':m>=20?'co':'cl';
-const allMod=()=>[...CUR,...S.custMod];
-const allLes=mid=>{const b=allMod().find(m=>m.id===mid);return[...(b?.lessons||[]),...(S.custLes[mid]||[])];};
-const isOwn=()=>S.role==='owner';
+// ─── STATE ───────────────────────────────────────────────
+let S = {
+  li:false, role:null, su:'owner', pin:'', perr:'',
+  tab:'dash', fsub:'invoices', esub:'All',
+  // data cache
+  clients:[], quotes:[], jobs:[], invoices:[],
+  expenses:[], recurring:[], draws:[], tasks:[],
+  inventory:[], vendors:[], laborCatalog:[], appLists:[],
+  purchaseOrders:[], drawComparisons:[],
+  goal:5000, invoiceN:1, quoteN:1, poN:500400,
+  // nav
+  clientId:null, clientTab:'info',
+  jobId:null, invoiceId:null, quoteId:null, poId:null,
+  vendorId:null, inventoryId:null,
+  // forms
+  showAddClient:false, editClientId:null,
+  showAddJob:false, jobClientId:null, jobFromQuote:null,
+  showAddQuote:false, quoteClientId:null,
+  showAddInvoice:false, invClientId:null, invJobId:null,
+  showAddExp:false, showAddRec:false, showAddDraw:false,
+  showAddTask:false, showAddPO:false, showAddVendor:false,
+  showAddInventory:false, showAddLabor:false,
+  showSettings:false, showMap:false, mapAddr:'', mapErr:'',
+  showCompare:false, compareData:null,
+  changingPin:null, editingGoal:false,
+  taskAssign:'Both', expType:'Variable', taxEnabled:false,
+  taxRate:AZ_TAX, jobStatus:'All', payStatus:'Unpaid',
+  // calendar
+  calYear:new Date().getFullYear(),
+  calMonth:new Date().getMonth(),
+  calSelected:null,
+  loading:false, loadingMsg:'Loading...',
+};
 
-function calcS(jobs,exps){
-  const rev=jobs.reduce((s,j)=>s+j.revenue,0);
-  const mat=jobs.reduce((s,j)=>s+matT(j.materials),0);
-  const lab=jobs.reduce((s,j)=>s+j.laborCost,0);
-  const mil=jobs.reduce((s,j)=>s+(j.mileageAmt||0),0);
-  const ovh=exps.reduce((s,e)=>s+e.amount,0);
-  const cost=mat+lab+mil+ovh;const net=rev-cost;
-  return{rev,mat,lab,mil,ovh,cost,net,margin:rev>0?net/rev*100:0,cnt:jobs.length};
-}
+// ─── UTILS ────────────────────────────────────────────────
+const td = () => new Date().toISOString().split('T')[0];
+const fmt = n => '$'+Math.abs(n||0).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});
+const fmt2 = n => '$'+Math.abs(n||0).toFixed(2);
+const fmtS = n => (n<0?'-':'+')+fmt(n);
+const pct = n => (n||0).toFixed(1)+'%';
+const isOwn = () => S.role==='owner';
+const yn = () => new Date().getFullYear();
 function tmf(d){const n=new Date(),dt=new Date(d+'T00:00:00');return dt.getMonth()===n.getMonth()&&dt.getFullYear()===n.getFullYear();}
-function smf(d,m,y){const dt=new Date(d+'T00:00:00');return dt.getMonth()===m&&dt.getFullYear()===y;}
+function smf(d,m,y){if(!d)return false;const dt=new Date(d+'T00:00:00');return dt.getMonth()===m&&dt.getFullYear()===y;}
+function dfmt(d){return d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';}
+function sfmt(d){return d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'—';}
+function nextInvNum(){return `EG-${yn()}-${String(S.invoiceN).padStart(3,'0')}`;}
+function nextQtNum(){return `QT-${yn()}-${String(S.quoteN).padStart(3,'0')}`;}
+function nextPONum(){return String(S.poN+Math.floor(Math.random()*100)+1);}
+const getC = id => S.clients.find(c=>c.id===id);
+const getJ = id => S.jobs.find(j=>j.id===id);
+const getInv = id => S.invoices.find(i=>i.id===id);
+const getQ = id => S.quotes.find(q=>q.id===id);
+const getPO = id => S.purchaseOrders.find(p=>p.id===id);
+function getLists(type){return S.appLists.filter(l=>l.list_type===type&&l.is_active).sort((a,b)=>a.sort_order-b.sort_order).map(l=>l.value);}
+function liT(li){return (li||[]).reduce((s,i)=>s+(i.qty*i.sell_price),0);}
+function jobRevenue(j){return j.revenue||0;}
+function cc(m){return m>=40?'var(--grn)':m>=20?'var(--gold)':'var(--red)';}
 
-// STORAGE — localStorage for deployed PWA
-function lsGet(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}}
-function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
-
-function ldAll(){
-  S.pins=lsGet('eg_pins')||{owner:'1111',partner:'2222'};
-  S.jobs=lsGet('eg_jobs_v5')||[];
-  S.expenses=lsGet('eg_exp_v2')||[];
-  S.recurring=lsGet('eg_rec_v1')||[];
-  S.drafts=lsGet('eg_drafts_v1')||[];
-  S.lessons=lsGet('eg_les_v2')||{};
-  S.custMod=lsGet('eg_cmod')||[];
-  S.custLes=lsGet('eg_cles')||{};
-  S.goal=lsGet('eg_goal')||5000;
-  checkRecurring();
+function calcStats(jobs, exps){
+  const rev = jobs.reduce((s,j)=>s+(j.revenue||0),0);
+  const mat = jobs.reduce((s,j)=>s+(j.materials_cost||0),0);
+  const lab = jobs.reduce((s,j)=>s+(j.labor_cost||0),0);
+  const mil = jobs.reduce((s,j)=>s+(j.mileage_amt||0),0);
+  const cogs = mat+lab+mil;
+  const fixed = exps.filter(e=>e.type==='Fixed').reduce((s,e)=>s+e.amount,0);
+  const variable = exps.filter(e=>e.type==='Variable').reduce((s,e)=>s+e.amount,0);
+  const onetime = exps.filter(e=>e.type==='One-Time').reduce((s,e)=>s+e.amount,0);
+  const ovh = fixed+variable+onetime;
+  const gross = rev-cogs;
+  const net = gross-ovh;
+  return{rev,mat,lab,mil,cogs,fixed,variable,onetime,ovh,gross,net,
+    grossMargin:rev>0?gross/rev*100:0,netMargin:rev>0?net/rev*100:0,cnt:jobs.length};
 }
-const sv=(k,v)=>lsSet(k,v);
 
-function checkRecurring(){
-  const now=new Date();let changed=false;
-  S.recurring.forEach(r=>{
+// ─── SUPABASE DATA LAYER ──────────────────────────────────
+async function loadAll(){
+  showLoading('Loading EverGuard OS...');
+  try{
+    const [
+      {data:clients},{data:quotes},{data:jobs},{data:invoices},
+      {data:expenses},{data:recurring},{data:draws},{data:tasks},
+      {data:inventory},{data:vendors},{data:labor},{data:lists},
+      {data:pos},{data:comparisons}
+    ] = await Promise.all([
+      sb.from('clients').select('*').order('created_at',{ascending:false}),
+      sb.from('quotes').select('*').order('created_at',{ascending:false}),
+      sb.from('jobs').select('*').order('created_at',{ascending:false}),
+      sb.from('invoices').select('*').order('created_at',{ascending:false}),
+      sb.from('expenses').select('*').order('date',{ascending:false}),
+      sb.from('recurring_expenses').select('*'),
+      sb.from('draws').select('*').order('date',{ascending:false}),
+      sb.from('tasks').select('*').order('created_at',{ascending:false}),
+      sb.from('inventory').select('*').order('name'),
+      sb.from('vendors').select('*').order('name'),
+      sb.from('labor_catalog').select('*').order('name'),
+      sb.from('app_lists').select('*').order('sort_order'),
+      sb.from('purchase_orders').select('*').order('created_at',{ascending:false}),
+      sb.from('draw_comparisons').select('*').order('created_at',{ascending:false}),
+    ]);
+    S.clients=clients||[];S.quotes=quotes||[];S.jobs=jobs||[];S.invoices=invoices||[];
+    S.expenses=expenses||[];S.recurring=recurring||[];S.draws=draws||[];S.tasks=tasks||[];
+    S.inventory=inventory||[];S.vendors=vendors||[];S.laborCatalog=labor||[];S.appLists=lists||[];
+    S.purchaseOrders=pos||[];S.drawComparisons=comparisons||[];
+
+    // counters
+    const invNums=S.invoices.map(i=>parseInt(i.number?.split('-')[2]||0)).filter(n=>!isNaN(n));
+    const qtNums=S.quotes.map(q=>parseInt(q.number?.split('-')[2]||0)).filter(n=>!isNaN(n));
+    S.invoiceN=(invNums.length?Math.max(...invNums):0)+1;
+    S.quoteN=(qtNums.length?Math.max(...qtNums):0)+1;
+
+    await checkRecurring();
+  }catch(e){console.error('Load error:',e);}
+  hideLoading();
+}
+
+async function checkRecurring(){
+  const now=new Date();
+  for(const r of S.recurring){
     let due=false;
-    if(!r.lastLogged){due=true;}
-    else{const last=new Date(r.lastLogged+'T00:00:00');
+    if(!r.last_logged){due=true;}
+    else{const last=new Date(r.last_logged+'T00:00:00');
       if(r.frequency==='Weekly')due=(now-last)>=7*864e5;
       else if(r.frequency==='Monthly')due=now.getMonth()!==last.getMonth()||now.getFullYear()!==last.getFullYear();
       else if(r.frequency==='Quarterly'){const md=(now.getFullYear()-last.getFullYear())*12+now.getMonth()-last.getMonth();due=md>=3;}
     }
-    if(due){S.expenses.unshift({id:'rc_'+Date.now()+'_'+Math.random(),date:today(),category:r.category,amount:r.amount,notes:(r.notes||'')+'  [Auto]',isRecurring:true});r.lastLogged=today();changed=true;}
-  });
-  if(changed){sv('eg_exp_v2',S.expenses);sv('eg_rec_v1',S.recurring);}
+    if(due){
+      const exp={date:td(),category:r.category,type:r.type||'Fixed',amount:r.amount,notes:(r.notes||'')+' [Auto]',is_recurring:true};
+      const{data}=await sb.from('expenses').insert(exp).select().single();
+      if(data)S.expenses.unshift(data);
+      await sb.from('recurring_expenses').update({last_logged:td()}).eq('id',r.id);
+      r.last_logged=td();
+    }
+  }
 }
 
+async function dbInsert(table,data){
+  const{data:result,error}=await sb.from(table).insert(data).select().single();
+  if(error)throw error;
+  return result;
+}
+async function dbUpdate(table,id,data){
+  const{error}=await sb.from(table).update(data).eq('id',id);
+  if(error)throw error;
+}
+async function dbDelete(table,id){
+  const{error}=await sb.from(table).delete().eq('id',id);
+  if(error)throw error;
+}
+
+function showLoading(msg='Loading...'){S.loading=true;S.loadingMsg=msg;renderLoading();}
+function hideLoading(){S.loading=false;}
+function renderLoading(){document.getElementById('app').innerHTML=`<div class="loading"><div class="spin"></div><div style="font-size:13px;color:var(--t2);font-weight:600">${S.loadingMsg}</div></div>`;}
+
+// ─── AUTH ─────────────────────────────────────────────────
+function getPins(){try{return JSON.parse(localStorage.getItem('eg_pins'))||LOCAL_PINS;}catch(e){return LOCAL_PINS;}}
+function savePins(p){localStorage.setItem('eg_pins',JSON.stringify(p));}
 function selUser(u){S.su=u;S.pin='';S.perr='';render();}
 function numP(n){if(S.pin.length>=4)return;S.pin+=n;S.perr='';upDots();if(S.pin.length===4)setTimeout(tryLogin,120);}
 function numD(){S.pin=S.pin.slice(0,-1);upDots();}
 function upDots(){document.querySelectorAll('.pdot').forEach((d,i)=>d.classList.toggle('on',i<S.pin.length));}
-function tryLogin(){if(S.pin===S.pins[S.su]){S.li=true;S.role=S.su;S.tab='dash';S.pin='';S.perr='';render();}else{S.perr='Incorrect PIN';S.pin='';upDots();const e=document.querySelector('.lerr');if(e)e.textContent=S.perr;}}
-function logout(){S.li=false;S.role=null;S.pin='';S.perr='';S.showSettings=false;S.tab='dash';render();}
+function tryLogin(){
+  const pins=getPins();
+  if(S.pin===pins[S.su]){S.li=true;S.role=S.su;S.tab='dash';S.pin='';S.perr='';render();}
+  else{S.perr='Incorrect PIN';S.pin='';upDots();const e=document.querySelector('.lerr');if(e)e.textContent=S.perr;}
+}
+function logout(){S.li=false;S.role=null;S.pin='';S.perr='';S.tab='dash';S.showSettings=false;render();}
 
+// ─── NAV ─────────────────────────────────────────────────
 function goTab(t){
-  S.tab=t;S.activeModule=null;S.activeLesson=null;S.showAddJob=false;S.showAddExp=false;S.showAddIntake=false;S.showAddMod=false;S.showAddLes=false;S.showSettings=false;S.showMap=false;S.finalizingDraft=null;
+  S.tab=t;S.clientId=null;S.jobId=null;S.invoiceId=null;S.quoteId=null;S.poId=null;S.vendorId=null;S.inventoryId=null;S.calSelected=null;
+  Object.assign(S,{showAddClient:false,showAddJob:false,showAddQuote:false,showAddInvoice:false,showAddExp:false,showAddRec:false,showAddDraw:false,showAddTask:false,showAddPO:false,showAddVendor:false,showAddInventory:false,showAddLabor:false,showSettings:false,showMap:false,showCompare:false});
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
   const b=document.querySelector(`[data-tab="${t}"]`);if(b)b.classList.add('on');
   render();
 }
 
+function goBack(){
+  if(S.showAddClient||S.editClientId){S.showAddClient=false;S.editClientId=null;}
+  else if(S.showAddJob){S.showAddJob=false;S.jobClientId=null;S.jobFromQuote=null;}
+  else if(S.showAddQuote){S.showAddQuote=false;}
+  else if(S.showAddInvoice){S.showAddInvoice=false;}
+  else if(S.showAddPO){S.showAddPO=false;}
+  else if(S.showAddVendor){S.showAddVendor=false;}
+  else if(S.showAddInventory){S.showAddInventory=false;}
+  else if(S.showAddLabor){S.showAddLabor=false;}
+  else if(S.showSettings){S.showSettings=false;}
+  else if(S.invoiceId){S.invoiceId=null;}
+  else if(S.quoteId){S.quoteId=null;}
+  else if(S.jobId){S.jobId=null;}
+  else if(S.poId){S.poId=null;}
+  else if(S.clientId){S.clientId=null;}
+  else if(S.vendorId){S.vendorId=null;}
+  render();
+}
+
+// ─── MAIN RENDER ─────────────────────────────────────────
 function render(){
+  if(S.loading){renderLoading();return;}
   const app=document.getElementById('app');
   if(!S.li){app.innerHTML=rLogin();return;}
-  const tabs=isOwn()?['dash','intake','finance','learn']:['dash','intake','finance'];
-  const tl={dash:'Home',intake:'Intake',finance:'Finance',learn:'Learn'};
-  const ti={dash:'◈',intake:'✦',finance:'◉',learn:'◎'};
+
+  const tabs=['dash','clients','schedule','jobs','finance','tasks'];
+  const tl={dash:'Home',clients:'Clients',schedule:'Schedule',jobs:'Jobs',finance:'Finance',tasks:'Tasks'};
+  const ti={dash:'◈',clients:'◉',schedule:'◎',jobs:'◆',finance:'◇',tasks:'✦'};
   const nav=tabs.map(t=>`<button class="nb ${S.tab===t?'on':''}" data-tab="${t}" onclick="goTab('${t}')"><span class="ni">${ti[t]}</span><span class="nl">${tl[t]}</span></button>`).join('');
-  let title='Dashboard',action='';
-  if(S.showSettings){title='Settings';}
-  else if(S.showMap){title='Client Location';}
-  else if(S.tab==='intake'){title=S.showAddIntake?'New Intake':'Intake Queue';}
-  else if(S.tab==='finance'){
-    if(S.finalizingDraft){title='Finalize Job';}
-    else if(S.showAddJob){title='New Job';}
-    else if(S.showAddExp){title='New Expense';}
-    else{title='Finance';if(S.fsub==='jobs')action=`<button class="addbtn" onclick="openAddJob()">+ Job</button>`;else if(S.fsub==='expenses')action=`<button class="addbtn" onclick="S.showAddExp=true;render()">+ Expense</button>`;}
-  }
-  else if(S.tab==='learn'&&S.activeModule){const m=allMod().find(m=>m.id===S.activeModule);title=m?.title||'Module';action=`<button class="backbtn" onclick="S.activeModule=null;S.activeLesson=null;S.showAddLes=false;render()">← Back</button>`;}
+
+  const{title,action,showBack}=getHdrState();
   const rl=isOwn()?`<span class="rbadge rb-own">OWNER</span>`:`<span class="rbadge rb-par">PARTNER</span>`;
   const mapOv=S.showMap?rMapModal():'';
-  app.innerHTML=`<div class="hdr"><div><div class="hbrand">EverGuard Lock &amp; Safe</div><div class="htitle">${title}</div></div><div class="hright">${action}${isOwn()&&!action&&!S.showMap?`<button class="ibtn" onclick="S.showSettings=!S.showSettings;render()">⚙</button>`:''} ${rl}<button class="lout" onclick="logout()">Exit</button></div></div><div class="scroll" id="main">${rMain()}</div><nav class="bnav">${nav}</nav>${mapOv}`;
+
+  app.innerHTML=`
+    <div class="hdr">
+      <div>${showBack?`<button class="backbtn" onclick="goBack()">← Back</button><div class="htitle" style="margin-top:4px">${title}</div>`:`<div class="hbrand">EverGuard Lock &amp; Safe</div><div class="htitle">${title}</div>`}</div>
+      <div class="hright">${action}${isOwn()&&!S.showMap?`<button class="ibtn" onclick="S.showSettings=!S.showSettings;render()">⚙</button>`:''} ${rl}<button class="lout" onclick="logout()">Exit</button></div>
+    </div>
+    <div class="scroll" id="main">${rMain()}</div>
+    <nav class="bnav">${nav}</nav>
+    ${mapOv}
+  `;
   if(S.showMap)setTimeout(()=>initMap(S.mapAddr),200);
+}
+
+function getHdrState(){
+  let title='Dashboard',action='',showBack=false;
+  if(S.showSettings)return{title:'Settings',action,showBack};
+  if(S.showMap)return{title:'Client Location',action,showBack};
+
+  if(S.tab==='dash'){title='Dashboard';}
+  else if(S.tab==='clients'){
+    if(S.showAddClient||S.editClientId){title=S.editClientId?'Edit Client':'New Client';showBack=true;}
+    else if(S.showAddQuote){title='New Quote';showBack=true;}
+    else if(S.quoteId){title='Quote';showBack=true;}
+    else if(S.clientId){const c=getC(S.clientId);title=c?.name||'Client';showBack=true;}
+    else{title='Clients';action=`<button class="addbtn" onclick="S.showAddClient=true;render()">+ Client</button>`;}
+  }
+  else if(S.tab==='schedule'){title='Schedule';}
+  else if(S.tab==='jobs'){
+    if(S.showAddJob){title='New Job';showBack=true;}
+    else if(S.jobId){title='Job Detail';showBack=true;}
+    else if(S.showAddPO){title='New Purchase Order';showBack=true;}
+    else if(S.poId){title='Purchase Order';showBack=true;}
+    else{title='Jobs';action=`<button class="addbtn" onclick="openAddJob(null,null)">+ Job</button>`;}
+  }
+  else if(S.tab==='finance'){
+    if(S.showAddInvoice){title='New Invoice';showBack=true;}
+    else if(S.invoiceId){title='Invoice';showBack=true;}
+    else if(S.showAddExp){title='New Expense';showBack=true;}
+    else if(S.showAddDraw){title='Log Draw';showBack=true;}
+    else if(S.showCompare){title='Draw Comparison';showBack=true;}
+    else if(S.showAddInventory){title='Add Inventory Item';showBack=true;}
+    else if(S.showAddVendor){title='Add Vendor';showBack=true;}
+    else if(S.showAddLabor){title='Add Labor Type';showBack=true;}
+    else{
+      title='Finance';
+      if(S.fsub==='invoices')action=`<button class="addbtn" onclick="openAddInvoice(null,null)">+ Invoice</button>`;
+      else if(S.fsub==='expenses')action=`<button class="addbtn" onclick="S.showAddExp=true;render()">+ Expense</button>`;
+      else if(S.fsub==='draws')action=`<button class="addbtn" onclick="S.showAddDraw=true;render()">+ Draw</button>`;
+      else if(S.fsub==='inventory')action=`<button class="addbtn" onclick="S.showAddInventory=true;render()">+ Item</button>`;
+    }
+  }
+  else if(S.tab==='tasks'){
+    title='Tasks';
+    action=`<button class="addbtn" onclick="S.showAddTask=true;S.taskAssign='Both';render()">+ Task</button>`;
+  }
+  return{title,action,showBack};
 }
 
 function rMain(){
   if(S.showSettings)return rSettings();
   if(S.tab==='dash')return rDash();
-  if(S.tab==='intake')return rIntake();
+  if(S.tab==='clients')return rClients();
+  if(S.tab==='schedule')return rSchedule();
+  if(S.tab==='jobs')return rJobs();
   if(S.tab==='finance')return rFinance();
-  if(S.tab==='learn')return rLearn();
+  if(S.tab==='tasks')return rTasks();
   return '';
 }
 
+// ─── LOGIN ────────────────────────────────────────────────
 function rLogin(){return`<div class="login"><div style="text-align:center;margin-bottom:28px"><div style="font-size:48px;margin-bottom:10px">🛡️</div><div style="font-size:22px;font-weight:800;color:var(--tx)">EverGuard OS</div><div style="font-size:10px;letter-spacing:3px;color:var(--t3);text-transform:uppercase;font-weight:700;margin-top:4px">Lock &amp; Safe</div></div><div class="lcard"><div class="llbl">Sign in as</div><div class="ubtns"><button class="ubtn ${S.su==='owner'?'on':''}" onclick="selUser('owner')">Drew</button><button class="ubtn ${S.su==='partner'?'on':''}" onclick="selUser('partner')">Jaime</button></div><div class="llbl">PIN</div><div class="pdots">${[0,1,2,3].map(i=>`<div class="pdot ${i<S.pin.length?'on':''}"></div>`).join('')}</div><div class="npad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="nkey" onclick="numP('${n}')">${n}</button>`).join('')}<button class="nkey emp"></button><button class="nkey" onclick="numP('0')">0</button><button class="nkey del" onclick="numD()">⌫</button></div><div class="lerr">${S.perr}</div></div></div>`;}
 
+// ─── DASHBOARD ────────────────────────────────────────────
 function rDash(){
-  const now=new Date(),y=now.getFullYear();
-  const ytdJ=S.jobs.filter(j=>new Date(j.date+'T00:00:00').getFullYear()===y);
+  const now=new Date(),y=yn();
+  const compJ=S.jobs.filter(j=>j.status==='Complete'&&new Date((j.completed_date||j.scheduled_date||td())+'T00:00:00').getFullYear()===y);
   const ytdE=S.expenses.filter(e=>new Date(e.date+'T00:00:00').getFullYear()===y);
-  const mJ=S.jobs.filter(j=>tmf(j.date)),mE=S.expenses.filter(e=>tmf(e.date));
-  const ytd=calcS(ytdJ,ytdE),mo=calcS(mJ,mE);
+  const mJ=compJ.filter(j=>tmf(j.completed_date||j.scheduled_date||td()));
+  const mE=ytdE.filter(e=>tmf(e.date));
+  const ytd=calcStats(compJ,ytdE),mo=calcStats(mJ,mE);
   const plc=ytd.net>=0?'var(--grn)':'var(--red)',moc=mo.net>=0?'var(--grn)':'var(--red)';
-  const outstanding=S.jobs.filter(j=>j.payStatus==='unpaid'||j.payStatus==='partial').reduce((s,j)=>s+(j.payStatus==='unpaid'?j.revenue:(j.revenue-(j.amtReceived||0))),0);
-  const goalPct=Math.min(Math.round(mo.rev/S.goal*100),100);
+  const ar=S.invoices.filter(i=>i.status==='Sent'||i.status==='Partial'||i.status==='Overdue').reduce((s,i)=>s+(i.total||0)-(i.amt_received||0),0);
+  const ytdDraws=S.draws.filter(d=>new Date(d.date+'T00:00:00').getFullYear()===y).reduce((s,d)=>s+d.amount,0);
+  const retained=ytd.net-ytdDraws;
+  const goalPct=Math.min(Math.round(mo.rev/(S.goal||1)*100),100);
   const goalC=goalPct>=100?'var(--grn)':goalPct>=60?'var(--gold)':'var(--red)';
+  const openTasks=S.tasks.filter(t=>t.status==='open').length;
+  const lowStock=S.inventory.filter(i=>i.qty_on_hand<=i.low_stock_threshold&&i.is_active);
+  const pendingCompare=S.drawComparisons.find(c=>c.status==='Pending');
+
   let h=`<div class="datesub">${now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}</div>`;
-  h+=`<div class="plb"><div class="pll">Net P&L — ${y} YTD</div><div class="plv" style="color:${plc}">${fmtS(ytd.net)}</div><div class="plm">Margin: <strong style="color:${plc}">${pct(ytd.margin)}</strong> &nbsp;·&nbsp; ${ytd.cnt} jobs &nbsp;·&nbsp; <span style="color:var(--red)">A/R: ${fmt(outstanding)}</span></div><div class="plr"><div><div class="pli-v">${fmt(ytd.rev)}</div><div class="pli-l">YTD Revenue</div></div><div><div class="pli-v" style="color:var(--red)">${fmt(ytd.cost)}</div><div class="pli-l">Total Costs</div></div><div><div class="pli-v" style="color:${moc}">${fmtS(mo.net)}</div><div class="pli-l">This Month</div></div></div></div>`;
-  h+=`<div class="goal-bar"><div class="goal-row"><div><div style="font-size:13px;font-weight:700">Monthly Goal</div><div style="font-size:11px;color:var(--t3);margin-top:2px">${fmt(mo.rev)} of ${fmt(S.goal)}</div></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:16px;font-weight:800;color:${goalC}">${goalPct}%</span>${isOwn()?`<button onclick="S.editingGoal=!S.editingGoal;render()" class="csm">Edit</button>`:''}</div></div>${S.editingGoal&&isOwn()?`<div style="display:flex;gap:8px;margin-top:8px"><input type="number" class="inp" id="goal-inp" placeholder="Monthly goal" value="${S.goal}" style="flex:1"><button class="ssm" onclick="saveGoal()">Save</button></div>`:`<div class="prog-bg" style="height:8px;"><div class="prog-fill" style="width:${goalPct}%;background:${goalC}"></div></div>`}</div>`;
-  const avg=ytd.cnt>0?ytd.rev/ytd.cnt:0;
-  h+=`<div class="sgrid"><div class="sc g"><div class="sc-v">${fmt(mo.rev)}</div><div class="sc-l">This Month</div></div><div class="sc b"><div class="sc-v">${ytd.cnt}</div><div class="sc-l">Jobs YTD</div></div><div class="sc gr"><div class="sc-v">${fmt(avg)}</div><div class="sc-l">Avg/Job</div></div><div class="sc r"><div class="sc-v">${fmt(outstanding)}</div><div class="sc-l">Outstanding A/R</div></div></div>`;
-  if(S.drafts.length>0){h+=`<div class="sl">Pending Intake (${S.drafts.length})</div>`;S.drafts.slice(0,2).forEach(d=>{const pc=d.priority==='Urgent'?'var(--red)':d.priority==='Low'?'var(--grn)':'var(--gold)';h+=`<div class="intake-card"><div class="ic-top"><div><div class="ic-name">${d.clientName}</div><div class="ic-type">${d.jobType}</div></div><span style="font-size:10px;font-weight:800;color:${pc}">${d.priority.toUpperCase()}</span></div></div>`;});}
-  if(isOwn()){const tL=allMod().reduce((s,m)=>s+allLes(m.id).length,0);const dL=Object.values(S.lessons).filter(l=>l.completed).length;const lp=tL>0?Math.round(dL/tL*100):0;h+=`<div class="sl">Learning</div><div class="card" style="padding:12px"><div style="display:flex;justify-content:space-between;margin-bottom:7px;"><span style="font-size:13px;font-weight:700">Curriculum</span><span style="font-size:12px;color:var(--gold);font-weight:800">${dL}/${tL} · ${lp}%</span></div><div class="prog-bg" style="height:6px;"><div class="prog-fill" style="width:${lp}%"></div></div></div>`;}
-  return h;
-}
 
-function rIntake(){
-  if(S.showAddIntake)return`<div class="card"><div class="field"><div class="fl">Client Name *</div><input class="inp" id="i-name" placeholder="Full name or company"></div><div class="two"><div class="field"><div class="fl">Phone</div><input class="inp" id="i-phone" type="tel" placeholder="(555) 000-0000"></div><div class="field"><div class="fl">Email</div><input class="inp" id="i-email" type="email" placeholder="email@co.com"></div></div><div class="field"><div class="fl">Address</div><div style="display:flex;gap:8px;align-items:flex-start"><input class="inp" id="i-addr" placeholder="Full address" style="flex:1"><button class="map-btn" onclick="previewMap()" style="margin-top:0;flex-shrink:0">🗺 Map</button></div></div><div class="field"><div class="fl">Job Type</div><select class="inp" id="i-type" style="background:var(--s2)">${JTYPES.map(t=>`<option>${t}</option>`).join('')}</select></div><div class="field"><div class="fl">Priority</div><div class="pri-row"><button class="pri-opt pri-low ${S.priority==='Low'?'on':''}" onclick="S.priority='Low';document.querySelectorAll('.pri-opt').forEach(b=>b.classList.remove('on'));this.classList.add('on')">Low</button><button class="pri-opt pri-norm ${S.priority==='Normal'?'on':''}" onclick="S.priority='Normal';document.querySelectorAll('.pri-opt').forEach(b=>b.classList.remove('on'));this.classList.add('on')">Normal</button><button class="pri-opt pri-urg ${S.priority==='Urgent'?'on':''}" onclick="S.priority='Urgent';document.querySelectorAll('.pri-opt').forEach(b=>b.classList.remove('on'));this.classList.add('on')">Urgent</button></div></div><div class="field"><div class="fl">Scope of Work</div><textarea class="inp" id="i-scope" rows="3" placeholder="Describe the job..." style="resize:vertical"></textarea></div><div class="brow"><button class="btnc" onclick="S.showAddIntake=false;render()">Cancel</button><button class="btns" onclick="saveIntake()">Save Intake</button></div></div>`;
-  let h=`<button class="addbtn" style="width:100%;margin-bottom:14px;padding:13px;border-radius:10px;font-size:14px;" onclick="S.showAddIntake=true;S.priority='Normal';render()">+ New Client Intake</button>`;
-  if(!S.drafts.length)return h+`<div class="empty">No pending intakes.<br>Tap above to capture a new client.</div>`;
-  S.drafts.forEach(d=>{const pc=d.priority==='Urgent'?'var(--red)':d.priority==='Low'?'var(--grn)':'var(--gold)';const dt=new Date(d.createdAt||d.date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});h+=`<div class="intake-card"><div class="ic-top"><div><div class="ic-name">${d.clientName}</div><div class="ic-type">${d.jobType} · ${dt}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><span style="font-size:10px;font-weight:800;color:${pc}">${d.priority.toUpperCase()}</span><button class="del" onclick="deleteDraft('${d.id}')">✕</button></div></div>${d.phone?`<div class="ic-addr">📞 ${d.phone}${d.email?' &nbsp;✉ '+d.email:''}</div>`:''}${d.address?`<div class="ic-addr">📍 ${d.address}</div><button class="map-btn" onclick="openMap('${d.address.replace(/'/g,"\\'")}')">🗺 View Location &amp; ETA</button>`:''} ${d.scope?`<div class="ic-scope">${d.scope}</div>`:''}<button class="fin-btn" onclick="startFinalize('${d.id}')">Finalize → Job</button></div>`;});
-  return h;
-}
+  // Low stock alerts
+  if(lowStock.length){h+=`<div class="inv-alert"><span style="font-size:16px">⚠️</span><div><div style="font-size:12px;font-weight:800;color:var(--red)">${lowStock.length} item${lowStock.length>1?'s':''} low on stock</div><div style="font-size:11px;color:var(--t2);margin-top:2px">${lowStock.slice(0,3).map(i=>i.name).join(', ')}${lowStock.length>3?` +${lowStock.length-3} more`:''}</div></div></div>`;}
 
-function previewMap(){const a=(document.getElementById('i-addr')?.value||'').trim();if(a)openMap(a);}
-function saveIntake(){
-  const name=(document.getElementById('i-name')?.value||'').trim();
-  if(!name){document.getElementById('i-name').style.borderColor='var(--red)';return;}
-  S.drafts.unshift({id:'d_'+Date.now(),clientName:name,phone:document.getElementById('i-phone')?.value||'',email:document.getElementById('i-email')?.value||'',address:document.getElementById('i-addr')?.value||'',jobType:document.getElementById('i-type')?.value,priority:S.priority,scope:document.getElementById('i-scope')?.value||'',createdAt:new Date().toISOString(),date:today()});
-  sv('eg_drafts_v1',S.drafts);S.showAddIntake=false;render();
-}
-function startFinalize(id){S.finalizingDraft=S.drafts.find(d=>d.id===id)||null;S.tab='finance';S.showAddJob=true;S.fsub='jobs';render();}
-function deleteDraft(id){S.drafts=S.drafts.filter(d=>d.id!==id);sv('eg_drafts_v1',S.drafts);render();}
-
-function rMapModal(){return`<div class="modal-ov"><div class="modal-hdr"><div class="modal-title">Client Location</div><button class="close-btn" onclick="S.showMap=false;render()">×</button></div><div id="map-container" style="flex:1;min-height:300px;display:flex;align-items:center;justify-content:center;"><div style="color:var(--t2);font-size:13px;font-weight:600">Loading map...</div></div><div class="map-info"><div class="map-eta-row"><div><div class="map-stat-v" id="eta-val">—</div><div class="map-stat-l">ETA</div></div><div><div class="map-stat-v" id="dist-val">—</div><div class="map-stat-l">Distance</div></div></div>${S.mapErr?`<div style="font-size:11px;color:var(--red);margin-top:6px;font-weight:600">${S.mapErr}</div>`:''}<div class="map-addr-lbl">${S.mapAddr}</div></div></div>`;}
-
-function openMap(addr){S.showMap=true;S.mapAddr=addr;S.mapErr='';render();}
-
-function loadLeaflet(){return new Promise(res=>{if(window.L){res();return;}const css=document.createElement('link');css.rel='stylesheet';css.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';document.head.appendChild(css);const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';s.onload=res;document.head.appendChild(s);});}
-
-async function initMap(addr){
-  const mc=document.getElementById('map-container');if(!mc)return;
-  mc.innerHTML='<div style="color:var(--t2);font-size:13px;font-weight:600;margin:auto">Geocoding address...</div>';
-  try{
-    await loadLeaflet();
-    const geo=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addr)}&limit=1`,{headers:{'User-Agent':'EverGuardOS/1.0'}});
-    const gd=await geo.json();
-    if(!gd.length){mc.innerHTML='<div style="color:var(--red);font-size:13px;margin:auto">Address not found</div>';return;}
-    const clat=parseFloat(gd[0].lat),clng=parseFloat(gd[0].lon);
-    mc.innerHTML='';
-    const map=L.map(mc,{zoomControl:true}).setView([clat,clng],13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
-    const ci=L.divIcon({html:'<div style="background:#DBB183;border:3px solid #050d08;border-radius:50%;width:18px;height:18px;"></div>',iconSize:[18,18],iconAnchor:[9,9]});
-    L.marker([clat,clng],{icon:ci}).addTo(map).bindPopup(`<strong>${addr}</strong>`).openPopup();
-    navigator.geolocation.getCurrentPosition(async pos=>{
-      const ulat=pos.coords.latitude,ulng=pos.coords.longitude;
-      const ui=L.divIcon({html:'<div style="background:#60a5fa;border:3px solid #050d08;border-radius:50%;width:18px;height:18px;"></div>',iconSize:[18,18],iconAnchor:[9,9]});
-      L.marker([ulat,ulng],{icon:ui}).addTo(map).bindPopup('Your location');
-      map.fitBounds([[ulat,ulng],[clat,clng]],{padding:[30,30]});
-      try{
-        const rt=await fetch(`https://router.project-osrm.org/route/v1/driving/${ulng},${ulat};${clng},${clat}?overview=full&geometries=geojson`);
-        const rd=await rt.json();
-        if(rd.routes?.length){
-          L.geoJSON(rd.routes[0].geometry,{style:{color:'#DBB183',weight:4,opacity:.8}}).addTo(map);
-          const mins=Math.round(rd.routes[0].duration/60);const miles=(rd.routes[0].distance*0.000621371).toFixed(1);
-          const ev=document.getElementById('eta-val'),dv=document.getElementById('dist-val');
-          if(ev)ev.textContent=mins<60?`${mins} min`:`${Math.floor(mins/60)}h ${mins%60}m`;
-          if(dv)dv.textContent=`${miles} mi`;
-        }
-      }catch(e){}
-      map.invalidateSize();
-    },()=>{map.invalidateSize();const ev=document.getElementById('eta-val');if(ev)ev.textContent='GPS off';},{timeout:8000});
-  }catch(e){const mc2=document.getElementById('map-container');if(mc2)mc2.innerHTML='<div style="color:var(--red);font-size:13px;margin:auto">Map unavailable</div>';}
-}
-
-function rFinance(){
-  if(S.finalizingDraft||S.showAddJob)return rAddJobForm();
-  if(S.showAddExp)return rAddExpForm();
-  let h=`<div class="stabs"><button class="stab ${S.fsub==='jobs'?'on':''}" onclick="S.fsub='jobs';render()">Jobs</button><button class="stab ${S.fsub==='expenses'?'on':''}" onclick="S.fsub='expenses';render()">Expenses</button><button class="stab ${S.fsub==='report'?'on':''}" onclick="S.fsub='report';render()">P&L</button></div>`;
-  if(S.fsub==='jobs')h+=rJobs();else if(S.fsub==='expenses')h+=rExpenses();else h+=rReport();
-  return h;
-}
-
-function rJobs(){
-  const all=[...S.drafts.map(d=>({...d,isDraft:true})),...S.jobs];
-  if(!all.length)return`<div class="empty">No jobs yet. Tap <strong>+ Job</strong> or use Intake.</div>`;
-  let h='';
-  all.forEach(j=>{
-    if(j.isDraft){const pc=j.priority==='Urgent'?'var(--red)':j.priority==='Low'?'var(--grn)':'var(--gold)';h+=`<div class="jrow"><div class="jtop"><div><div class="jn">${j.clientName}</div><div class="jt">${j.jobType}</div></div><div style="text-align:right"><span class="draft-badge">DRAFT</span><br><span style="font-size:10px;font-weight:800;color:${pc}">${j.priority}</span></div></div>${j.address?`<div style="font-size:11px;color:var(--t3);margin-top:6px">📍 ${j.address}</div>`:''}<div style="display:flex;gap:8px;margin-top:8px;align-items:center"><button class="fin-btn" onclick="startFinalize('${j.id}')">Finalize</button><button class="del" onclick="deleteDraft('${j.id}')">✕</button></div></div>`;}
-    else{const mc=matT(j.materials),gp=j.revenue-mc-j.laborCost-(j.mileageAmt||0);const m=j.revenue>0?gp/j.revenue*100:0;const dt=new Date(j.date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});const mls=j.miles?`${j.miles}mi → ${fmt(j.mileageAmt||0)}`:'';const matLines=(j.materials||[]).filter(m=>m.name||m.cost>0);const psty=j.payStatus==='paid'?'pay-paid':j.payStatus==='partial'?'pay-partial':'pay-unpaid';const plbl=j.payStatus==='paid'?'Paid':j.payStatus==='partial'?`Partial (${fmt(j.amtReceived||0)})`:'Unpaid';h+=`<div class="jrow"><div class="jtop"><div><div class="jn">${j.client||j.clientName}</div><div class="jt">${j.jobType} · ${j.technician} · ${dt}</div></div><div style="text-align:right"><div class="jr">${fmt(j.revenue)}</div><div class="jchip ${cc(m)}">${pct(m)}</div></div></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:7px"><span class="pay-chip ${psty}">${plbl}</span><button onclick="cyclePayStatus('${j.id}')" style="background:none;border:none;color:var(--t3);font-size:11px;cursor:pointer;font-family:var(--f);font-weight:700">Change ›</button></div><div class="jcosts"><div class="jcr"><div style="flex:1"><div class="jcl">Materials</div>${matLines.length?`<div class="ml2">${matLines.map(mi=>`<div class="mi"><span>${mi.name}</span><span>${fmt(mi.cost)}</span></div>`).join('')}<div class="mt">Total: ${fmt(mc)}</div></div>`:`<div class="jcv">${fmt(mc)}</div>`}</div><div style="width:70px"><div class="jcl">Labor</div><div class="jcv">${fmt(j.laborCost)}</div></div>${mls?`<div style="width:90px"><div class="jcl">Mileage</div><div class="jcv">${mls}</div></div>`:''}<div style="width:80px;text-align:right"><div class="jcl">Profit</div><div class="jcv" style="color:${gp>=0?'var(--grn)':'var(--red)'}">${fmtS(gp)}</div></div><button class="del" onclick="deleteJob('${j.id}')">✕</button></div></div></div>`;}
-  });
-  return h;
-}
-
-function cyclePayStatus(id){
-  const order=['unpaid','partial','paid'];
-  S.jobs=S.jobs.map(j=>{
-    if(j.id!==id)return j;
-    const next=order[(order.indexOf(j.payStatus||'unpaid')+1)%3];
-    let amtReceived=j.amtReceived||0;
-    if(next==='partial'){const v=prompt('Amount received so far:','');amtReceived=parseFloat(v||0)||0;}
-    if(next==='paid')amtReceived=j.revenue;
-    return{...j,payStatus:next,amtReceived};
-  });
-  sv('eg_jobs_v5',S.jobs);render();
-}
-
-function rExpenses(){
-  let h='';
-  if(S.recurring.length||S.showAddRec){
-    h+=`<div class="sl">Recurring</div>`;
-    S.recurring.forEach(r=>{h+=`<div class="erow"><div><div style="font-size:13px;font-weight:700">${r.category} <span class="recbadge">${r.frequency}</span></div><div style="font-size:11px;color:var(--t3);margin-top:2px">Last: ${r.lastLogged||'Never'}</div></div><div style="display:flex;align-items:center;gap:8px"><div style="font-size:14px;font-weight:800;color:var(--red)">${fmt(r.amount)}</div><button class="del" onclick="deleteRec('${r.id}')">✕</button></div></div>`;});
-    h+=`<button class="ghost" onclick="S.showAddRec=!S.showAddRec;render()">+ Add Recurring</button>`;
-    if(S.showAddRec)h+=`<div class="card" style="margin-bottom:12px"><div class="fl" style="margin-bottom:10px">New Recurring Expense</div><div class="field"><div class="fl">Category</div><select class="inp" id="rc-cat" style="background:var(--s2)">${ECATS.map(c=>`<option>${c}</option>`).join('')}</select></div><div class="two"><div class="field"><div class="fl">Amount ($)</div><input type="number" class="inp" id="rc-amt" placeholder="0"></div><div class="field"><div class="fl">Frequency</div><select class="inp" id="rc-freq" style="background:var(--s2)">${FREQS.map(f=>`<option>${f}</option>`).join('')}</select></div></div><div class="field"><div class="fl">Notes</div><input class="inp" id="rc-notes" placeholder="Optional"></div><div class="brow"><button class="btnc" onclick="S.showAddRec=false;render()">Cancel</button><button class="btns" onclick="saveRec()">Add</button></div></div>`;
-  } else {
-    h+=`<button class="ghost" style="margin-bottom:12px" onclick="S.showAddRec=true;render()">+ Add Recurring Expense</button>`;
-    if(S.showAddRec)h+=`<div class="card"><div class="fl" style="margin-bottom:10px">New Recurring</div><div class="field"><div class="fl">Category</div><select class="inp" id="rc-cat" style="background:var(--s2)">${ECATS.map(c=>`<option>${c}</option>`).join('')}</select></div><div class="two"><div class="field"><div class="fl">Amount</div><input type="number" class="inp" id="rc-amt" placeholder="0"></div><div class="field"><div class="fl">Frequency</div><select class="inp" id="rc-freq" style="background:var(--s2)">${FREQS.map(f=>`<option>${f}</option>`).join('')}</select></div></div><div class="field"><div class="fl">Notes</div><input class="inp" id="rc-notes" placeholder="Optional"></div><div class="brow"><button class="btnc" onclick="S.showAddRec=false;render()">Cancel</button><button class="btns" onclick="saveRec()">Add</button></div></div>`;
+  // Draw comparison pending
+  if(pendingCompare){
+    const myApproval=S.role==='owner'?pendingCompare.drew_approved:pendingCompare.jaime_approved;
+    if(!myApproval){h+=`<div style="background:var(--gbg);border:1px solid var(--gbr);border-radius:10px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center"><div style="font-size:13px;font-weight:700;color:var(--gold)">Draw comparison requested</div><button class="ssm" onclick="approveCompare('${pendingCompare.id}')">Approve</button></div>`;}
   }
-  h+=`<div class="sl" style="margin-top:4px">All Expenses</div>`;
-  if(!S.expenses.length)h+=`<div class="empty">No expenses yet.</div>`;
-  S.expenses.forEach(e=>{const dt=new Date(e.date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});h+=`<div class="erow"><div><div style="font-size:13px;font-weight:700">${e.category}${e.isRecurring?`<span class="recbadge">AUTO</span>`:''}</div><div style="font-size:11px;color:var(--t3);margin-top:2px">${dt}${e.notes?' · '+e.notes:''}</div></div><div style="display:flex;align-items:center;gap:8px"><div style="font-size:14px;font-weight:800;color:var(--red)">${fmt(e.amount)}</div><button class="del" onclick="deleteExp('${e.id}')">✕</button></div></div>`;});
+
+  h+=`<div class="plb"><div class="pll">Net P&L — ${y} YTD</div><div class="plv" style="color:${plc}">${fmtS(ytd.net)}</div><div class="plm">Net Margin: <strong style="color:${plc}">${pct(ytd.netMargin)}</strong> · ${ytd.cnt} jobs · Gross: <span style="color:var(--grn)">${pct(ytd.grossMargin)}</span></div><div class="plr"><div><div class="pli-v">${fmt(ytd.rev)}</div><div class="pli-l">Revenue</div></div><div><div class="pli-v" style="color:var(--red)">${fmt(ar)}</div><div class="pli-l">A/R</div></div><div><div class="pli-v" style="color:${moc}">${fmtS(mo.net)}</div><div class="pli-l">This Month</div></div></div></div>`;
+
+  h+=`<div class="goal-bar"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><div><div style="font-size:13px;font-weight:700">Monthly Goal</div><div style="font-size:11px;color:var(--t3);margin-top:2px">${fmt(mo.rev)} of ${fmt(S.goal)}</div></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px;font-weight:800;color:${goalC}">${goalPct}%</span><button onclick="S.editingGoal=!S.editingGoal;render()" class="csm">Edit</button></div></div>${S.editingGoal?`<div style="display:flex;gap:8px"><input type="number" class="inp" id="goal-inp" value="${S.goal}" style="flex:1"><button class="ssm" onclick="saveGoal()">Save</button></div>`:`<div class="prog-bg" style="height:8px;"><div class="prog-fill" style="width:${goalPct}%;background:${goalC}"></div></div>`}</div>`;
+
+  h+=`<div class="sgrid"><div class="sc g"><div class="sc-v">${fmt(mo.rev)}</div><div class="sc-l">This Month</div></div><div class="sc b"><div class="sc-v">${ytd.cnt}</div><div class="sc-l">Jobs YTD</div></div><div class="sc gr"><div class="sc-v">${fmt(retained)}</div><div class="sc-l">Retained</div></div><div class="sc r"><div class="sc-v">${fmt(ar)}</div><div class="sc-l">A/R</div></div></div>`;
+
+  if(openTasks>0)h+=`<div style="background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="goTab('tasks')"><div style="font-size:13px;font-weight:700">${openTasks} Open Task${openTasks>1?'s':''}</div><span style="color:var(--gold)">View →</span></div>`;
+
+  const todayJobs=S.jobs.filter(j=>j.scheduled_date===td());
+  if(todayJobs.length){h+=`<div class="sl">Today's Jobs (${todayJobs.length})</div>`;todayJobs.forEach(j=>{const c=getC(j.client_id);h+=`<div class="jrow" onclick="S.tab='jobs';S.jobId='${j.id}';render()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><div><div style="font-size:14px;font-weight:700">${c?.name||'Unknown'}</div><div style="font-size:11px;color:var(--t2);margin-top:2px">${j.job_type} · ${j.technician}</div></div><span class="sbadge sb-${(j.status||'').toLowerCase().replace(' ','')}">${j.status}</span></div></div>`);};}
+
   return h;
 }
 
-function saveRec(){const amt=parseFloat(document.getElementById('rc-amt')?.value||0);if(!amt)return;S.recurring.push({id:'r_'+Date.now(),category:document.getElementById('rc-cat')?.value,amount:amt,frequency:document.getElementById('rc-freq')?.value,notes:document.getElementById('rc-notes')?.value||'',lastLogged:null});sv('eg_rec_v1',S.recurring);S.showAddRec=false;render();}
-function deleteRec(id){S.recurring=S.recurring.filter(r=>r.id!==id);sv('eg_rec_v1',S.recurring);render();}
+// ─── SCHEDULE ─────────────────────────────────────────────
+function rSchedule(){
+  const now=new Date();
+  const y=S.calYear,m=S.calMonth;
+  const firstDay=new Date(y,m,1).getDay();
+  const daysInMonth=new Date(y,m+1,0).getDate();
+  const prevDays=new Date(y,m,0).getDate();
+  const todayStr=td();
 
-function rReport(){
-  const now=new Date(),y=now.getFullYear();
-  const ytdJ=S.jobs.filter(j=>new Date(j.date+'T00:00:00').getFullYear()===y);
-  const ytdE=S.expenses.filter(e=>new Date(e.date+'T00:00:00').getFullYear()===y);
-  const ytd=calcS(ytdJ,ytdE);const plc=ytd.net>=0?'var(--grn)':'var(--red)';
-  const outstanding=S.jobs.filter(j=>j.payStatus==='unpaid'||j.payStatus==='partial').reduce((s,j)=>s+(j.payStatus==='unpaid'?j.revenue:(j.revenue-(j.amtReceived||0))),0);
-  let h=`<div style="margin-bottom:10px"><button class="addbtn" style="width:100%" onclick="exportCSV()">⬇ Export CSV</button></div>`;
-  h+=`<div class="sl">${y} YTD P&L</div><div class="card"><table class="yt"><tr><td class="lb">Gross Revenue</td><td style="color:var(--gold)">${fmt(ytd.rev)}</td></tr><tr><td class="lb sb">↳ Materials</td><td style="color:var(--t2)">-${fmt(ytd.mat)}</td></tr><tr><td class="lb sb">↳ Labor</td><td style="color:var(--t2)">-${fmt(ytd.lab)}</td></tr><tr><td class="lb sb">↳ Mileage</td><td style="color:var(--t2)">-${fmt(ytd.mil)}</td></tr><tr><td class="lb sb">↳ Overhead</td><td style="color:var(--t2)">-${fmt(ytd.ovh)}</td></tr><tr style="font-weight:800;font-size:13px"><td>Net Profit</td><td style="color:${plc}">${fmtS(ytd.net)}</td></tr><tr><td class="lb">Profit Margin</td><td style="color:${plc}">${pct(ytd.margin)}</td></tr><tr><td class="lb">Outstanding A/R</td><td style="color:var(--red)">${fmt(outstanding)}</td></tr><tr><td class="lb">Jobs</td><td>${ytd.cnt}</td></tr><tr><td class="lb">Avg/Job</td><td>${ytd.cnt?fmt(ytd.rev/ytd.cnt):'—'}</td></tr></table></div>`;
-  h+=`<div class="sl" style="margin-top:4px">Monthly</div><div class="card" style="padding:13px 14px">`;
-  const maxR=Math.max(...MONTHS.map((_,i)=>S.jobs.filter(j=>smf(j.date,i,y)).reduce((s,j)=>s+j.revenue,0)),1);
-  MONTHS.forEach((m,i)=>{const mj=S.jobs.filter(j=>smf(j.date,i,y));const me=S.expenses.filter(e=>smf(e.date,i,y));const ms=calcS(mj,me);const w=ms.rev>0?Math.round(ms.rev/maxR*100):0;const pc=ms.net>=0?'var(--grn)':'var(--red)';const fut=i>now.getMonth()&&y===now.getFullYear();h+=`<div class="mrow" style="${fut?'opacity:.3':''}"><div class="mn2">${m}</div><div class="mbw"><div class="mb" style="width:${w}%"></div></div><div class="mrv">${ms.rev?fmt(ms.rev):'—'}</div><div class="mpr" style="color:${pc}">${ms.rev?fmtS(ms.net):'—'}</div></div>`;});
+  // Get jobs for this month
+  const monthJobs=S.jobs.filter(j=>smf(j.scheduled_date,m,y));
+  const jobsByDate={};
+  monthJobs.forEach(j=>{
+    const d=j.scheduled_date;
+    if(!jobsByDate[d])jobsByDate[d]=[];
+    jobsByDate[d].push(j);
+  });
+
+  let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:12px 16px">
+    <button onclick="prevMonth()" style="background:none;border:none;color:var(--t2);font-size:20px;cursor:pointer;padding:4px 8px">‹</button>
+    <div style="font-size:16px;font-weight:800">${MONTHS[m]} ${y}</div>
+    <button onclick="nextMonth()" style="background:none;border:none;color:var(--t2);font-size:20px;cursor:pointer;padding:4px 8px">›</button>
+  </div>`;
+
+  h+=`<div class="cal-grid">`;
+  DAYS.forEach(d=>h+=`<div class="cal-day-lbl">${d[0]}</div>`);
+
+  // Previous month padding
+  for(let i=0;i<firstDay;i++){
+    const day=prevDays-firstDay+i+1;
+    h+=`<div class="cal-day other-month">${day}</div>`;
+  }
+
+  // Current month days
+  for(let day=1;day<=daysInMonth;day++){
+    const dateStr=`${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const hasJobs=jobsByDate[dateStr]?.length>0;
+    const isToday=dateStr===todayStr;
+    const isSelected=S.calSelected===dateStr;
+    const cls=['cal-day',hasJobs?'has-jobs':'',isToday?'today':'',isSelected?'selected':''].filter(Boolean).join(' ');
+    h+=`<div class="${cls}" onclick="S.calSelected='${dateStr}';render()">${day}${hasJobs?`<div class="job-dot"></div>`:''}</div>`;
+  }
+
+  // Next month padding
+  const totalCells=Math.ceil((firstDay+daysInMonth)/7)*7;
+  for(let i=1;i<=totalCells-firstDay-daysInMonth;i++){
+    h+=`<div class="cal-day other-month">${i}</div>`;
+  }
   h+=`</div>`;
-  h+=`<div class="sl" style="margin-top:4px">By Job Type</div><div class="card" style="padding:13px 14px">`;
-  const td={};ytdJ.forEach(j=>{if(!td[j.jobType])td[j.jobType]={cnt:0,rev:0,gp:0};td[j.jobType].cnt++;td[j.jobType].rev+=j.revenue;td[j.jobType].gp+=(j.revenue-matT(j.materials)-j.laborCost-(j.mileageAmt||0));});
-  if(!Object.keys(td).length)h+=`<div style="color:var(--t3);font-size:12px;padding:6px 0;font-weight:600">Log jobs to see</div>`;
-  else Object.entries(td).sort((a,b)=>b[1].rev-a[1].rev).forEach(([type,d])=>{const m=d.rev>0?d.gp/d.rev*100:0;h+=`<div class="trow"><div><div style="font-size:12px;color:var(--t2);font-weight:600">${type}</div><div style="font-size:10px;color:var(--t3);font-weight:500;margin-top:1px">${d.cnt} job${d.cnt>1?'s':''} · avg ${fmt(d.rev/d.cnt)}</div></div><div style="font-size:15px;font-weight:800" class="${cc(m)}">${pct(m)}</div></div>`;});
+
+  // Selected day jobs
+  if(S.calSelected){
+    const selJobs=jobsByDate[S.calSelected]||[];
+    h+=`<div class="sl">${sfmt(S.calSelected)} — ${selJobs.length} job${selJobs.length!==1?'s':''}</div>`;
+    if(!selJobs.length)h+=`<div style="color:var(--t3);font-size:13px;font-weight:600;padding:12px 0">No jobs scheduled</div>`;
+    selJobs.forEach(j=>{
+      const c=getC(j.client_id);
+      h+=`<div class="cal-job-row" onclick="S.tab='jobs';S.jobId='${j.id}';render()">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-size:14px;font-weight:700">${c?.name||'Unknown'}</div><div style="font-size:11px;color:var(--t2);margin-top:2px">${j.job_type} · ${j.technician}</div></div>
+          <span class="sbadge sb-${(j.status||'').toLowerCase().replace(' ','')}">${j.status}</span>
+        </div>
+      </div>`;
+    });
+  } else {
+    // Show month summary
+    h+=`<div class="sl">This Month — ${monthJobs.length} jobs scheduled</div>`;
+    if(!monthJobs.length)h+=`<div class="empty">No jobs scheduled this month</div>`;
+    monthJobs.slice(0,5).forEach(j=>{
+      const c=getC(j.client_id);
+      h+=`<div class="cal-job-row" onclick="S.tab='jobs';S.jobId='${j.id}';render()">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-size:14px;font-weight:700">${c?.name||'Unknown'}</div><div style="font-size:11px;color:var(--t2);margin-top:2px">${sfmt(j.scheduled_date)} · ${j.job_type} · ${j.technician}</div></div>
+          <span class="sbadge sb-${(j.status||'').toLowerCase().replace(' ','')}">${j.status}</span>
+        </div>
+      </div>`;
+    });
+  }
+  return h;
+}
+
+function prevMonth(){S.calMonth--;if(S.calMonth<0){S.calMonth=11;S.calYear--;}S.calSelected=null;render();}
+function nextMonth(){S.calMonth++;if(S.calMonth>11){S.calMonth=0;S.calYear++;}S.calSelected=null;render();}
+
+// ─── CLIENTS ─────────────────────────────────────────────
+function rClients(){
+  if(S.showAddClient||S.editClientId)return rClientForm();
+  if(S.showAddQuote)return rAddQuoteForm();
+  if(S.quoteId)return rQuoteDetail();
+  if(S.clientId)return rClientDetail();
+  return rClientList();
+}
+
+function rClientList(){
+  let h=`<input class="search-inp" id="client-search" placeholder="🔍  Search clients..." oninput="renderClientSearch()"><div id="client-list">`;
+  if(!S.clients.length)h+=`<div class="empty">No clients yet.<br>Tap <strong>+ Client</strong> to add your first.</div>`;
+  S.clients.forEach(c=>{
+    const cJobs=S.jobs.filter(j=>j.client_id===c.id).length;
+    h+=`<div class="client-row" onclick="S.clientId='${c.id}';S.clientTab='info';render()"><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:14px;font-weight:700">${c.name}</div><div style="font-size:11px;color:var(--t2);margin-top:2px">${c.company||c.phone||'No contact info'}</div></div><div style="font-size:11px;color:var(--t3);font-weight:600">${cJobs} job${cJobs!==1?'s':''} →</div></div></div>`;
+  });
   h+=`</div>`;
-  h+=`<div class="sl" style="margin-top:4px">Tech Split</div><div class="card" style="padding:13px 14px">`;
-  let anyT=false;TECHS.forEach(tech=>{const tj=ytdJ.filter(j=>j.technician===tech);if(!tj.length)return;anyT=true;const ts=calcS(tj,[]);h+=`<div class="techrow"><div><div style="font-size:13px;font-weight:700">${tech}</div><div style="font-size:11px;color:var(--t3);font-weight:500">${tj.length} jobs · avg ${fmt(ts.rev/tj.length)}</div></div><div style="text-align:right"><div style="font-size:14px;font-weight:800;color:var(--gold)">${fmt(ts.rev)}</div><div style="font-size:11px;color:var(--t2);font-weight:600">${pct(ts.margin)}</div></div></div>`;});
-  if(!anyT)h+=`<div style="color:var(--t3);font-size:12px;padding:6px 0;font-weight:600">Log jobs to see</div>`;
-  h+=`</div>`;
+  return h;
+}
+
+function renderClientSearch(){
+  const q=(document.getElementById('client-search')?.value||'').toLowerCase();
+  const list=document.getElementById('client-list');if(!list)return;
+  const f=q?S.clients.filter(c=>(c.name+c.company+c.phone+c.email).toLowerCase().includes(q)):S.clients;
+  list.innerHTML=f.map(c=>`<div class="client-row" onclick="S.clientId='${c.id}';S.clientTab='info';render()"><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:14px;font-weight:700">${c.name}</div><div style="font-size:11px;color:var(--t2);margin-top:2px">${c.company||c.phone||''}</div></div><div style="font-size:11px;color:var(--t3);font-weight:600">${S.jobs.filter(j=>j.client_id===c.id).length} jobs →</div></div></div>`).join('')||(q?`<div class="empty">No results</div>`:'');
+}
+
+function rClientDetail(){
+  const c=getC(S.clientId);if(!c)return'';
+  const cJobs=S.jobs.filter(j=>j.client_id===c.id);
+  const cInvs=S.invoices.filter(i=>i.client_id===c.id);
+  const cQuotes=S.quotes.filter(q=>q.client_id===c.id);
+  const cPOs=S.purchaseOrders.filter(p=>p.client_id===c.id);
+  const totalBilled=cInvs.reduce((s,i)=>s+(i.total||0),0);
+  const totalPaid=cInvs.filter(i=>i.status==='Paid').reduce((s,i)=>s+(i.total||0),0)+cInvs.filter(i=>i.status==='Partial').reduce((s,i)=>s+(i.amt_received||0),0);
+
+  let h=`<div class="client-hdr"><div style="font-size:20px;font-weight:800">${c.name}</div>${c.company?`<div style="font-size:13px;color:var(--gold);font-weight:600;margin-top:2px">${c.company}</div>`:''}<div style="margin-top:8px">${c.phone?`<div style="font-size:13px;color:var(--t2);margin-top:4px">📞 <a href="tel:${c.phone}" style="color:var(--gold);text-decoration:none;font-weight:600">${c.phone}</a></div>`:''} ${c.email?`<div style="font-size:13px;color:var(--t2);margin-top:4px">✉ <a href="mailto:${c.email}" style="color:var(--gold);text-decoration:none;font-weight:600">${c.email}</a></div>`:''} ${c.address?`<div style="font-size:12px;color:var(--t3);margin-top:6px;display:flex;align-items:center;gap:8px">📍 ${c.address} <button onclick="openMap('${c.address.replace(/'/g,"\\'")}');event.stopPropagation()" style="background:none;border:none;color:var(--gold);font-size:12px;cursor:pointer;font-weight:700">Map</button></div>`:''}</div><div style="display:flex;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--bd)"><div><div style="font-size:15px;font-weight:800;color:var(--gold)">${fmt(totalBilled)}</div><div style="font-size:9px;color:var(--t3);font-weight:700;margin-top:2px">BILLED</div></div><div><div style="font-size:15px;font-weight:800;color:var(--grn)">${fmt(totalPaid)}</div><div style="font-size:9px;color:var(--t3);font-weight:700;margin-top:2px">COLLECTED</div></div><div><div style="font-size:15px;font-weight:800;color:var(--red)">${fmt(totalBilled-totalPaid)}</div><div style="font-size:9px;color:var(--t3);font-weight:700;margin-top:2px">OUTSTANDING</div></div>${c.tax_exempt?`<div><div style="font-size:11px;font-weight:800;color:var(--pur);background:rgba(167,139,250,.1);padding:3px 8px;border-radius:6px;border:1px solid rgba(167,139,250,.2)">TAX EXEMPT</div></div>`:''}</div></div>`;
+
+  h+=`<div class="stabs"><button class="stab ${S.clientTab==='info'?'on':''}" onclick="S.clientTab='info';render()">Info</button><button class="stab ${S.clientTab==='quotes'?'on':''}" onclick="S.clientTab='quotes';render()">Quotes</button><button class="stab ${S.clientTab==='jobs'?'on':''}" onclick="S.clientTab='jobs';render()">Jobs</button><button class="stab ${S.clientTab==='invoices'?'on':''}" onclick="S.clientTab='invoices';render()">Invoices</button></div>`;
+
+  if(S.clientTab==='info'){h+=`<div class="card">${c.notes?`<div style="font-size:13px;color:var(--t2);margin-bottom:12px">${c.notes}</div>`:''}<div style="display:flex;gap:8px"><button class="btnc" onclick="editClient('${c.id}')">Edit</button><button class="btnd" onclick="deleteClient('${c.id}')">Delete</button></div></div>`;}
+  else if(S.clientTab==='quotes'){
+    h+=`<button class="addbtn" style="width:100%;margin-bottom:12px;padding:11px;border-radius:10px" onclick="S.showAddQuote=true;S.quoteClientId='${c.id}';S.taxEnabled=${c.tax_exempt?'false':'false'};render()">+ New Quote</button>`;
+    if(!cQuotes.length)h+=`<div class="empty">No quotes yet.</div>`;
+    cQuotes.forEach(q=>{const sub=liT(q.line_items||[]);h+=`<div class="doc-row" onclick="S.quoteId='${q.id}';render()"><div style="display:flex;justify-content:space-between"><div><div style="font-size:11px;font-weight:800;color:var(--t3)">${q.number}</div><div style="font-size:14px;font-weight:700;margin-top:2px">${q.title||'Quote'}</div><div style="font-size:11px;color:var(--t2);margin-top:2px">${dfmt(q.created_at)}</div></div><div style="text-align:right"><div style="font-size:16px;font-weight:800;color:var(--gold)">${fmt(sub*(1+(q.tax_enabled?q.tax_rate/100:0)))}</div><span class="sbadge sb-${(q.status||'draft').toLowerCase()}" style="margin-top:4px;display:block">${q.status}</span></div></div></div>`;});
+  }
+  else if(S.clientTab==='jobs'){
+    h+=`<button class="addbtn" style="width:100%;margin-bottom:12px;padding:11px;border-radius:10px" onclick="openAddJob('${c.id}',null)">+ New Job</button>`;
+    if(!cJobs.length)h+=`<div class="empty">No jobs yet.</div>`;
+    cJobs.forEach(j=>{h+=`<div class="doc-row" onclick="S.tab='jobs';S.jobId='${j.id}';render()"><div style="display:flex;justify-content:space-between"><div><div style="font-size:14px;font-weight:700">${j.job_type}</div><div style="font-size:11px;color:var(--t2);margin-top:2px">${j.technician} · ${sfmt(j.scheduled_date)}</div></div><div style="text-align:right"><div style="font-size:15px;font-weight:800;color:var(--gold)">${fmt(j.revenue||0)}</div><span class="sbadge sb-${(j.status||'').toLowerCase().replace(' ','')}" style="margin-top:4px;display:block">${j.status}</span></div></div></div>`;});
+  }
+  else if(S.clientTab==='invoices'){
+    h+=`<button class="addbtn" style="width:100%;margin-bottom:12px;padding:11px;border-radius:10px" onclick="openAddInvoice('${c.id}',null)">+ New Invoice</button>`;
+    if(!cInvs.length)h+=`<div class="empty">No invoices yet.</div>`;
+    cInvs.forEach(i=>{h+=`<div class="doc-row" onclick="S.tab='finance';S.fsub='invoices';S.invoiceId='${i.id}';render()"><div style="display:flex;justify-content:space-between"><div><div style="font-size:11px;font-weight:800;color:var(--t3)">${i.number}</div><div style="font-size:12px;color:var(--t2);margin-top:2px">Due ${dfmt(i.due_date)}</div></div><div style="text-align:right"><div style="font-size:15px;font-weight:800;color:var(--gold)">${fmt2(i.total||0)}</div><span class="sbadge sb-${(i.status||'draft').toLowerCase()}" style="margin-top:4px;display:block">${i.status}</span></div></div></div>`;});
+  }
+  return h;
+}
+
+function rClientForm(){
+  const c=S.editClientId?getC(S.editClientId):{};
+  return`<div class="card"><div class="field"><div class="fl">Name *</div><input class="inp" id="cf-name" placeholder="Full name" value="${c.name||''}"></div><div class="field"><div class="fl">Company</div><input class="inp" id="cf-co" placeholder="Company name" value="${c.company||''}"></div><div class="two"><div class="field"><div class="fl">Phone</div><input class="inp" id="cf-phone" type="tel" placeholder="(555) 000-0000" value="${c.phone||''}"></div><div class="field"><div class="fl">Email</div><input class="inp" id="cf-email" type="email" placeholder="email@co.com" value="${c.email||''}"></div></div><div class="field"><div class="fl">Address</div><div style="display:flex;gap:8px;align-items:flex-start"><input class="inp" id="cf-addr" placeholder="Full address" style="flex:1" value="${c.address||''}"><button onclick="previewMap()" style="background:var(--s2);border:1px solid var(--gbr);color:var(--gold);border-radius:8px;padding:10px 12px;font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0">🗺</button></div></div><div class="tax-row" style="margin-bottom:12px"><span style="font-size:13px;font-weight:600;color:var(--tx)">Tax Exempt</span><button class="toggle ${c.tax_exempt?'on':''}" id="tax-exempt-toggle" onclick="this.classList.toggle('on')"></button></div><div class="field" id="exempt-num-field" style="${c.tax_exempt?'':'display:none'}"><div class="fl">Exemption Certificate # (optional)</div><input class="inp" id="cf-exempt-num" placeholder="Certificate number" value="${c.tax_exempt_number||''}"></div><div class="field"><div class="fl">Notes</div><textarea class="inp" id="cf-notes" rows="2" style="resize:vertical" placeholder="Internal notes">${c.notes||''}</textarea></div><div class="brow"><button class="btnc" onclick="goBack()">Cancel</button><button class="btns" onclick="saveClient()">Save</button></div></div>`;
+}
+
+async function saveClient(){
+  const name=(document.getElementById('cf-name')?.value||'').trim();
+  if(!name){document.getElementById('cf-name').style.borderColor='var(--red)';return;}
+  const taxExempt=document.getElementById('tax-exempt-toggle')?.classList.contains('on');
+  const data={name,company:document.getElementById('cf-co')?.value||'',phone:document.getElementById('cf-phone')?.value||'',email:document.getElementById('cf-email')?.value||'',address:document.getElementById('cf-addr')?.value||'',tax_exempt:taxExempt,tax_exempt_number:document.getElementById('cf-exempt-num')?.value||'',notes:document.getElementById('cf-notes')?.value||''};
+  showLoading('Saving client...');
+  try{
+    if(S.editClientId){await dbUpdate('clients',S.editClientId,data);S.clients=S.clients.map(c=>c.id===S.editClientId?{...c,...data}:c);S.clientId=S.editClientId;S.editClientId=null;}
+    else{const result=await dbInsert('clients',data);S.clients.unshift(result);S.clientId=result.id;}
+    S.showAddClient=false;S.clientTab='info';
+  }catch(e){alert('Error saving client: '+e.message);}
+  hideLoading();render();
+}
+function editClient(id){S.editClientId=id;S.showAddClient=false;render();}
+async function deleteClient(id){
+  if(!confirm('Delete client and all associated records?'))return;
+  showLoading('Deleting...');
+  try{await dbDelete('clients',id);S.clients=S.clients.filter(c=>c.id!==id);S.quotes=S.quotes.filter(q=>q.client_id!==id);S.jobs=S.jobs.filter(j=>j.client_id!==id);S.invoices=S.invoices.filter(i=>i.client_id!==id);S.clientId=null;}
+  catch(e){alert('Error: '+e.message);}
+  hideLoading();render();
+}
+
+// ─── QUOTES ──────────────────────────────────────────────
+function rAddQuoteForm(){
+  const c=getC(S.quoteClientId);
+  const jtypes=getLists('job_type');
+  return`<div class="card"><div style="font-size:12px;color:var(--t2);font-weight:600;margin-bottom:14px">Client: <strong style="color:var(--gold)">${c?.name||'Unknown'}</strong></div><div class="field"><div class="fl">Quote Title</div><input class="inp" id="qf-title" placeholder="e.g. Access Control Installation"></div><div class="field"><div class="fl">Valid Until</div><input type="date" class="inp" id="qf-valid"></div><div class="field"><div class="fl">Line Items</div><div style="display:flex;gap:6px;margin-bottom:4px"><span style="flex:1;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase">Description</span><span style="width:54px;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;text-align:center">Qty</span><span style="width:70px;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;text-align:center">Price</span><span style="width:28px"></span></div><div id="qt-li-con"></div><div style="display:flex;gap:6px;margin-top:6px"><button class="ali-btn" style="flex:1" onclick="addQtLI('part')">+ Part</button><button class="ali-btn" style="flex:1" onclick="addQtLI('labor')">+ Labor</button><button class="ali-btn" style="flex:1" onclick="addQtLI('custom')">+ Custom</button></div></div><div class="tax-row">${c?.tax_exempt?`<span style="font-size:12px;color:var(--pur);font-weight:700">Tax Exempt Client</span><span style="font-size:11px;color:var(--t3)">No tax applied</span>`:`<span style="font-size:13px;font-weight:600;color:var(--tx)">Sales Tax (${AZ_TAX}%)</span><button class="toggle ${S.taxEnabled?'on':''}" onclick="S.taxEnabled=!S.taxEnabled;render()"></button>`}</div><div id="qt-total" style="text-align:right;margin-top:10px;font-size:14px;font-weight:700;color:var(--gold)"></div><div class="field" style="margin-top:12px"><div class="fl">Notes</div><textarea class="inp" id="qf-notes" rows="2" style="resize:vertical" placeholder="Notes for client"></textarea></div><div class="brow"><button class="btnc" onclick="goBack()">Cancel</button><button class="btns" onclick="saveQuote()">Save Quote</button></div></div>`;
+}
+
+function addQtLI(type){
+  const c=document.getElementById('qt-li-con');if(!c)return;
+  const id='li'+Date.now();const d=document.createElement('div');d.className='li-row';d.id=id;
+  let desc='';
+  if(type==='labor'){
+    const opts=S.laborCatalog.filter(l=>l.is_active).map(l=>`<option value="${l.sell_rate}" data-desc="${l.name}">${l.name} ($${l.sell_rate}/hr)</option>`).join('');
+    desc=`<select class="li-desc" onchange="this.nextElementSibling.nextElementSibling.value=this.options[this.selectedIndex].getAttribute('data-desc')||this.value;this.parentElement.querySelector('.li-price').value=this.value;updateDocTotal('qt-total','qt-li-con')"><option value="">Select labor...</option>${opts}</select>`;
+  } else if(type==='part'){
+    const opts=S.inventory.filter(i=>i.is_active).map(i=>`<option value="${i.sell_price}" data-desc="${i.name}">${i.name} ($${i.sell_price})</option>`).join('');
+    desc=`<select class="li-desc" onchange="this.parentElement.querySelector('.li-price').value=this.value;updateDocTotal('qt-total','qt-li-con')"><option value="">Select part...</option>${opts}</select>`;
+  } else {
+    desc=`<input class="li-desc" placeholder="Description" oninput="updateDocTotal('qt-total','qt-li-con')">`;
+  }
+  d.innerHTML=`${desc}<input class="li-qty" type="number" placeholder="1" value="1" oninput="updateDocTotal('qt-total','qt-li-con')"><input class="li-price" type="number" placeholder="0.00" oninput="updateDocTotal('qt-total','qt-li-con')"><button class="del" onclick="document.getElementById('${id}').remove();updateDocTotal('qt-total','qt-li-con')">✕</button>`;
+  c.appendChild(d);
+}
+
+function updateDocTotal(totalId,conId){
+  const rows=document.querySelectorAll(`#${conId} .li-row`);
+  let sub=0;
+  rows.forEach(r=>{const qty=parseFloat(r.querySelector('.li-qty')?.value)||1;const price=parseFloat(r.querySelector('.li-price')?.value)||0;sub+=qty*price;});
+  const tax=S.taxEnabled?sub*S.taxRate/100:0;
+  const t=document.getElementById(totalId);
+  if(t)t.textContent=`Total: ${fmt2(sub+tax)}${S.taxEnabled?` (incl. ${AZ_TAX}% tax)`:''}`;
+}
+
+function getLIsFromDOM(conId){
+  return Array.from(document.querySelectorAll(`#${conId} .li-row`)).map(r=>{
+    const descEl=r.querySelector('.li-desc');
+    const desc=descEl?.tagName==='SELECT'?(descEl.options[descEl.selectedIndex]?.getAttribute('data-desc')||descEl.value):descEl?.value||'';
+    return{description:desc,qty:parseFloat(r.querySelector('.li-qty')?.value)||1,sell_price:parseFloat(r.querySelector('.li-price')?.value)||0};
+  }).filter(i=>i.description||i.sell_price>0);
+}
+
+async function saveQuote(){
+  const lis=getLIsFromDOM('qt-li-con');
+  const c=getC(S.quoteClientId);
+  const taxEnabled=c?.tax_exempt?false:S.taxEnabled;
+  const sub=lis.reduce((s,i)=>s+i.qty*i.sell_price,0);
+  const tax=taxEnabled?sub*S.taxRate/100:0;
+  const q={client_id:S.quoteClientId,number:nextQtNum(),title:document.getElementById('qf-title')?.value||'Quote',line_items:lis,tax_enabled:taxEnabled,tax_rate:S.taxRate,status:'Draft',notes:document.getElementById('qf-notes')?.value||'',valid_until:document.getElementById('qf-valid')?.value||null};
+  showLoading('Saving quote...');
+  try{const result=await dbInsert('quotes',q);S.quotes.unshift(result);S.quoteN++;S.showAddQuote=false;S.quoteId=result.id;}
+  catch(e){alert('Error: '+e.message);}
+  hideLoading();render();
+}
+
+function rQuoteDetail(){
+  const q=getQ(S.quoteId);if(!q)return'';
+  const c=getC(q.client_id);
+  const lis=q.line_items||[];
+  const sub=lis.reduce((s,i)=>s+i.qty*i.sell_price,0);
+  const tax=q.tax_enabled?sub*q.tax_rate/100:0;
+  const total=sub+tax;
+
+  let h=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px"><div><div style="font-size:11px;font-weight:800;color:var(--t3)">${q.number}</div><div style="font-size:16px;font-weight:800;margin-top:4px">${q.title||'Quote'}</div><div style="font-size:12px;color:var(--t2);margin-top:4px;cursor:pointer" onclick="S.tab='clients';S.clientId='${q.client_id}';S.clientTab='info';S.quoteId=null;render()">${c?.name} →</div></div><span class="sbadge sb-${(q.status||'draft').toLowerCase()}">${q.status}</span></div><table class="yt"><tr><td class="lb" style="width:45%">Description</td><td class="lb" style="text-align:center">Qty</td><td class="lb">Price</td><td class="lb">Total</td></tr>${lis.map(i=>`<tr><td>${i.description}</td><td style="text-align:center">${i.qty}</td><td>${fmt2(i.sell_price)}</td><td>${fmt2(i.qty*i.sell_price)}</td></tr>`).join('')}<tr><td class="lb" colspan="3">Subtotal</td><td>${fmt2(sub)}</td></tr>${q.tax_enabled?`<tr><td class="lb" colspan="3">Tax (${q.tax_rate}%)</td><td>${fmt2(tax)}</td></tr>`:''}<tr class="total-row"><td colspan="3">Total</td><td style="color:var(--gold)">${fmt2(total)}</td></tr></table>${q.notes?`<div style="font-size:12px;color:var(--t2);margin-top:12px;padding-top:12px;border-top:1px solid var(--bd)">${q.notes}</div>`:''}</div>`;
+
+  h+=`<div class="card"><div class="sl">Status</div><div style="display:flex;gap:6px;flex-wrap:wrap">${QUOTE_STATUS.map(s=>`<button onclick="updateQuoteStatus('${q.id}','${s}')" style="flex:1;min-width:70px;padding:8px;border-radius:8px;border:1px solid ${q.status===s?'var(--gold)':'var(--b2)'};background:${q.status===s?'var(--gbg)':'transparent'};color:${q.status===s?'var(--gold)':'var(--t3)'};font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer">${s}</button>`).join('')}</div>${q.status==='Accepted'?`<button class="btns" style="width:100%;margin-top:12px" onclick="quoteToJob('${q.id}')">Convert to Job →</button>`:''}</div>`;
+
+  h+=`<div class="card"><div class="sl">Send to Client</div><div class="share-row">${c?.email?`<button class="share-email" onclick="shareQuoteEmail('${q.id}')">✉ Email</button>`:''}${c?.phone?`<button class="share-sms" onclick="shareQuoteSMS('${q.id}')">💬 Text</button>`:''}</div>${!c?.email&&!c?.phone?`<div style="font-size:12px;color:var(--t3)">Add client contact info to send</div>`:''}</div>`;
+  h+=`<button class="btnd" style="width:100%;padding:11px;margin-top:4px" onclick="deleteQuote('${q.id}')">Delete Quote</button>`;
+  return h;
+}
+
+async function updateQuoteStatus(id,status){
+  try{await dbUpdate('quotes',id,{status});S.quotes=S.quotes.map(q=>q.id===id?{...q,status}:q);render();}
+  catch(e){alert('Error: '+e.message);}
+}
+function quoteToJob(qid){const q=getQ(qid);S.showAddJob=true;S.jobClientId=q?.client_id;S.jobFromQuote=qid;S.tab='jobs';render();}
+async function deleteQuote(id){if(!confirm('Delete quote?'))return;try{await dbDelete('quotes',id);S.quotes=S.quotes.filter(q=>q.id!==id);S.quoteId=null;render();}catch(e){alert('Error: '+e.message);}}
+
+function shareQuoteEmail(qid){const q=getQ(qid);const c=getC(q?.client_id);if(!q||!c)return;const lis=q.line_items||[];const sub=lis.reduce((s,i)=>s+i.qty*i.sell_price,0);const tax=q.tax_enabled?sub*q.tax_rate/100:0;const body=`Dear ${c.name},\n\nPlease find your quote:\n\nQuote #: ${q.number}\nValid Until: ${dfmt(q.valid_until)}\n\n${lis.map(i=>`${i.description}  ${i.qty}x  $${(i.qty*i.sell_price).toFixed(2)}`).join('\n')}\n\nSubtotal: ${fmt2(sub)}${q.tax_enabled?`\nTax: ${fmt2(tax)}`:''}\nTotal: ${fmt2(sub+tax)}\n\n${q.notes||''}\n\nThank you,\nEverGuard Lock & Safe`;window.location.href=`mailto:${c.email}?subject=Quote ${q.number}&body=${encodeURIComponent(body)}`;}
+function shareQuoteSMS(qid){const q=getQ(qid);const c=getC(q?.client_id);if(!q||!c)return;const lis=q.line_items||[];const sub=lis.reduce((s,i)=>s+i.qty*i.sell_price,0);const tax=q.tax_enabled?sub*q.tax_rate/100:0;const body=`EverGuard Lock & Safe\nQuote #${q.number}\n${lis.map(i=>`${i.description}: $${(i.qty*i.sell_price).toFixed(2)}`).join('\n')}\nTotal: ${fmt2(sub+tax)}\nValid: ${dfmt(q.valid_until)}`;window.location.href=`sms:${c.phone}&body=${encodeURIComponent(body)}`;}
+
+// ─── JOBS ─────────────────────────────────────────────────
+function rJobs(){
+  if(S.showAddPO)return rAddPOForm();
+  if(S.poId)return rPODetail();
+  if(S.showAddJob)return rAddJobForm();
+  if(S.jobId)return rJobDetail();
+  return rJobList();
+}
+
+function rJobList(){
+  const statuses=['All',...JOB_STATUS];
+  const active=S.jobStatus||'All';
+  let h=`<div style="display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:4px">${statuses.map(s=>`<button onclick="S.jobStatus='${s}';render()" style="padding:6px 14px;border-radius:20px;border:1px solid ${active===s?'var(--gold)':'var(--b2)'};background:${active===s?'var(--gbg)':'transparent'};color:${active===s?'var(--gold)':'var(--t3)'};font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0">${s}</button>`).join('')}</div>`;
+  
+  // PO section
+  const openPOs=S.purchaseOrders.filter(p=>p.status==='Open');
+  if(openPOs.length)h+=`<div style="background:var(--gbg);border:1px solid var(--gbr);border-radius:10px;padding:10px 12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center"><div style="font-size:12px;font-weight:700;color:var(--gold)">${openPOs.length} Open PO${openPOs.length>1?'s':''}</div><button onclick="S.showAddPO=false;S.poId=null;render()" style="background:none;border:none;color:var(--gold);font-size:12px;cursor:pointer;font-weight:700">View →</button></div>`;
+  
+  h+=`<button class="ghost" onclick="S.showAddPO=true;render()" style="margin-bottom:12px">+ Generate Purchase Order</button>`;
+
+  const jobs=active==='All'?S.jobs:S.jobs.filter(j=>j.status===active);
+  if(!jobs.length)return h+`<div class="empty">No ${active==='All'?'':active.toLowerCase()+' '}jobs yet.</div>`;
+  jobs.forEach(j=>{const c=getC(j.client_id);h+=`<div class="jrow" onclick="S.jobId='${j.id}';render()" style="cursor:pointer"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div style="font-size:14px;font-weight:700">${c?.name||'Unknown'}</div><div style="font-size:11px;color:var(--t2);margin-top:2px">${j.job_type} · ${j.technician} · ${sfmt(j.scheduled_date)}</div></div><div style="text-align:right"><div style="font-size:15px;font-weight:800;color:var(--gold)">${fmt(j.revenue||0)}</div><span class="sbadge sb-${(j.status||'').toLowerCase().replace(' ','')}" style="margin-top:4px;display:block">${j.status}</span></div></div></div>`;});
   return h;
 }
 
 function rAddJobForm(){
-  const d=S.finalizingDraft||{};
-  return`<div class="card"><div class="field"><div class="fl">Date</div><input type="date" class="inp" id="f-date" value="${today()}"></div><div class="field"><div class="fl">Client Name</div><input class="inp" id="f-client" placeholder="Client" value="${d.clientName||''}"></div><div class="two"><div class="field"><div class="fl">Job Type</div><select class="inp" id="f-type" style="background:var(--s2)">${JTYPES.map(t=>`<option ${t===(d.jobType||'')?'selected':''}>${t}</option>`).join('')}</select></div><div class="field"><div class="fl">Technician</div><select class="inp" id="f-tech" style="background:var(--s2)">${TECHS.map(t=>`<option>${t}</option>`).join('')}</select></div></div><div class="field"><div class="fl">Revenue ($)</div><input type="number" class="inp" id="f-rev" placeholder="0"></div><div class="field"><div class="fl">Materials</div><div style="display:flex;gap:6px;margin-bottom:4px"><span style="flex:1;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.8px">Item</span><span style="width:78px;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.8px">Cost ($)</span><span style="width:28px"></span></div><div id="mat-con"></div><button class="amb" onclick="addMat()">+ Add Material</button></div><div class="two"><div class="field"><div class="fl">Labor ($)</div><input type="number" class="inp" id="f-lab" placeholder="0"></div><div class="field"><div class="fl">Miles Driven</div><input type="number" class="inp" id="f-miles" placeholder="0" oninput="updateMileage()"></div></div><div class="field"><div class="fl" id="mil-lbl">Mileage Deduction ($0.70/mi)</div><input type="number" class="inp" id="f-milamt" placeholder="Auto-calculated"></div><div class="field"><div class="fl">Payment Status</div><div class="pri-row"><button class="pri-opt pri-urg ${S.payStatus==='unpaid'?'on':''}" onclick="S.payStatus='unpaid';this.closest('.pri-row').querySelectorAll('.pri-opt').forEach(b=>b.classList.remove('on'));this.classList.add('on');document.getElementById('amt-recv-field').style.display='none'">Unpaid</button><button class="pri-opt pri-norm ${S.payStatus==='partial'?'on':''}" onclick="S.payStatus='partial';this.closest('.pri-row').querySelectorAll('.pri-opt').forEach(b=>b.classList.remove('on'));this.classList.add('on');document.getElementById('amt-recv-field').style.display='block'">Partial</button><button class="pri-opt pri-low ${S.payStatus==='paid'?'on':''}" onclick="S.payStatus='paid';this.closest('.pri-row').querySelectorAll('.pri-opt').forEach(b=>b.classList.remove('on'));this.classList.add('on');document.getElementById('amt-recv-field').style.display='none'">Paid</button></div></div><div class="field" id="amt-recv-field" style="${S.payStatus==='partial'?'':'display:none'}"><div class="fl">Amount Received ($)</div><input type="number" class="inp" id="f-amtrec" placeholder="0"></div><div class="field"><div class="fl">Notes</div><input class="inp" id="f-notes" placeholder="Optional" value="${d.scope||''}"></div><div class="brow"><button class="btnc" onclick="S.showAddJob=false;S.finalizingDraft=null;render()">Cancel</button><button class="btns" onclick="doSaveJob()">Save Job</button></div></div>`;
+  const clientId=S.jobClientId;
+  const q=S.jobFromQuote?getQ(S.jobFromQuote):null;
+  const c=getC(clientId);
+  const jtypes=getLists('job_type');
+  const techs=getLists('technician');
+  const openPOs=S.purchaseOrders.filter(p=>p.status==='Open');
+  return`<div class="card">${c?`<div style="font-size:12px;color:var(--t2);font-weight:600;margin-bottom:14px">Client: <strong style="color:var(--gold)">${c.name}</strong></div>`:''} ${!clientId?`<div class="field"><div class="fl">Client</div><select class="inp" id="jf-client" style="background:var(--s2)"><option value="">Select...</option>${S.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select></div>`:''} <div class="two"><div class="field"><div class="fl">Date</div><input type="date" class="inp" id="jf-date" value="${td()}"></div><div class="field"><div class="fl">Status</div><select class="inp" id="jf-status" style="background:var(--s2)">${JOB_STATUS.map(s=>`<option>${s}</option>`).join('')}</select></div></div><div class="two"><div class="field"><div class="fl">Job Type</div><select class="inp" id="jf-type" style="background:var(--s2)">${jtypes.map(t=>`<option>${t}</option>`).join('')}</select></div><div class="field"><div class="fl">Technician</div><select class="inp" id="jf-tech" style="background:var(--s2)">${techs.map(t=>`<option>${t}</option>`).join('')}</select></div></div><div class="field"><div class="fl">Revenue ($)</div><input type="number" class="inp" id="jf-rev" placeholder="0.00"></div><div class="field"><div class="fl">Line Items (Labor &amp; Materials)</div><div style="display:flex;gap:6px;margin-bottom:4px"><span style="flex:1;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase">Description</span><span style="width:54px;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;text-align:center">Qty</span><span style="width:70px;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;text-align:center">Cost</span><span style="width:28px"></span></div><div id="jf-li-con"></div><div style="display:flex;gap:6px;margin-top:6px"><button class="ali-btn" style="flex:1" onclick="addJobLI('part')">+ Part</button><button class="ali-btn" style="flex:1" onclick="addJobLI('labor')">+ Labor</button><button class="ali-btn" style="flex:1" onclick="addJobLI('custom')">+ Custom</button></div></div><div class="two"><div class="field"><div class="fl">Miles</div><input type="number" class="inp" id="jf-miles" placeholder="0" oninput="updMileage()"></div><div class="field"><div class="fl" id="mil-lbl">Mileage ($)</div><input type="number" class="inp" id="jf-milamt" placeholder="Auto"></div></div>${openPOs.length?`<div class="field"><div class="fl">Attach PO (optional)</div><select class="inp" id="jf-po" style="background:var(--s2)"><option value="">None</option>${openPOs.map(p=>`<option value="${p.id}">#${p.po_number}${p.vendor_id?' - '+S.vendors.find(v=>v.id===p.vendor_id)?.name:''}</option>`).join('')}</select></div>`:''}<div class="field"><div class="fl">Notes</div><input class="inp" id="jf-notes" placeholder="Optional" value="${q?.notes||''}"></div><div class="brow"><button class="btnc" onclick="goBack()">Cancel</button><button class="btns" onclick="saveJob()">Save Job</button></div></div>`;
 }
 
-function updateMileage(){const miles=parseFloat(document.getElementById('f-miles')?.value||0);const amt=document.getElementById('f-milamt');if(amt)amt.value=miles>0?(miles*IRS).toFixed(2):'';const lbl=document.getElementById('mil-lbl');if(lbl)lbl.textContent=miles>0?`Mileage (${miles}mi × $${IRS} = $${(miles*IRS).toFixed(2)})`:'Mileage Deduction ($0.70/mi)';}
-function addMat(){const c=document.getElementById('mat-con');if(!c)return;const id='m'+Date.now();const d=document.createElement('div');d.className='mrf';d.id=id;d.innerHTML=`<input class="mn" placeholder="e.g. Schlage deadbolt"><input class="mc" type="number" placeholder="0"><button class="del" onclick="document.getElementById('${id}').remove()">✕</button>`;c.appendChild(d);}
-function getMats(){return Array.from(document.querySelectorAll('.mrf')).map(r=>({name:r.querySelector('.mn')?.value.trim()||'',cost:parseFloat(r.querySelector('.mc')?.value)||0})).filter(m=>m.name||m.cost>0);}
-function doSaveJob(){
-  const rev=parseFloat(document.getElementById('f-rev')?.value||0);
-  const client=(document.getElementById('f-client')?.value||'').trim();
-  if(!client||!rev){if(!client)document.getElementById('f-client').style.borderColor='var(--red)';return;}
-  const miles=parseFloat(document.getElementById('f-miles')?.value||0);
-  const mileageAmt=parseFloat(document.getElementById('f-milamt')?.value||(miles*IRS))||0;
-  const amtReceived=parseFloat(document.getElementById('f-amtrec')?.value||0);
-  const job={id:'j_'+Date.now(),date:document.getElementById('f-date')?.value||today(),client,jobType:document.getElementById('f-type')?.value,technician:document.getElementById('f-tech')?.value,revenue:rev,materials:getMats(),laborCost:parseFloat(document.getElementById('f-lab')?.value||0),miles,mileageAmt,payStatus:S.payStatus,amtReceived:S.payStatus==='paid'?rev:amtReceived,notes:document.getElementById('f-notes')?.value||''};
-  S.jobs.unshift(job);sv('eg_jobs_v5',S.jobs);
-  if(S.finalizingDraft){S.drafts=S.drafts.filter(d=>d.id!==S.finalizingDraft.id);sv('eg_drafts_v1',S.drafts);}
-  S.showAddJob=false;S.finalizingDraft=null;S.payStatus='unpaid';render();
+function addJobLI(type){
+  const c=document.getElementById('jf-li-con');if(!c)return;
+  const id='jli'+Date.now();const d=document.createElement('div');d.className='li-row';d.id=id;
+  let desc='';
+  if(type==='labor'){
+    const opts=S.laborCatalog.filter(l=>l.is_active).map(l=>`<option value="${l.cost_rate}" data-desc="${l.name}">${l.name}</option>`).join('');
+    desc=`<select class="li-desc"><option value="">Select labor...</option>${opts}</select>`;
+  } else if(type==='part'){
+    const opts=S.inventory.filter(i=>i.is_active).map(i=>`<option value="${i.cost_price}" data-desc="${i.name}" data-invid="${i.id}">${i.name}</option>`).join('');
+    desc=`<select class="li-desc"><option value="">Select part...</option>${opts}</select>`;
+  } else {
+    desc=`<input class="li-desc" placeholder="Description">`;
+  }
+  d.innerHTML=`${desc}<input class="li-qty" type="number" placeholder="1" value="1"><input class="li-price" type="number" placeholder="0.00"><button class="del" onclick="document.getElementById('${id}').remove()">✕</button>`;
+  c.appendChild(d);
 }
-function rAddExpForm(){return`<div class="card"><div class="field"><div class="fl">Date</div><input type="date" class="inp" id="e-date" value="${today()}"></div><div class="field"><div class="fl">Category</div><select class="inp" id="e-cat" style="background:var(--s2)">${ECATS.map(c=>`<option>${c}</option>`).join('')}</select></div><div class="field"><div class="fl">Amount ($)</div><input type="number" class="inp" id="e-amt" placeholder="0"></div><div class="field"><div class="fl">Notes</div><input class="inp" id="e-notes" placeholder="Optional"></div><div class="brow"><button class="btnc" onclick="S.showAddExp=false;render()">Cancel</button><button class="btns" onclick="doSaveExp()">Save</button></div></div>`;}
-function doSaveExp(){const amt=parseFloat(document.getElementById('e-amt')?.value||0);if(!amt)return;S.expenses.unshift({id:'e_'+Date.now(),date:document.getElementById('e-date')?.value||today(),category:document.getElementById('e-cat')?.value,amount:amt,notes:document.getElementById('e-notes')?.value||''});sv('eg_exp_v2',S.expenses);S.showAddExp=false;render();}
-function openAddJob(){S.showAddJob=true;S.finalizingDraft=null;S.payStatus='unpaid';render();}
-function deleteJob(id){if(!confirm('Delete?'))return;S.jobs=S.jobs.filter(j=>j.id!==id);sv('eg_jobs_v5',S.jobs);render();}
-function deleteExp(id){if(!confirm('Delete?'))return;S.expenses=S.expenses.filter(e=>e.id!==id);sv('eg_exp_v2',S.expenses);render();}
-function saveGoal(){const v=parseInt(document.getElementById('goal-inp')?.value||0);if(v>0){S.goal=v;sv('eg_goal',v);}S.editingGoal=false;render();}
+
+function updMileage(){const m=parseFloat(document.getElementById('jf-miles')?.value||0);const a=document.getElementById('jf-milamt');if(a)a.value=m>0?(m*IRS).toFixed(2):'';const l=document.getElementById('mil-lbl');if(l)l.textContent=m>0?`Mileage (${m}mi×$${IRS})`:'Mileage ($)';}
+
+async function saveJob(){
+  const rev=parseFloat(document.getElementById('jf-rev')?.value||0);
+  const clientId=S.jobClientId||document.getElementById('jf-client')?.value;
+  if(!clientId){alert('Select a client');return;}
+  const miles=parseFloat(document.getElementById('jf-miles')?.value||0);
+  const mileageAmt=parseFloat(document.getElementById('jf-milamt')?.value||(miles*IRS))||0;
+  const status=document.getElementById('jf-status')?.value||'Scheduled';
+  const lis=getLIsFromDOM('jf-li-con');
+  const matCost=lis.filter(l=>l.type!=='labor').reduce((s,l)=>s+l.qty*(parseFloat(l.cost_price)||0),0);
+  const labCost=lis.filter(l=>l.type==='labor').reduce((s,l)=>s+l.qty*(parseFloat(l.cost_price)||0),0);
+  const poId=document.getElementById('jf-po')?.value||null;
+
+  const job={client_id:clientId,quote_id:S.jobFromQuote||null,po_id:poId||null,job_type:document.getElementById('jf-type')?.value,technician:document.getElementById('jf-tech')?.value,scheduled_date:document.getElementById('jf-date')?.value||td(),status,revenue:rev,line_items:lis,materials_cost:matCost,labor_cost:labCost,miles,mileage_amt:mileageAmt,notes:document.getElementById('jf-notes')?.value||'',completed_date:status==='Complete'?td():null};
+
+  showLoading('Saving job...');
+  try{
+    const result=await dbInsert('jobs',job);
+    S.jobs.unshift(result);
+    if(S.jobFromQuote)await updateQuoteStatus(S.jobFromQuote,'Accepted');
+    if(poId){await dbUpdate('purchase_orders',poId,{job_id:result.id,status:'Attached'});S.purchaseOrders=S.purchaseOrders.map(p=>p.id===poId?{...p,job_id:result.id,status:'Attached'}:p);}
+    // Decrement inventory
+    for(const li of lis){if(li.inventory_id){const item=S.inventory.find(i=>i.id===li.inventory_id);if(item){const newQty=Math.max(0,(item.qty_on_hand||0)-li.qty);await dbUpdate('inventory',li.inventory_id,{qty_on_hand:newQty});S.inventory=S.inventory.map(i=>i.id===li.inventory_id?{...i,qty_on_hand:newQty}:i);}}}
+    S.showAddJob=false;S.jobClientId=null;S.jobFromQuote=null;S.jobId=result.id;
+  }catch(e){alert('Error: '+e.message);}
+  hideLoading();render();
+}
+
+function rJobDetail(){
+  const j=getJ(S.jobId);if(!j)return'';
+  const c=getC(j.client_id);
+  const lis=j.line_items||[];
+  const cogs=(j.materials_cost||0)+(j.labor_cost||0)+(j.mileage_amt||0);
+  const gp=(j.revenue||0)-cogs;
+  const margin=(j.revenue||0)>0?gp/(j.revenue||1)*100:0;
+
+  let h=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px"><div><div style="font-size:16px;font-weight:800">${j.job_type}</div><div style="font-size:13px;color:var(--gold);font-weight:600;margin-top:4px;cursor:pointer" onclick="S.tab='clients';S.clientId='${j.client_id}';S.clientTab='info';render()">${c?.name||'Unknown'} →</div><div style="font-size:12px;color:var(--t2);margin-top:4px">${j.technician} · ${sfmt(j.scheduled_date)}</div></div><span class="sbadge sb-${(j.status||'').toLowerCase().replace(' ','')}">${j.status}</span></div><div style="display:flex;gap:16px;margin-bottom:12px"><div><div style="font-size:20px;font-weight:800;color:var(--gold)">${fmt(j.revenue||0)}</div><div style="font-size:9px;color:var(--t3);font-weight:700">REVENUE</div></div><div><div style="font-size:20px;font-weight:800" style="color:${cc(margin)}">${fmtS(gp)}</div><div style="font-size:9px;color:var(--t3);font-weight:700">GROSS PROFIT · ${pct(margin)}</div></div></div>`;
+
+  if(lis.length){h+=`<table class="yt" style="margin-bottom:8px"><tr><td class="lb">Item</td><td class="lb" style="text-align:center">Qty</td><td class="lb">Cost</td></tr>${lis.map(i=>`<tr><td>${i.description}</td><td style="text-align:center">${i.qty}</td><td>${fmt2(parseFloat(i.cost_price||i.price||0))}</td></tr>`).join('')}</table>`;}
+
+  h+=`<div style="display:flex;gap:12px;font-size:12px;color:var(--t2);flex-wrap:wrap">${j.miles?`<span>🚗 ${j.miles}mi → ${fmt(j.mileage_amt||0)}</span>`:''}${j.po_id?`<span>PO #${getPO(j.po_id)?.po_number||'—'}</span>`:''}</div>${j.notes?`<div style="font-size:12px;color:var(--t2);margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)">${j.notes}</div>`:''}</div>`;
+
+  h+=`<div class="card"><div class="sl">Status</div><div style="display:flex;gap:8px">${JOB_STATUS.map(s=>`<button onclick="updateJobStatus('${j.id}','${s}')" style="flex:1;padding:9px;border-radius:8px;border:1px solid ${j.status===s?'var(--gold)':'var(--b2)'};background:${j.status===s?'var(--gbg)':'transparent'};color:${j.status===s?'var(--gold)':'var(--t3)'};font-family:var(--f);font-size:11px;font-weight:700;cursor:pointer">${s}</button>`).join('')}</div>${j.status==='Complete'?`<button class="btns" style="width:100%;margin-top:12px" onclick="jobToInvoice('${j.id}')">Create Invoice →</button>`:''}</div>`;
+  h+=`<button class="btnd" style="width:100%;padding:11px;margin-top:4px" onclick="deleteJob('${j.id}')">Delete Job</button>`;
+  return h;
+}
+
+async function updateJobStatus(id,status){
+  const data={status,completed_date:status==='Complete'?td():null};
+  try{await dbUpdate('jobs',id,data);S.jobs=S.jobs.map(j=>j.id===id?{...j,...data}:j);render();}
+  catch(e){alert('Error: '+e.message);}
+}
+function jobToInvoice(jid){S.showAddInvoice=true;S.invClientId=null;S.invJobId=jid;S.tab='finance';S.fsub='invoices';S.taxEnabled=false;render();}
+async function deleteJob(id){if(!confirm('Delete job?'))return;try{await dbDelete('jobs',id);S.jobs=S.jobs.filter(j=>j.id!==id);S.jobId=null;render();}catch(e){alert('Error: '+e.message);}}
+function openAddJob(cid,qid){S.showAddJob=true;S.jobClientId=cid;S.jobFromQuote=qid;render();}
+
+// PO
+function rAddPOForm(){
+  const vendors=S.vendors;
+  return`<div class="card"><div class="po-number" id="po-preview">${nextPONum()}</div><div style="text-align:center;margin-bottom:16px"><button class="csm" onclick="document.getElementById('po-preview').textContent=nextPONum()">Regenerate #</button></div><div class="field"><div class="fl">Vendor (optional)</div><select class="inp" id="po-vendor" style="background:var(--s2)"><option value="">Select vendor...</option>${vendors.map(v=>`<option value="${v.id}">${v.name}</option>`).join('')}</select></div><div class="field"><div class="fl">Amount ($)</div><input type="number" class="inp" id="po-amt" placeholder="0.00"></div><div class="field"><div class="fl">Notes</div><input class="inp" id="po-notes" placeholder="Optional"></div><div class="brow"><button class="btnc" onclick="goBack()">Cancel</button><button class="btns" onclick="savePO()">Generate PO</button></div></div>`;
+}
+
+async function savePO(){
+  const poNum=document.getElementById('po-preview')?.textContent||nextPONum();
+  const data={po_number:poNum,vendor_id:document.getElementById('po-vendor')?.value||null,amount:parseFloat(document.getElementById('po-amt')?.value||0),notes:document.getElementById('po-notes')?.value||'',status:'Open'};
+  showLoading('Generating PO...');
+  try{const result=await dbInsert('purchase_orders',data);S.purchaseOrders.unshift(result);S.showAddPO=false;S.poId=result.id;}
+  catch(e){alert('Error: '+e.message);}
+  hideLoading();render();
+}
+
+function rPODetail(){
+  const po=getPO(S.poId);if(!po)return'';
+  const v=po.vendor_id?S.vendors.find(v=>v.id===po.vendor_id):null;
+  const j=po.job_id?getJ(po.job_id):null;
+  return`<div class="po-number">#${po.po_number}</div><div class="card"><div style="display:flex;justify-content:space-between;margin-bottom:10px"><div style="font-size:13px;color:var(--t2);font-weight:600">Vendor</div><div style="font-size:13px;font-weight:700">${v?.name||'None'}</div></div><div style="display:flex;justify-content:space-between;margin-bottom:10px"><div style="font-size:13px;color:var(--t2);font-weight:600">Amount</div><div style="font-size:13px;font-weight:700;color:var(--gold)">${fmt(po.amount||0)}</div></div><div style="display:flex;justify-content:space-between;margin-bottom:10px"><div style="font-size:13px;color:var(--t2);font-weight:600">Status</div><span class="sbadge sb-${(po.status||'').toLowerCase()}">${po.status}</span></div>${j?`<div style="display:flex;justify-content:space-between"><div style="font-size:13px;color:var(--t2);font-weight:600">Attached Job</div><div style="font-size:13px;font-weight:700;color:var(--gold);cursor:pointer" onclick="S.tab='jobs';S.jobId='${j.id}';render()">${getC(j.client_id)?.name} →</div></div>`:''} ${po.notes?`<div style="font-size:12px;color:var(--t2);margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)">${po.notes}</div>`:''}</div><div class="card"><div class="sl">Status</div><div style="display:flex;gap:8px">${PO_STATUS.map(s=>`<button onclick="updatePOStatus('${po.id}','${s}')" style="flex:1;padding:8px;border-radius:8px;border:1px solid ${po.status===s?'var(--gold)':'var(--b2)'};background:${po.status===s?'var(--gbg)':'transparent'};color:${po.status===s?'var(--gold)':'var(--t3)'};font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer">${s}</button>`).join('')}</div></div><button class="btnd" style="width:100%;padding:11px;margin-top:4px" onclick="deletePO('${po.id}')">Delete PO</button>`;
+}
+
+async function updatePOStatus(id,status){try{await dbUpdate('purchase_orders',id,{status});S.purchaseOrders=S.purchaseOrders.map(p=>p.id===id?{...p,status}:p);render();}catch(e){alert('Error: '+e.message);}}
+async function deletePO(id){if(!confirm('Delete PO?'))return;try{await dbDelete('purchase_orders',id);S.purchaseOrders=S.purchaseOrders.filter(p=>p.id!==id);S.poId=null;render();}catch(e){alert('Error: '+e.message);}}
+
+// ─── FINANCE ─────────────────────────────────────────────
+function rFinance(){
+  if(S.showAddInvoice)return rAddInvoiceForm();
+  if(S.invoiceId)return rInvoiceDetail();
+  if(S.showAddExp)return rAddExpForm();
+  if(S.showAddDraw)return rAddDrawForm();
+  if(S.showCompare)return rCompareView();
+  if(S.showAddInventory)return rAddInventoryForm();
+  if(S.showAddVendor)return rAddVendorForm();
+  if(S.showAddLabor)return rAddLaborForm();
+  let h=`<div class="stabs"><button class="stab ${S.fsub==='invoices'?'on':''}" onclick="S.fsub='invoices';render()">Invoices</button><button class="stab ${S.fsub==='expenses'?'on':''}" onclick="S.fsub='expenses';render()">Expenses</button><button class="stab ${S.fsub==='draws'?'on':''}" onclick="S.fsub='draws';render()">Draws</button><button class="stab ${S.fsub==='inventory'?'on':''}" onclick="S.fsub='inventory';render()">Inventory</button><button class="stab ${S.fsub==='report'?'on':''}" onclick="S.fsub='report';render()">P&L</button></div>`;
+  if(S.fsub==='invoices')h+=rInvoiceList();
+  else if(S.fsub==='expenses')h+=rExpenses();
+  else if(S.fsub==='draws')h+=rDraws();
+  else if(S.fsub==='inventory')h+=rInventory();
+  else h+=rReport();
+  return h;
+}
+
+function rInvoiceList(){
+  if(!S.invoices.length)return`<div class="empty">No invoices yet.<br>Create from a completed job or tap <strong>+ Invoice</strong>.</div>`;
+  let h='';
+  S.invoices.forEach(i=>{const c=getC(i.client_id);h+=`<div class="doc-row" onclick="S.invoiceId='${i.id}';render()"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div style="font-size:11px;font-weight:800;color:var(--t3)">${i.number}</div><div style="font-size:14px;font-weight:700;margin-top:2px">${c?.name||'Unknown'}</div><div style="font-size:11px;color:var(--t2);margin-top:2px">Due ${dfmt(i.due_date)}</div></div><div style="text-align:right"><div style="font-size:16px;font-weight:800;color:var(--gold)">${fmt2(i.total||0)}</div><span class="sbadge sb-${(i.status||'draft').toLowerCase()}" style="margin-top:4px;display:block">${i.status}</span></div></div></div>`;});
+  return h;
+}
+
+function rInvoiceDetail(){
+  const inv=getInv(S.invoiceId);if(!inv)return'';
+  const c=getC(inv.client_id);
+  const lis=inv.line_items||[];
+  const sub=lis.reduce((s,i)=>s+i.qty*i.sell_price,0);
+  const tax=inv.tax_enabled?sub*inv.tax_rate/100:0;
+
+  let h=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px"><div><div style="font-size:11px;font-weight:800;color:var(--t3)">${inv.number}</div><div style="font-size:16px;font-weight:800;margin-top:4px">${c?.name||'Unknown'}</div><div style="font-size:12px;color:var(--t2);margin-top:4px">Issued: ${dfmt(inv.created_at)}</div></div><div style="text-align:right"><span class="sbadge sb-${(inv.status||'draft').toLowerCase()}">${inv.status}</span><div style="font-size:20px;font-weight:800;color:var(--gold);margin-top:8px">${fmt2(inv.total||0)}</div></div></div><table class="yt"><tr><td class="lb" style="width:45%">Description</td><td class="lb" style="text-align:center">Qty</td><td class="lb">Price</td><td class="lb">Total</td></tr>${lis.map(i=>`<tr><td>${i.description}</td><td style="text-align:center">${i.qty}</td><td>${fmt2(i.sell_price)}</td><td>${fmt2(i.qty*i.sell_price)}</td></tr>`).join('')}<tr><td class="lb" colspan="3">Subtotal</td><td>${fmt2(sub)}</td></tr>${inv.tax_enabled?`<tr><td class="lb" colspan="3">Tax (${inv.tax_rate}%)</td><td>${fmt2(tax)}</td></tr>`:''}<tr class="total-row"><td colspan="3">Total Due</td><td style="color:var(--gold)">${fmt2(inv.total||0)}</td></tr>${inv.amt_received?`<tr><td class="lb" colspan="3">Received</td><td style="color:var(--grn)">${fmt2(inv.amt_received)}</td></tr>`:''}</table>${inv.payment_method?`<div style="font-size:12px;color:var(--t2);margin-top:10px">Payment: ${inv.payment_method}</div>`:''} ${inv.notes?`<div style="font-size:12px;color:var(--t2);margin-top:8px;padding-top:8px;border-top:1px solid var(--bd)">${inv.notes}</div>`:''}</div>`;
+
+  h+=`<div class="card"><div class="sl">Payment Status</div><div style="display:flex;gap:6px;flex-wrap:wrap">${INV_STATUS.map(s=>`<button onclick="updateInvStatus('${inv.id}','${s}')" style="flex:1;min-width:60px;padding:7px 4px;border-radius:8px;border:1px solid ${inv.status===s?'var(--gold)':'var(--b2)'};background:${inv.status===s?'var(--gbg)':'transparent'};color:${inv.status===s?'var(--gold)':'var(--t3)'};font-family:var(--f);font-size:11px;font-weight:700;cursor:pointer">${s}</button>`).join('')}</div>${inv.status==='Partial'?`<div style="display:flex;gap:8px;margin-top:10px"><input type="number" class="inp" id="partial-amt" placeholder="Amount received" value="${inv.amt_received||''}" style="flex:1"><select class="inp" id="partial-method" style="background:var(--s2);width:120px">${PAY_METHODS.map(m=>`<option ${m===inv.payment_method?'selected':''}>${m}</option>`).join('')}</select><button class="ssm" onclick="savePartial('${inv.id}')">Save</button></div>`:''}</div>`;
+
+  h+=`<div class="card"><div class="sl">Send to Client</div><div class="share-row">${c?.email?`<button class="share-email" onclick="shareInvEmail('${inv.id}')">✉ Email</button>`:''}${c?.phone?`<button class="share-sms" onclick="shareInvSMS('${inv.id}')">💬 Text</button>`:''}</div>${!c?.email&&!c?.phone?`<div style="font-size:12px;color:var(--t3)">Add client contact info to send</div>`:''}</div>`;
+  h+=`<button class="btnd" style="width:100%;padding:11px;margin-top:4px" onclick="deleteInvoice('${inv.id}')">Delete Invoice</button>`;
+  return h;
+}
+
+function rAddInvoiceForm(){
+  const j=S.invJobId?getJ(S.invJobId):null;
+  const clientId=S.invClientId||j?.client_id;
+  const c=getC(clientId);
+  const due=new Date();due.setDate(due.getDate()+30);
+  const dueStr=due.toISOString().split('T')[0];
+  const taxEnabled=c?.tax_exempt?false:S.taxEnabled;
+
+  let preScript='';
+  if(j&&j.line_items?.length){
+    preScript=`<script>setTimeout(()=>{${j.line_items.map((li,idx)=>`addInvLI('custom');setTimeout(()=>{const rows=document.querySelectorAll('#inv-li-con .li-row');const r=rows[${idx}];if(r){r.querySelector('.li-desc').value='${(li.description||'').replace(/'/g,"\\'")}';r.querySelector('.li-qty').value='${li.qty||1}';r.querySelector('.li-price').value='${li.sell_price||0}';}},50);`).join('')}updateDocTotal('inv-total','inv-li-con');},200);<\/script>`;
+  }
+
+  return`<div class="card">${c?`<div style="font-size:12px;color:var(--t2);font-weight:600;margin-bottom:14px">Client: <strong style="color:var(--gold)">${c.name}</strong>${c.tax_exempt?` <span style="font-size:10px;color:var(--pur);font-weight:800;background:rgba(167,139,250,.1);padding:2px 6px;border-radius:6px">TAX EXEMPT</span>`:''}  </div>`:''} ${!clientId?`<div class="field"><div class="fl">Client</div><select class="inp" id="inv-client" style="background:var(--s2)"><option value="">Select...</option>${S.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select></div>`:''} <div class="two"><div class="field"><div class="fl">Invoice Date</div><input type="date" class="inp" id="if-date" value="${td()}"></div><div class="field"><div class="fl">Due Date</div><input type="date" class="inp" id="if-due" value="${dueStr}"></div></div><div class="field"><div class="fl">Line Items</div><div style="display:flex;gap:6px;margin-bottom:4px"><span style="flex:1;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase">Description</span><span style="width:54px;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;text-align:center">Qty</span><span style="width:70px;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;text-align:center">Price ($)</span><span style="width:28px"></span></div><div id="inv-li-con"></div><div style="display:flex;gap:6px;margin-top:6px"><button class="ali-btn" style="flex:1" onclick="addInvLI('part')">+ Part</button><button class="ali-btn" style="flex:1" onclick="addInvLI('labor')">+ Labor</button><button class="ali-btn" style="flex:1" onclick="addInvLI('custom')">+ Custom</button></div></div>${!c?.tax_exempt?`<div class="tax-row"><span style="font-size:13px;font-weight:600;color:var(--tx)">Sales Tax (${AZ_TAX}%)</span><button class="toggle ${taxEnabled?'on':''}" onclick="S.taxEnabled=!S.taxEnabled;render()"></button></div>`:''}<div id="inv-total" style="text-align:right;margin-top:10px;font-size:14px;font-weight:700;color:var(--gold)"></div><div class="two" style="margin-top:12px"><div class="field"><div class="fl">Payment Method</div><select class="inp" id="if-method" style="background:var(--s2)">${PAY_METHODS.map(m=>`<option>${m}</option>`).join('')}</select></div><div class="field"></div></div><div class="field"><div class="fl">Notes</div><textarea class="inp" id="if-notes" rows="2" style="resize:vertical">Net 30 — Payment due within 30 days</textarea></div><div class="brow"><button class="btnc" onclick="goBack()">Cancel</button><button class="btns" onclick="saveInvoice()">Save Invoice</button></div></div>${preScript}`;
+}
+
+function addInvLI(type){
+  const c=document.getElementById('inv-li-con');if(!c)return;
+  const id='ili'+Date.now();const d=document.createElement('div');d.className='li-row';d.id=id;
+  let desc='';
+  if(type==='labor'){const opts=S.laborCatalog.filter(l=>l.is_active).map(l=>`<option value="${l.sell_rate}" data-desc="${l.name}">${l.name} ($${l.sell_rate})</option>`).join('');desc=`<select class="li-desc" onchange="this.parentElement.querySelector('.li-price').value=this.value;updateDocTotal('inv-total','inv-li-con')"><option value="">Select labor...</option>${opts}</select>`;}
+  else if(type==='part'){const opts=S.inventory.filter(i=>i.is_active).map(i=>`<option value="${i.sell_price}" data-desc="${i.name}">${i.name} ($${i.sell_price})</option>`).join('');desc=`<select class="li-desc" onchange="this.parentElement.querySelector('.li-price').value=this.value;updateDocTotal('inv-total','inv-li-con')"><option value="">Select part...</option>${opts}</select>`;}
+  else{desc=`<input class="li-desc" placeholder="Description" oninput="updateDocTotal('inv-total','inv-li-con')">`;}
+  d.innerHTML=`${desc}<input class="li-qty" type="number" placeholder="1" value="1" oninput="updateDocTotal('inv-total','inv-li-con')"><input class="li-price" type="number" placeholder="0.00" oninput="updateDocTotal('inv-total','inv-li-con')"><button class="del" onclick="document.getElementById('${id}').remove();updateDocTotal('inv-total','inv-li-con')">✕</button>`;
+  c.appendChild(d);updateDocTotal('inv-total','inv-li-con');
+}
+
+async function saveInvoice(){
+  const clientId=S.invClientId||(S.invJobId?getJ(S.invJobId)?.client_id:null)||document.getElementById('inv-client')?.value;
+  if(!clientId){alert('Select a client');return;}
+  const c=getC(clientId);
+  const lis=getLIsFromDOM('inv-li-con');
+  const sub=lis.reduce((s,i)=>s+i.qty*i.sell_price,0);
+  const taxEnabled=c?.tax_exempt?false:S.taxEnabled;
+  const tax=taxEnabled?sub*S.taxRate/100:0;
+  const inv={client_id:clientId,job_id:S.invJobId||null,number:nextInvNum(),line_items:lis,tax_enabled:taxEnabled,tax_rate:S.taxRate,subtotal:sub,tax,total:sub+tax,status:'Draft',amt_received:0,due_date:document.getElementById('if-due')?.value||null,payment_method:document.getElementById('if-method')?.value||'',notes:document.getElementById('if-notes')?.value||''};
+  showLoading('Saving invoice...');
+  try{const result=await dbInsert('invoices',inv);S.invoices.unshift(result);S.invoiceN++;S.showAddInvoice=false;S.invClientId=null;S.invJobId=null;S.invoiceId=result.id;}
+  catch(e){alert('Error: '+e.message);}
+  hideLoading();render();
+}
+
+async function updateInvStatus(id,status){
+  const inv=getInv(id);const data={status,amt_received:status==='Paid'?(inv?.total||0):inv?.amt_received||0};
+  try{await dbUpdate('invoices',id,data);S.invoices=S.invoices.map(i=>i.id===id?{...i,...data}:i);render();}catch(e){alert('Error: '+e.message);}
+}
+async function savePartial(id){
+  const v=parseFloat(document.getElementById('partial-amt')?.value||0);
+  const method=document.getElementById('partial-method')?.value||'';
+  const data={amt_received:v,status:v>=(getInv(id)?.total||0)?'Paid':'Partial',payment_method:method};
+  try{await dbUpdate('invoices',id,data);S.invoices=S.invoices.map(i=>i.id===id?{...i,...data}:i);render();}catch(e){alert('Error: '+e.message);}
+}
+async function deleteInvoice(id){if(!confirm('Delete?'))return;try{await dbDelete('invoices',id);S.invoices=S.invoices.filter(i=>i.id!==id);S.invoiceId=null;render();}catch(e){alert('Error: '+e.message);}}
+function openAddInvoice(cid,jid){S.showAddInvoice=true;S.invClientId=cid;S.invJobId=jid;S.taxEnabled=false;render();}
+
+function shareInvEmail(id){const inv=getInv(id);const c=getC(inv?.client_id);if(!inv||!c)return;const lis=inv.line_items||[];const body=`Dear ${c.name},\n\nInvoice #${inv.number}\nDate: ${dfmt(inv.created_at)}\nDue: ${dfmt(inv.due_date)}\n\n${lis.map(i=>`${i.description}  ${i.qty}x  $${(i.qty*i.sell_price).toFixed(2)}`).join('\n')}\n\nTotal Due: $${(inv.total||0).toFixed(2)}\n\n${inv.notes||''}\n\nThank you,\nEverGuard Lock & Safe`;window.location.href=`mailto:${c.email}?subject=Invoice ${inv.number} - EverGuard Lock %26 Safe&body=${encodeURIComponent(body)}`;}
+function shareInvSMS(id){const inv=getInv(id);const c=getC(inv?.client_id);if(!inv||!c)return;const lis=inv.line_items||[];const body=`EverGuard Lock & Safe\nInvoice #${inv.number}\n${lis.map(i=>`${i.description}: $${(i.qty*i.sell_price).toFixed(2)}`).join('\n')}\nTotal: $${(inv.total||0).toFixed(2)}\nDue: ${dfmt(inv.due_date)}`;window.location.href=`sms:${c.phone}&body=${encodeURIComponent(body)}`;}
+
+// ─── EXPENSES ─────────────────────────────────────────────
+function rExpenses(){
+  const types=['All','Fixed','Variable','One-Time'];
+  let h='';
+  if(S.recurring.length||S.showAddRec){
+    h+=`<div class="sl">Recurring</div>`;
+    S.recurring.forEach(r=>{h+=`<div class="erow"><div><div style="font-size:13px;font-weight:700">${r.category} <span class="recbadge">${r.frequency}</span></div><div style="font-size:11px;color:var(--t3);margin-top:2px"><span class="exp-type-badge et-${r.type==='Fixed'?'fixed':r.type==='Variable'?'var':'once'}">${r.type}</span> · Last: ${r.last_logged||'Never'}</div></div><div style="display:flex;align-items:center;gap:8px"><div style="font-size:14px;font-weight:800;color:var(--red)">${fmt(r.amount)}</div><button class="del" onclick="deleteRec('${r.id}')">✕</button></div></div>`;});
+    h+=`<button class="ghost" onclick="S.showAddRec=!S.showAddRec;render()">+ Add Recurring</button>`;
+    if(S.showAddRec)h+=rRecForm();
+  } else {
+    h+=`<button class="ghost" style="margin-bottom:12px" onclick="S.showAddRec=true;render()">+ Set Up Recurring</button>`;
+    if(S.showAddRec)h+=rRecForm();
+  }
+
+  const ytdE=S.expenses.filter(e=>new Date(e.date+'T00:00:00').getFullYear()===yn());
+  const totals={Fixed:ytdE.filter(e=>e.type==='Fixed').reduce((s,e)=>s+e.amount,0),Variable:ytdE.filter(e=>e.type==='Variable').reduce((s,e)=>s+e.amount,0),'One-Time':ytdE.filter(e=>e.type==='One-Time').reduce((s,e)=>s+e.amount,0)};
+
+  h+=`<div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;padding-bottom:2px">${types.map(t=>`<button onclick="S.esub='${t}';render()" style="padding:6px 12px;border-radius:20px;border:1px solid ${S.esub===t?'var(--gold)':'var(--b2)'};background:${S.esub===t?'var(--gbg)':'transparent'};color:${S.esub===t?'var(--gold)':'var(--t3)'};font-family:var(--f);font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0">${t}</button>`).join('')}</div>`;
+  h+=`<div class="sgrid" style="margin-bottom:10px"><div class="sc b"><div class="sc-v">${fmt(totals.Fixed)}</div><div class="sc-l">Fixed YTD</div></div><div class="sc g"><div class="sc-v">${fmt(totals.Variable)}</div><div class="sc-l">Variable YTD</div></div></div>`;
+
+  const filtered=S.esub==='All'?S.expenses:S.expenses.filter(e=>e.type===S.esub);
+  if(!filtered.length)h+=`<div class="empty">No ${S.esub==='All'?'':S.esub.toLowerCase()+' '}expenses.</div>`;
+  filtered.forEach(e=>{const tc=e.type==='Fixed'?'et-fixed':e.type==='Variable'?'et-var':'et-once';h+=`<div class="erow"><div><div style="font-size:13px;font-weight:700">${e.category}${e.is_recurring?`<span class="recbadge">AUTO</span>`:''}</div><div style="font-size:11px;color:var(--t3);margin-top:2px"><span class="exp-type-badge ${tc}">${e.type}</span> · ${sfmt(e.date)}${e.notes?' · '+e.notes:''}</div></div><div style="display:flex;align-items:center;gap:8px"><div style="font-size:14px;font-weight:800;color:var(--red)">${fmt(e.amount)}</div><button class="del" onclick="deleteExp('${e.id}')">✕</button></div></div>`;});
+  return h;
+}
+
+function rRecForm(){
+  const cats=getLists('expense_category').length?getLists('expense_category'):['Fuel & Gas','Insurance','Phone & Admin','Vehicle','Other'];
+  return`<div class="card" style="margin-bottom:12px"><div class="fl" style="margin-bottom:10px">New Recurring Expense</div><div class="field"><div class="fl">Category</div><select class="inp" id="rc-cat" style="background:var(--s2)">${cats.map(c=>`<option>${c}</option>`).join('')}</select></div><div class="three"><div class="field"><div class="fl">Type</div><select class="inp" id="rc-type" style="background:var(--s2)">${ETYPES.map(t=>`<option>${t}</option>`).join('')}</select></div><div class="field"><div class="fl">Amount ($)</div><input type="number" class="inp" id="rc-amt" placeholder="0"></div><div class="field"><div class="fl">Frequency</div><select class="inp" id="rc-freq" style="background:var(--s2)">${FREQS.map(f=>`<option>${f}</option>`).join('')}</select></div></div><div class="field"><div class="fl">Notes</div><input class="inp" id="rc-notes" placeholder="Optional"></div><div class="brow"><button class="btnc" onclick="S.showAddRec=false;render()">Cancel</button><button class="btns" onclick="saveRec()">Add</button></div></div>`;
+}
+
+async function saveRec(){
+  const amt=parseFloat(document.getElementById('rc-amt')?.value||0);if(!amt)return;
+  const data={category:document.getElementById('rc-cat')?.value,type:document.getElementById('rc-type')?.value||'Fixed',amount:amt,frequency:document.getElementById('rc-freq')?.value,notes:document.getElementById('rc-notes')?.value||''};
+  try{const r=await dbInsert('recurring_expenses',data);S.recurring.push(r);S.showAddRec=false;render();}catch(e){alert('Error: '+e.message);}
+}
+async function deleteRec(id){S.recurring=S.recurring.filter(r=>r.id!==id);try{await dbDelete('recurring_expenses',id);render();}catch(e){alert('Error: '+e.message);}}
+
+function rAddExpForm(){
+  const cats=getLists('expense_category').length?getLists('expense_category'):['Fuel & Gas','Insurance','Phone & Admin','Vehicle','Other'];
+  return`<div class="card"><div class="field"><div class="fl">Date</div><input type="date" class="inp" id="ef-date" value="${td()}"></div><div class="two"><div class="field"><div class="fl">Category</div><select class="inp" id="ef-cat" style="background:var(--s2)">${cats.map(c=>`<option>${c}</option>`).join('')}</select></div><div class="field"><div class="fl">Type</div><select class="inp" id="ef-type" style="background:var(--s2)">${ETYPES.map(t=>`<option>${t}</option>`).join('')}</select></div></div><div class="field"><div class="fl">Amount ($)</div><input type="number" class="inp" id="ef-amt" placeholder="0.00"></div><div class="field"><div class="fl">Notes</div><input class="inp" id="ef-notes" placeholder="Optional"></div><div class="brow"><button class="btnc" onclick="S.showAddExp=false;render()">Cancel</button><button class="btns" onclick="saveExp()">Save</button></div></div>`;
+}
+async function saveExp(){const amt=parseFloat(document.getElementById('ef-amt')?.value||0);if(!amt)return;const data={date:document.getElementById('ef-date')?.value||td(),category:document.getElementById('ef-cat')?.value,type:document.getElementById('ef-type')?.value||'Variable',amount:amt,notes:document.getElementById('ef-notes')?.value||''};try{const r=await dbInsert('expenses',data);S.expenses.unshift(r);S.showAddExp=false;render();}catch(e){alert('Error: '+e.message);}}
+async function deleteExp(id){if(!confirm('Delete?'))return;try{await dbDelete('expenses',id);S.expenses=S.expenses.filter(e=>e.id!==id);render();}catch(e){alert('Error: '+e.message);}}
+
+// ─── DRAWS ────────────────────────────────────────────────
+function rDraws(){
+  const myDraws=S.draws.filter(d=>d.person===(S.role==='owner'?'Drew':'Jaime'));
+  const myYTD=myDraws.filter(d=>new Date(d.date+'T00:00:00').getFullYear()===yn()).reduce((s,d)=>s+d.amount,0);
+  const allYTD=S.draws.filter(d=>new Date(d.date+'T00:00:00').getFullYear()===yn()).reduce((s,d)=>s+d.amount,0);
+  const pendingCompare=S.drawComparisons.find(c=>c.status==='Pending');
+  const approvedCompare=S.drawComparisons.find(c=>c.status==='Approved');
+
+  let h=`<div class="sgrid" style="margin-bottom:12px"><div class="sc g"><div class="sc-v">${fmt(myYTD)}</div><div class="sc-l">My Draws YTD</div></div><div class="sc b"><div class="sc-v">${fmt(allYTD)}</div><div class="sc-l">Combined YTD</div></div></div>`;
+
+  // Compare feature
+  if(approvedCompare){
+    h+=rCompareView(approvedCompare);
+  } else if(pendingCompare){
+    const myApproval=S.role==='owner'?pendingCompare.drew_approved:pendingCompare.jaime_approved;
+    const otherApproval=S.role==='owner'?pendingCompare.jaime_approved:pendingCompare.drew_approved;
+    h+=`<div class="compare-card"><div class="pll">Draw Comparison Request</div><div style="font-size:13px;color:var(--t2);margin-top:4px">Requested by ${pendingCompare.requested_by} · Expires ${dfmt(pendingCompare.expires_at)}</div><div style="display:flex;gap:10px;margin-top:12px"><div style="flex:1;text-align:center"><div style="font-size:11px;color:var(--t3);margin-bottom:4px">Drew</div><div style="font-size:16px">${pendingCompare.drew_approved?'✅':'⏳'}</div></div><div style="flex:1;text-align:center"><div style="font-size:11px;color:var(--t3);margin-bottom:4px">Jaime</div><div style="font-size:16px">${pendingCompare.jaime_approved?'✅':'⏳'}</div></div></div>${!myApproval?`<button class="btns" style="width:100%;margin-top:12px" onclick="approveCompare('${pendingCompare.id}')">Approve</button>`:`<div style="font-size:12px;color:var(--t2);text-align:center;margin-top:10px">Waiting for ${S.role==='owner'?'Jaime':'Drew'} to approve</div>`}</div>`;
+  } else {
+    h+=`<button class="ghost" onclick="requestCompare()">Request Draw Comparison</button>`;
+  }
+
+  // Draw chart
+  h+=drawChart();
+
+  h+=`<div class="sl" style="margin-top:4px">My Draw History</div>`;
+  if(!myDraws.length)h+=`<div class="empty">No draws logged yet.</div>`;
+  myDraws.slice(0,15).forEach(d=>{h+=`<div class="erow"><div><div style="font-size:13px;font-weight:700;color:${S.role==='owner'?'var(--gold)':'var(--blu)'}">${d.person}</div><div style="font-size:11px;color:var(--t3);margin-top:2px">${sfmt(d.date)}${d.notes?' · '+d.notes:''}</div></div><div style="display:flex;align-items:center;gap:8px"><div style="font-size:14px;font-weight:800">${fmt(d.amount)}</div><button class="del" onclick="deleteDraw('${d.id}')">✕</button></div></div>`;});
+  return h;
+}
+
+function rCompareView(compare){
+  if(!compare)return'';
+  const y=yn();
+  const drewYTD=S.draws.filter(d=>d.person==='Drew'&&new Date(d.date+'T00:00:00').getFullYear()===y).reduce((s,d)=>s+d.amount,0);
+  const jaimeYTD=S.draws.filter(d=>d.person==='Jaime'&&new Date(d.date+'T00:00:00').getFullYear()===y).reduce((s,d)=>s+d.amount,0);
+  return`<div class="compare-card"><div class="pll">Draw Comparison — ${y} YTD</div><div class="compare-person"><div><div style="font-size:14px;font-weight:800">Drew</div></div><div style="font-size:20px;font-weight:800;color:var(--gold)">${fmt(drewYTD)}</div></div><div class="compare-person"><div><div style="font-size:14px;font-weight:800">Jaime</div></div><div style="font-size:20px;font-weight:800;color:var(--blu)">${fmt(jaimeYTD)}</div></div><div style="padding-top:12px;border-top:1px solid var(--bd);display:flex;justify-content:space-between;margin-top:4px"><div style="font-size:12px;color:var(--t2)">Difference</div><div style="font-size:14px;font-weight:800">${fmt(Math.abs(drewYTD-jaimeYTD))}</div></div><button class="btnd" style="width:100%;margin-top:12px" onclick="closeCompare('${compare.id}')">Close Comparison</button></div>`;
+}
+
+async function requestCompare(){
+  const data={requested_by:S.role==='owner'?'Drew':'Jaime',drew_approved:S.role==='owner',jaime_approved:S.role==='partner',status:'Pending'};
+  try{const r=await dbInsert('draw_comparisons',data);S.drawComparisons.unshift(r);render();}catch(e){alert('Error: '+e.message);}
+}
+async function approveCompare(id){
+  const field=S.role==='owner'?'drew_approved':'jaime_approved';
+  const compare=S.drawComparisons.find(c=>c.id===id);
+  const otherApproved=S.role==='owner'?compare?.jaime_approved:compare?.drew_approved;
+  const data={[field]:true,status:otherApproved?'Approved':'Pending'};
+  try{await dbUpdate('draw_comparisons',id,data);S.drawComparisons=S.drawComparisons.map(c=>c.id===id?{...c,...data}:c);render();}catch(e){alert('Error: '+e.message);}
+}
+async function closeCompare(id){
+  try{await dbUpdate('draw_comparisons',id,{status:'Closed',closed_at:td()});S.drawComparisons=S.drawComparisons.map(c=>c.id===id?{...c,status:'Closed',closed_at:td()}:c);render();}catch(e){alert('Error: '+e.message);}
+}
+
+function drawChart(){
+  const now=new Date();
+  const months=[];
+  for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push({m:d.getMonth(),y:d.getFullYear(),label:MONTHS[d.getMonth()]});}
+  const myKey=S.role==='owner'?'Drew':'Jaime';
+  const mData=months.map(({m,y,label})=>{
+    const mine=S.draws.filter(d=>d.person===myKey&&smf(d.date,m,y)).reduce((s,d)=>s+d.amount,0);
+    return{label,mine};
+  });
+  const maxVal=Math.max(...mData.map(d=>d.mine),1);
+  const W=340,H=100,pad=20,bw=28;
+  let bars='';
+  mData.forEach((d,i)=>{
+    const x=pad+i*(bw+10);
+    const h2=Math.max(d.mine/maxVal*(H-20),d.mine>0?2:0);
+    const color=S.role==='owner'?'#DBB183':'#60a5fa';
+    bars+=`<rect x="${x}" y="${H-h2}" width="${bw}" height="${h2}" rx="3" fill="${color}" opacity="0.85"/>`;
+    bars+=`<text x="${x+bw/2}" y="${H+14}" text-anchor="middle" font-size="10" fill="#3a5a48" font-family="Manrope">${d.label}</text>`;
+    if(d.mine>0)bars+=`<text x="${x+bw/2}" y="${H-h2-4}" text-anchor="middle" font-size="9" fill="${color}" font-family="Manrope">$${Math.round(d.mine/1000)}k</text>`;
+  });
+  return`<div class="chart-wrap"><div style="font-size:11px;color:var(--t2);font-weight:700;margin-bottom:10px">My Draws — Last 6 Months</div><svg viewBox="0 0 ${W} ${H+20}" width="100%" style="overflow:visible">${bars}<line x1="${pad-5}" y1="${H}" x2="${W}" y2="${H}" stroke="#1c3224" stroke-width="1"/></svg></div>`;
+}
+
+function rAddDrawForm(){
+  return`<div class="card"><div style="font-size:13px;color:var(--t2);font-weight:600;margin-bottom:14px">Logging draw for: <strong style="color:${S.role==='owner'?'var(--gold)':'var(--blu)'}">${S.role==='owner'?'Drew':'Jaime'}</strong></div><div class="field"><div class="fl">Date</div><input type="date" class="inp" id="dr-date" value="${td()}"></div><div class="field"><div class="fl">Amount ($)</div><input type="number" class="inp" id="dr-amt" placeholder="0.00"></div><div class="field"><div class="fl">Notes</div><input class="inp" id="dr-notes" placeholder="Optional"></div><div class="brow"><button class="btnc" onclick="S.showAddDraw=false;render()">Cancel</button><button class="btns" onclick="saveDraw()">Log Draw</button></div></div>`;
+}
+async function saveDraw(){const amt=parseFloat(document.getElementById('dr-amt')?.value||0);if(!amt)return;const data={person:S.role==='owner'?'Drew':'Jaime',date:document.getElementById('dr-date')?.value||td(),amount:amt,notes:document.getElementById('dr-notes')?.value||''};try{const r=await dbInsert('draws',data);S.draws.unshift(r);S.showAddDraw=false;render();}catch(e){alert('Error: '+e.message);}}
+async function deleteDraw(id){if(!confirm('Delete?'))return;try{await dbDelete('draws',id);S.draws=S.draws.filter(d=>d.id!==id);render();}catch(e){alert('Error: '+e.message);}}
+
+// ─── INVENTORY ────────────────────────────────────────────
+function rInventory(){
+  const lowStock=S.inventory.filter(i=>i.qty_on_hand<=i.low_stock_threshold&&i.is_active);
+  let h='';
+  if(lowStock.length){h+=`<div class="sl">⚠️ Low Stock</div>`;lowStock.forEach(i=>{h+=`<div class="low-stock">${i.name} — ${i.qty_on_hand} remaining (threshold: ${i.low_stock_threshold})</div>`;});}
+
+  // Sub tabs
+  h+=`<div class="stabs"><button class="stab ${S.esub==='items'||!S.esub||S.esub==='All'?'on':''}" onclick="S.esub='items';render()">Parts</button><button class="stab ${S.esub==='labor'?'on':''}" onclick="S.esub='labor';render()">Labor</button><button class="stab ${S.esub==='vendors'?'on':''}" onclick="S.esub='vendors';render()">Vendors</button></div>`;
+
+  if(S.esub==='labor'){
+    h+=`<button class="ghost" onclick="S.showAddLabor=true;render()">+ Add Labor Type</button>`;
+    S.laborCatalog.forEach(l=>{h+=`<div class="erow"><div><div style="font-size:13px;font-weight:700">${l.name}</div><div style="font-size:11px;color:var(--t3);margin-top:2px">${l.unit} · ${l.description||'—'}</div></div><div style="text-align:right"><div style="font-size:13px;font-weight:800;color:var(--gold)">${fmt2(l.sell_rate||0)}</div><div style="font-size:10px;color:var(--t3)">cost: ${fmt2(l.cost_rate||0)}</div></div></div>`;});
+    if(!S.laborCatalog.length)h+=`<div class="empty">No labor types yet.</div>`;
+  } else if(S.esub==='vendors'){
+    h+=`<button class="ghost" onclick="S.showAddVendor=true;render()">+ Add Vendor</button>`;
+    S.vendors.forEach(v=>{h+=`<div class="erow"><div><div style="font-size:13px;font-weight:700">${v.name}</div><div style="font-size:11px;color:var(--t3);margin-top:2px">${v.phone||''} ${v.account_number?'· Acct: '+v.account_number:''}</div></div><button class="del" onclick="deleteVendor('${v.id}')">✕</button></div>`;});
+    if(!S.vendors.length)h+=`<div class="empty">No vendors yet.</div>`;
+  } else {
+    S.inventory.filter(i=>i.is_active).forEach(i=>{
+      const low=i.qty_on_hand<=i.low_stock_threshold;
+      h+=`<div class="erow"><div><div style="font-size:13px;font-weight:700">${i.name}${i.sku?` <span style="font-size:10px;color:var(--t3)">${i.sku}</span>`:''}</div><div style="font-size:11px;color:var(--t3);margin-top:2px">${i.category||'—'} · ${i.qty_on_hand} ${i.unit||'each'}${low?` <span style="color:var(--red);font-weight:800">LOW</span>`:''}</div></div><div style="text-align:right"><div style="font-size:13px;font-weight:800;color:var(--gold)">${fmt2(i.sell_price||0)}</div><div style="font-size:10px;color:var(--t3)">cost: ${fmt2(i.cost_price||0)}</div><button class="del" style="margin-top:4px" onclick="deleteInventory('${i.id}')">✕</button></div></div>`;
+    });
+    if(!S.inventory.filter(i=>i.is_active).length)h+=`<div class="empty">No inventory items yet.</div>`;
+  }
+  return h;
+}
+
+function rAddInventoryForm(){
+  return`<div class="card"><div class="field"><div class="fl">Item Name *</div><input class="inp" id="inv-name" placeholder="e.g. Schlage B60N Deadbolt"></div><div class="two"><div class="field"><div class="fl">SKU / Part #</div><input class="inp" id="inv-sku" placeholder="Optional"></div><div class="field"><div class="fl">Category</div><input class="inp" id="inv-cat" placeholder="e.g. Locks"></div></div><div class="two"><div class="field"><div class="fl">Cost Price ($)</div><input type="number" class="inp" id="inv-cost" placeholder="0.00"></div><div class="field"><div class="fl">Sell Price ($)</div><input type="number" class="inp" id="inv-sell" placeholder="0.00"></div></div><div class="three"><div class="field"><div class="fl">Qty on Hand</div><input type="number" class="inp" id="inv-qty" placeholder="0"></div><div class="field"><div class="fl">Low Alert At</div><input type="number" class="inp" id="inv-low" placeholder="5"></div><div class="field"><div class="fl">Unit</div><input class="inp" id="inv-unit" placeholder="each"></div></div><div class="field"><div class="fl">Vendor</div><select class="inp" id="inv-vendor" style="background:var(--s2)"><option value="">None</option>${S.vendors.map(v=>`<option value="${v.id}">${v.name}</option>`).join('')}</select></div><div class="brow"><button class="btnc" onclick="goBack()">Cancel</button><button class="btns" onclick="saveInventory()">Save Item</button></div></div>`;
+}
+async function saveInventory(){const name=(document.getElementById('inv-name')?.value||'').trim();if(!name)return;const data={name,sku:document.getElementById('inv-sku')?.value||'',category:document.getElementById('inv-cat')?.value||'',cost_price:parseFloat(document.getElementById('inv-cost')?.value||0),sell_price:parseFloat(document.getElementById('inv-sell')?.value||0),qty_on_hand:parseInt(document.getElementById('inv-qty')?.value||0),low_stock_threshold:parseInt(document.getElementById('inv-low')?.value||5),unit:document.getElementById('inv-unit')?.value||'each',vendor_id:document.getElementById('inv-vendor')?.value||null,is_active:true};try{const r=await dbInsert('inventory',data);S.inventory.push(r);S.showAddInventory=false;S.esub='items';render();}catch(e){alert('Error: '+e.message);}}
+async function deleteInventory(id){if(!confirm('Remove item?'))return;try{await dbUpdate('inventory',id,{is_active:false});S.inventory=S.inventory.map(i=>i.id===id?{...i,is_active:false}:i);render();}catch(e){alert('Error: '+e.message);}}
+
+function rAddVendorForm(){return`<div class="card"><div class="field"><div class="fl">Vendor Name *</div><input class="inp" id="vf-name" placeholder="e.g. Allegion / Schlage"></div><div class="two"><div class="field"><div class="fl">Phone</div><input class="inp" id="vf-phone" type="tel" placeholder="(555) 000-0000"></div><div class="field"><div class="fl">Account #</div><input class="inp" id="vf-acct" placeholder="Optional"></div></div><div class="field"><div class="fl">Email</div><input class="inp" id="vf-email" type="email" placeholder="rep@vendor.com"></div><div class="field"><div class="fl">Notes</div><input class="inp" id="vf-notes" placeholder="Optional"></div><div class="brow"><button class="btnc" onclick="goBack()">Cancel</button><button class="btns" onclick="saveVendor()">Save Vendor</button></div></div>`;}
+async function saveVendor(){const name=(document.getElementById('vf-name')?.value||'').trim();if(!name)return;const data={name,phone:document.getElementById('vf-phone')?.value||'',account_number:document.getElementById('vf-acct')?.value||'',email:document.getElementById('vf-email')?.value||'',notes:document.getElementById('vf-notes')?.value||''};try{const r=await dbInsert('vendors',data);S.vendors.push(r);S.showAddVendor=false;S.esub='vendors';render();}catch(e){alert('Error: '+e.message);}}
+async function deleteVendor(id){if(!confirm('Delete vendor?'))return;try{await dbDelete('vendors',id);S.vendors=S.vendors.filter(v=>v.id!==id);render();}catch(e){alert('Error: '+e.message);}}
+
+function rAddLaborForm(){return`<div class="card"><div class="field"><div class="fl">Labor Type Name *</div><input class="inp" id="lf-name" placeholder="e.g. Standard Labor"></div><div class="field"><div class="fl">Description</div><input class="inp" id="lf-desc" placeholder="Optional"></div><div class="two"><div class="field"><div class="fl">Sell Rate ($)</div><input type="number" class="inp" id="lf-sell" placeholder="0.00"></div><div class="field"><div class="fl">Cost Rate ($)</div><input type="number" class="inp" id="lf-cost" placeholder="0.00"></div></div><div class="field"><div class="fl">Unit</div><select class="inp" id="lf-unit" style="background:var(--s2)"><option>hourly</option><option>flat</option></select></div><div class="brow"><button class="btnc" onclick="goBack()">Cancel</button><button class="btns" onclick="saveLabor()">Save</button></div></div>`;}
+async function saveLabor(){const name=(document.getElementById('lf-name')?.value||'').trim();if(!name)return;const data={name,description:document.getElementById('lf-desc')?.value||'',sell_rate:parseFloat(document.getElementById('lf-sell')?.value||0),cost_rate:parseFloat(document.getElementById('lf-cost')?.value||0),unit:document.getElementById('lf-unit')?.value||'hourly',is_active:true};try{const r=await dbInsert('labor_catalog',data);S.laborCatalog.push(r);S.showAddLabor=false;S.esub='labor';render();}catch(e){alert('Error: '+e.message);}}
+
+// ─── P&L REPORT ───────────────────────────────────────────
+function rReport(){
+  const y=yn(),now=new Date();
+  const compJ=S.jobs.filter(j=>j.status==='Complete'&&new Date((j.completed_date||j.scheduled_date||td())+'T00:00:00').getFullYear()===y);
+  const ytdE=S.expenses.filter(e=>new Date(e.date+'T00:00:00').getFullYear()===y);
+  const s=calcStats(compJ,ytdE);
+  const plc=s.net>=0?'var(--grn)':'var(--red)';
+  const gmc=s.grossMargin>=40?'var(--grn)':s.grossMargin>=20?'var(--gold)':'var(--red)';
+  const ytdDraws=S.draws.filter(d=>new Date(d.date+'T00:00:00').getFullYear()===y).reduce((sum,d)=>sum+d.amount,0);
+  const retained=s.net-ytdDraws;
+  const ar=S.invoices.filter(i=>i.status==='Sent'||i.status==='Partial'||i.status==='Overdue').reduce((sum,i)=>sum+(i.total||0)-(i.amt_received||0),0);
+
+  let h=`<div style="margin-bottom:10px"><button class="addbtn" style="width:100%" onclick="exportCSV()">⬇ Export CSV</button></div>`;
+  h+=`<div class="sl">${y} Income Statement</div><div class="card"><table class="yt"><tr><td style="font-size:10px;font-weight:800;color:var(--t3);letter-spacing:1px" colspan="2">REVENUE</td></tr><tr><td class="lb">Gross Revenue</td><td style="color:var(--gold)">${fmt(s.rev)}</td></tr><tr><td class="lb">Outstanding A/R</td><td style="color:var(--red)">${fmt(ar)}</td></tr><tr><td style="font-size:10px;font-weight:800;color:var(--t3);letter-spacing:1px;padding-top:10px" colspan="2">COST OF GOODS SOLD</td></tr><tr><td class="lb sb2">Materials</td><td style="color:var(--t2)">-${fmt(s.mat)}</td></tr><tr><td class="lb sb2">Labor</td><td style="color:var(--t2)">-${fmt(s.lab)}</td></tr><tr><td class="lb sb2">Mileage</td><td style="color:var(--t2)">-${fmt(s.mil)}</td></tr><tr class="total-row"><td>Gross Profit</td><td style="color:${gmc}">${fmt(s.gross)} (${pct(s.grossMargin)})</td></tr><tr><td style="font-size:10px;font-weight:800;color:var(--t3);letter-spacing:1px;padding-top:10px" colspan="2">OPERATING EXPENSES</td></tr><tr><td class="lb sb2">Fixed</td><td style="color:var(--t2)">-${fmt(s.fixed)}</td></tr><tr><td class="lb sb2">Variable</td><td style="color:var(--t2)">-${fmt(s.variable)}</td></tr><tr><td class="lb sb2">One-Time</td><td style="color:var(--t2)">-${fmt(s.onetime)}</td></tr><tr class="total-row"><td>Net Operating Profit</td><td style="color:${plc}">${fmt(s.net)} (${pct(s.netMargin)})</td></tr><tr><td style="font-size:10px;font-weight:800;color:var(--t3);letter-spacing:1px;padding-top:10px" colspan="2">DISTRIBUTIONS</td></tr><tr><td class="lb sb2">Owner Draws</td><td style="color:var(--t2)">-${fmt(ytdDraws)}</td></tr><tr class="total-row"><td>Retained Earnings</td><td style="color:${retained>=0?'var(--grn)':'var(--red)'}">${fmtS(retained)}</td></tr></table></div>`;
+
+  h+=`<div class="sl" style="margin-top:4px">Monthly</div><div class="card" style="padding:13px 14px">`;
+  const maxR=Math.max(...MONTHS.map((_,i)=>compJ.filter(j=>smf(j.completed_date||j.scheduled_date,i,y)).reduce((s,j)=>s+(j.revenue||0),0)),1);
+  MONTHS.forEach((m,i)=>{const mj=compJ.filter(j=>smf(j.completed_date||j.scheduled_date,i,y));const me=ytdE.filter(e=>smf(e.date,i,y));const ms=calcStats(mj,me);const w=ms.rev>0?Math.round(ms.rev/maxR*100):0;const pc=ms.net>=0?'var(--grn)':'var(--red)';const fut=i>now.getMonth()&&y===now.getFullYear();h+=`<div class="mrow" style="${fut?'opacity:.3':''}"><div class="mn2">${m}</div><div class="mbw"><div class="mb" style="width:${w}%"></div></div><div class="mrv">${ms.rev?fmt(ms.rev):'—'}</div><div class="mpr" style="color:${pc}">${ms.rev?fmtS(ms.net):'—'}</div></div>`;});
+  h+=`</div>`;
+
+  h+=`<div class="sl" style="margin-top:4px">By Job Type</div><div class="card" style="padding:13px 14px">`;
+  const td2={};compJ.forEach(j=>{if(!td2[j.job_type])td2[j.job_type]={cnt:0,rev:0,gp:0};td2[j.job_type].cnt++;td2[j.job_type].rev+=(j.revenue||0);td2[j.job_type].gp+=((j.revenue||0)-(j.materials_cost||0)-(j.labor_cost||0)-(j.mileage_amt||0));});
+  if(!Object.keys(td2).length)h+=`<div style="color:var(--t3);font-size:12px;padding:6px 0;font-weight:600">Complete jobs to see breakdown</div>`;
+  else Object.entries(td2).sort((a,b)=>b[1].rev-a[1].rev).forEach(([type,d])=>{const m=d.rev>0?d.gp/d.rev*100:0;h+=`<div class="trow"><div><div style="font-size:12px;color:var(--t2);font-weight:600">${type}</div><div style="font-size:10px;color:var(--t3);font-weight:500;margin-top:1px">${d.cnt} job${d.cnt>1?'s':''} · avg ${fmt(d.rev/d.cnt)}</div></div><div style="font-size:15px;font-weight:800;color:${cc(m)}">${pct(m)}</div></div>`;});
+  h+=`</div>`;
+  return h;
+}
 
 function exportCSV(){
-  const jH='Date,Client,Job Type,Technician,Revenue,Materials,Labor,Miles,Mileage Deduction,Net Profit,Margin %,Payment Status,Amount Received\n';
-  const jR=S.jobs.map(j=>{const mc=matT(j.materials);const gp=j.revenue-mc-j.laborCost-(j.mileageAmt||0);const m=j.revenue>0?gp/j.revenue*100:0;return`${j.date},"${j.client||j.clientName}","${j.jobType}","${j.technician||''}",${j.revenue},${mc},${j.laborCost},${j.miles||0},${j.mileageAmt||0},${gp.toFixed(2)},${m.toFixed(1)},"${j.payStatus||'unpaid'}",${j.amtReceived||0}`;}).join('\n');
-  const eH='\n\nDate,Category,Amount,Notes\n';
-  const eR=S.expenses.map(e=>`${e.date},"${e.category}",${e.amount},"${e.notes||''}"`).join('\n');
-  const csv=jH+jR+eH+eR;
+  const jH='Date,Client,Job Type,Technician,Revenue,Materials,Labor,Miles,Mileage,Gross Profit,Margin%,Status\n';
+  const jR=S.jobs.map(j=>{const c=getC(j.client_id);const gp=(j.revenue||0)-(j.materials_cost||0)-(j.labor_cost||0)-(j.mileage_amt||0);const m=(j.revenue||0)>0?gp/(j.revenue||1)*100:0;return`${j.scheduled_date},"${c?.name||'Unknown'}","${j.job_type}","${j.technician}",${j.revenue||0},${j.materials_cost||0},${j.labor_cost||0},${j.miles||0},${j.mileage_amt||0},${gp.toFixed(2)},${m.toFixed(1)},"${j.status}"`;}).join('\n');
+  const eH='\n\nDate,Category,Type,Amount,Notes\n';
+  const eR=S.expenses.map(e=>`${e.date},"${e.category}","${e.type}",${e.amount},"${e.notes||''}"`).join('\n');
+  const iH='\n\nInvoice#,Client,Total,Status,Due Date\n';
+  const iR=S.invoices.map(i=>{const c=getC(i.client_id);return`"${i.number}","${c?.name||'Unknown'}",${(i.total||0).toFixed(2)},"${i.status}","${i.due_date||''}"`}).join('\n');
+  const csv=jH+jR+eH+eR+iH+iR;
   const blob=new Blob([csv],{type:'text/csv'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`EverGuard_${new Date().getFullYear()}_Export.csv`;a.click();
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`EverGuard_${yn()}_Export.csv`;a.click();
 }
 
-function rLearn(){if(!S.activeModule)return rModList();return rModDetail();}
-function rModList(){
-  const mods=allMod();const tL=mods.reduce((s,m)=>s+allLes(m.id).length,0);const dL=Object.values(S.lessons).filter(l=>l.completed).length;const lp=tL>0?Math.round(dL/tL*100):0;
-  let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span style="font-size:12px;color:var(--t2);font-weight:600">${dL}/${tL} complete</span><span style="font-size:13px;font-weight:800;color:var(--gold)">${lp}%</span></div><div class="prog-bg" style="height:6px;margin-bottom:18px;"><div class="prog-fill" style="width:${lp}%"></div></div>`;
-  mods.forEach(m=>{const ls=allLes(m.id);const dn=ls.filter(l=>S.lessons[`${m.id}_${l.id}`]?.completed).length;const isC=S.custMod.some(cm=>cm.id===m.id);h+=`<button class="mbtn" onclick="S.activeModule='${m.id}';S.activeLesson=null;S.showAddLes=false;render()"><div style="display:flex;align-items:center;gap:12px;"><span style="font-size:20px">${m.icon||'📖'}</span><div><div style="font-size:14px;font-weight:700;color:var(--tx)">${m.title}</div><div style="font-size:11px;color:var(--t3);margin-top:2px;font-weight:500">${dn}/${ls.length}</div></div></div><div style="display:flex;align-items:center;gap:6px;">${isC?`<button onclick="event.stopPropagation();delMod('${m.id}')" style="background:none;border:none;color:var(--t3);cursor:pointer;font-size:13px">✕</button>`:''}<span style="color:var(--t3)">›</span></div></button>`;});
-  if(S.showAddMod)h+=`<div class="card"><div class="fl" style="margin-bottom:8px">New Module</div><div style="display:flex;gap:8px;margin-bottom:8px"><input class="cinp" id="nm-icon" placeholder="Emoji" style="width:80px"><input class="cinp" id="nm-title" placeholder="Title" style="flex:1"></div><div style="display:flex;gap:8px"><button class="csm" onclick="S.showAddMod=false;render()">Cancel</button><button class="ssm" onclick="doAddMod()">Add</button></div></div>`;
-  else h+=`<button class="ghost" onclick="S.showAddMod=true;render()">+ New Module</button>`;
+// ─── TASKS ────────────────────────────────────────────────
+function rTasks(){
+  if(S.showAddTask)return rAddTaskForm();
+  const open=S.tasks.filter(t=>t.status==='open');
+  const done=S.tasks.filter(t=>t.status==='done');
+  if(!S.tasks.length)return`<div class="empty">No tasks yet.<br>Tap <strong>+ Task</strong> to add one.</div>`;
+  let h='';
+  if(open.length){h+=`<div class="sl">Open (${open.length})</div>`;open.forEach(t=>h+=renderTask(t));}
+  if(done.length){h+=`<div class="sl" style="margin-top:8px">Completed</div>`;done.forEach(t=>h+=renderTask(t));}
   return h;
 }
-function rModDetail(){
-  const mod=allMod().find(m=>m.id===S.activeModule);if(!mod)return'';
-  const lessons=allLes(S.activeModule);let h='';
-  lessons.forEach(l=>{const key=`${S.activeModule}_${l.id}`;const d=S.lessons[key]||{};const op=S.activeLesson===l.id;const isC=!!(S.custLes[S.activeModule]||[]).find(cl=>cl.id===l.id);h+=`<div class="lrow2"><div class="ltop" onclick="S.activeLesson=S.activeLesson==='${l.id}'?null:'${l.id}';render()"><div class="chk ${d.completed?'dn':''}" onclick="event.stopPropagation();ckLesson('${S.activeModule}','${l.id}')">${d.completed?`<svg width="11" height="11" viewBox="0 0 11 11"><polyline points="1.5,5.5 4.5,8.5 9.5,2.5" stroke="#050d08" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}</div><span class="lt ${d.completed?'dn':''}">${l.title}</span>${isC?`<button onclick="event.stopPropagation();delLes('${S.activeModule}','${l.id}')" style="background:none;border:none;color:var(--t3);cursor:pointer;font-size:13px">✕</button>`:''}<span style="color:var(--t3);font-size:12px;margin-left:4px">${op?'▲':'▼'}</span></div>${op?`<div style="padding-left:32px;margin-top:8px"><textarea class="nta" id="nt-${l.id}" placeholder="Notes...">${d.notes||''}</textarea><button onclick="svNote('${S.activeModule}','${l.id}')" style="margin-top:5px;background:var(--gbg);border:1px solid var(--gbr);color:var(--gold);padding:4px 11px;border-radius:6px;font-size:11px;cursor:pointer;font-family:var(--f);font-weight:700">Save Notes</button></div>`:''}</div>`;});
-  if(S.showAddLes)h+=`<div class="card" style="margin-top:4px"><div class="fl" style="margin-bottom:8px">New Lesson</div><div style="display:flex;gap:8px"><input class="cinp" id="nl-title" placeholder="Lesson title" style="flex:1"><button class="csm" onclick="S.showAddLes=false;render()">✕</button><button class="ssm" onclick="doAddLes('${S.activeModule}')">Add</button></div></div>`;
-  else h+=`<button class="ghost" style="margin-top:4px" onclick="S.showAddLes=true;render()">+ Add Lesson</button>`;
-  return h;
+
+function renderTask(t){
+  const ac=t.assigned_to==='Drew'?'ta-drew':t.assigned_to==='Jaime'?'ta-jaime':'ta-both';
+  const canDelete=isOwn()||(t.created_by===S.role);
+  return`<div class="task-row"><div style="display:flex;align-items:flex-start;gap:10px"><div class="chk ${t.status==='done'?'dn':''}" onclick="toggleTask('${t.id}')">${t.status==='done'?`<svg width="11" height="11" viewBox="0 0 11 11"><polyline points="1.5,5.5 4.5,8.5 9.5,2.5" stroke="#050d08" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}</div><div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--tx);${t.status==='done'?'text-decoration:line-through;color:var(--t3)':''}">${t.title}</div>${t.description?`<div style="font-size:12px;color:var(--t2);margin-top:4px">${t.description}</div>`:''}<div style="margin-top:6px;display:flex;align-items:center;gap:8px"><span class="task-assign ${ac}">${t.assigned_to}</span>${t.due_date?`<span style="font-size:10px;color:var(--t3);font-weight:600">${sfmt(t.due_date)}</span>`:''}</div></div>${canDelete?`<button class="del" onclick="deleteTask('${t.id}')">✕</button>`:''}</div></div>`;
 }
-function doAddMod(){const t=(document.getElementById('nm-title')?.value||'').trim();if(!t)return;S.custMod.push({id:'cm_'+Date.now(),title:t,icon:document.getElementById('nm-icon')?.value.trim()||'📖'});sv('eg_cmod',S.custMod);S.showAddMod=false;render();}
-function doAddLes(mid){const t=(document.getElementById('nl-title')?.value||'').trim();if(!t)return;if(!S.custLes[mid])S.custLes[mid]=[];S.custLes[mid].push({id:'cl_'+Date.now(),title:t});sv('eg_cles',S.custLes);S.showAddLes=false;render();}
-function delMod(id){if(!confirm('Delete module?'))return;S.custMod=S.custMod.filter(m=>m.id!==id);sv('eg_cmod',S.custMod);render();}
-function delLes(mid,lid){if(!confirm('Delete?'))return;S.custLes[mid]=(S.custLes[mid]||[]).filter(l=>l.id!==lid);sv('eg_cles',S.custLes);render();}
-function ckLesson(mid,lid){const k=`${mid}_${lid}`;S.lessons[k]={...(S.lessons[k]||{}),completed:!S.lessons[k]?.completed};sv('eg_les_v2',S.lessons);render();}
-function svNote(mid,lid){const k=`${mid}_${lid}`;S.lessons[k]={...(S.lessons[k]||{}),notes:document.getElementById(`nt-${lid}`)?.value||''};sv('eg_les_v2',S.lessons);}
 
-function rSettings(){return`<div class="sl">Accounts</div><div class="card"><div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--bd)"><div><div style="font-size:14px;font-weight:700">Drew</div><div style="font-size:11px;color:var(--t3);margin-top:2px">Owner · Full access</div></div><div style="display:flex;gap:8px;align-items:center"><span class="rbadge rb-own">OWNER</span><button class="csm" onclick="S.changingPin='owner';render()">Change PIN</button></div></div><div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0"><div><div style="font-size:14px;font-weight:700">Jaime</div><div style="font-size:11px;color:var(--t3);margin-top:2px">Partner · Home, Intake, Finance</div></div><div style="display:flex;gap:8px;align-items:center"><span class="rbadge rb-par">PARTNER</span><button class="csm" onclick="S.changingPin='partner';render()">Change PIN</button></div></div></div>${S.changingPin?`<div class="card"><div class="fl" style="margin-bottom:8px">New PIN for ${S.changingPin==='owner'?'Drew':'Jaime'}</div><input type="number" class="inp" id="np" placeholder="4 digits" style="letter-spacing:6px;font-size:20px;text-align:center;margin-bottom:12px"><div class="brow"><button class="btnc" onclick="S.changingPin=null;render()">Cancel</button><button class="btns" onclick="doChangePin()">Save</button></div></div>`:''}<div class="sl" style="margin-top:4px">Access Levels</div><div class="card"><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd)"><div style="font-size:12px;color:var(--t2);font-weight:600">Dashboard</div><div style="font-size:11px;color:var(--grn);font-weight:700">Both</div></div><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd)"><div style="font-size:12px;color:var(--t2);font-weight:600">Intake</div><div style="font-size:11px;color:var(--grn);font-weight:700">Both</div></div><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd)"><div style="font-size:12px;color:var(--t2);font-weight:600">Finance</div><div style="font-size:11px;color:var(--grn);font-weight:700">Both</div></div><div style="display:flex;justify-content:space-between;padding:8px 0"><div style="font-size:12px;color:var(--t2);font-weight:600">Learning Hub</div><div style="font-size:11px;color:var(--gold);font-weight:700">Drew only</div></div></div>`;}
-function doChangePin(){const v=(document.getElementById('np')?.value||'').trim();if(v.length!==4||isNaN(v))return;S.pins[S.changingPin]=v;sv('eg_pins',S.pins);S.changingPin=null;render();}
+function rAddTaskForm(){return`<div class="card"><div class="field"><div class="fl">Title *</div><input class="inp" id="tf-title" placeholder="What needs to get done?"></div><div class="field"><div class="fl">Description</div><textarea class="inp" id="tf-desc" rows="2" style="resize:vertical" placeholder="Details, instructions..."></textarea></div><div class="field"><div class="fl">Assign To</div><div class="assign-row"><button class="assign-opt ao-drew ${S.taskAssign==='Drew'?'on':''}" onclick="S.taskAssign='Drew';render()">Drew</button><button class="assign-opt ao-jaime ${S.taskAssign==='Jaime'?'on':''}" onclick="S.taskAssign='Jaime';render()">Jaime</button><button class="assign-opt ao-both ${S.taskAssign==='Both'?'on':''}" onclick="S.taskAssign='Both';render()">Both</button></div></div><div class="field"><div class="fl">Due Date</div><input type="date" class="inp" id="tf-due"></div><div class="brow"><button class="btnc" onclick="S.showAddTask=false;render()">Cancel</button><button class="btns" onclick="saveTask()">Add Task</button></div></div>`;}
+async function saveTask(){const title=(document.getElementById('tf-title')?.value||'').trim();if(!title)return;const data={title,description:document.getElementById('tf-desc')?.value||'',assigned_to:S.taskAssign,created_by:S.role,status:'open',due_date:document.getElementById('tf-due')?.value||null};try{const r=await dbInsert('tasks',data);S.tasks.unshift(r);S.showAddTask=false;render();}catch(e){alert('Error: '+e.message);}}
+async function toggleTask(id){const t=S.tasks.find(t=>t.id===id);const status=t?.status==='open'?'done':'open';try{await dbUpdate('tasks',id,{status});S.tasks=S.tasks.map(t=>t.id===id?{...t,status}:t);render();}catch(e){alert('Error: '+e.message);}}
+async function deleteTask(id){if(!confirm('Delete?'))return;try{await dbDelete('tasks',id);S.tasks=S.tasks.filter(t=>t.id!==id);render();}catch(e){alert('Error: '+e.message);}}
 
-ldAll();render();
+// ─── SETTINGS ─────────────────────────────────────────────
+function rSettings(){
+  return`<div class="scroll"><div class="sl">Accounts</div><div class="card"><div class="settings-row"><div><div style="font-size:14px;font-weight:700">Drew</div><div style="font-size:11px;color:var(--t3);margin-top:2px">Owner · Full access</div></div><div style="display:flex;gap:8px;align-items:center"><span class="rbadge rb-own">OWNER</span><button class="csm" onclick="S.changingPin='owner';render()">Change PIN</button></div></div><div class="settings-row"><div><div style="font-size:14px;font-weight:700">Jaime</div><div style="font-size:11px;color:var(--t3);margin-top:2px">Partner · All tabs</div></div><div style="display:flex;gap:8px;align-items:center"><span class="rbadge rb-par">PARTNER</span><button class="csm" onclick="S.changingPin='partner';render()">Change PIN</button></div></div></div>
+  ${S.changingPin?`<div class="card"><div class="fl" style="margin-bottom:8px">New PIN for ${S.changingPin==='owner'?'Drew':'Jaime'}</div><input type="number" class="inp" id="np" placeholder="4 digits" style="letter-spacing:6px;font-size:20px;text-align:center;margin-bottom:12px"><div class="brow"><button class="btnc" onclick="S.changingPin=null;render()">Cancel</button><button class="btns" onclick="doChangePin()">Save</button></div></div>`:''}
+  <div class="sl" style="margin-top:4px">App Lists (Job Types, Technicians)</div><div class="card"><div style="font-size:12px;color:var(--t2)">Manage dropdown options for job types, technicians, and expense categories.</div><div style="margin-top:12px">${['job_type','technician','expense_category'].map(type=>{const items=getLists(type);return`<div style="margin-bottom:12px"><div style="font-size:10px;font-weight:800;color:var(--t3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">${type.replace('_',' ')}</div><div style="display:flex;flex-wrap:wrap;gap:6px">${items.map(v=>`<span style="background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;color:var(--t2)">${v}</span>`).join('')}</div></div>`;}).join('')}</div><div style="font-size:11px;color:var(--t3);margin-top:8px">To add custom options, go to Settings → Lists in the next update.</div></div>
+  <div class="sl" style="margin-top:4px">Sync Status</div><div class="card"><div style="font-size:13px;color:var(--grn);font-weight:700">● Connected to Supabase</div><div style="font-size:11px;color:var(--t3);margin-top:4px">West US (Oregon) · Real-time sync active</div></div></div>`;
+}
+function doChangePin(){const v=(document.getElementById('np')?.value||'').trim();if(v.length!==4||isNaN(v))return;const pins=getPins();pins[S.changingPin]=v;savePins(pins);S.changingPin=null;render();}
+
+// ─── MAP ──────────────────────────────────────────────────
+function rMapModal(){return`<div class="modal-ov"><div class="modal-hdr"><div class="modal-title">Client Location</div><button class="close-btn" onclick="S.showMap=false;render()">×</button></div><div id="map-container" style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;"><div style="color:var(--t2);font-size:13px;font-weight:600">Loading map...</div></div><div class="map-info"><div style="display:flex;gap:20px"><div><div class="map-stat-v" id="eta-val">—</div><div class="map-stat-l">ETA</div></div><div><div class="map-stat-v" id="dist-val">—</div><div class="map-stat-l">Distance</div></div></div><div style="font-size:12px;color:var(--t2);margin-top:8px">${S.mapAddr}</div></div></div>`;}
+function previewMap(){const a=(document.getElementById('cf-addr')?.value||'').trim();if(a)openMap(a);}
+function openMap(addr){S.showMap=true;S.mapAddr=addr;render();}
+function loadLeaflet(){return new Promise(res=>{if(window.L){res();return;}const css=document.createElement('link');css.rel='stylesheet';css.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';document.head.appendChild(css);const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';s.onload=res;document.head.appendChild(s);});}
+
+async function initMap(addr){
+  const mc=document.getElementById('map-container');if(!mc)return;
+  mc.innerHTML='<div style="color:var(--t2);font-size:13px;font-weight:600;margin:auto">Locating...</div>';
+  try{
+    await loadLeaflet();
+    const geo=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addr)}&limit=1`,{headers:{'User-Agent':'EverGuardOS/1.0'}});
+    const gd=await geo.json();if(!gd.length){mc.innerHTML='<div style="color:var(--red);font-size:13px;margin:auto">Address not found</div>';return;}
+    const clat=parseFloat(gd[0].lat),clng=parseFloat(gd[0].lon);mc.innerHTML='';
+    const map=L.map(mc).setView([clat,clng],13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM'}).addTo(map);
+    const ci=L.divIcon({html:'<div style="background:#DBB183;border:3px solid #050d08;border-radius:50%;width:16px;height:16px;"></div>',iconSize:[16,16],iconAnchor:[8,8]});
+    L.marker([clat,clng],{icon:ci}).addTo(map).bindPopup(addr).openPopup();
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      const ulat=pos.coords.latitude,ulng=pos.coords.longitude;
+      const ui=L.divIcon({html:'<div style="background:#60a5fa;border:3px solid #050d08;border-radius:50%;width:16px;height:16px;"></div>',iconSize:[16,16],iconAnchor:[8,8]});
+      L.marker([ulat,ulng],{icon:ui}).addTo(map).bindPopup('You');
+      map.fitBounds([[ulat,ulng],[clat,clng]],{padding:[30,30]});
+      try{const rt=await fetch(`https://router.project-osrm.org/route/v1/driving/${ulng},${ulat};${clng},${clat}?overview=full&geometries=geojson`);const rd=await rt.json();if(rd.routes?.length){L.geoJSON(rd.routes[0].geometry,{style:{color:'#DBB183',weight:4,opacity:.8}}).addTo(map);const mins=Math.round(rd.routes[0].duration/60);const mi=(rd.routes[0].distance*0.000621371).toFixed(1);const ev=document.getElementById('eta-val'),dv=document.getElementById('dist-val');if(ev)ev.textContent=mins<60?`${mins} min`:`${Math.floor(mins/60)}h ${mins%60}m`;if(dv)dv.textContent=`${mi} mi`;}}catch(e){}
+      map.invalidateSize();
+    },()=>map.invalidateSize(),{timeout:8000});
+  }catch(e){const mc2=document.getElementById('map-container');if(mc2)mc2.innerHTML='<div style="color:var(--red);font-size:13px;margin:auto">Map unavailable</div>';}
+}
+
+// ─── GOAL ─────────────────────────────────────────────────
+async function saveGoal(){
+  const v=parseInt(document.getElementById('goal-inp')?.value||0);
+  if(v>0){S.goal=v;localStorage.setItem('eg_goal',v);}
+  S.editingGoal=false;render();
+}
+
+// ─── INIT ─────────────────────────────────────────────────
+S.goal=parseInt(localStorage.getItem('eg_goal'))||5000;
+loadAll().then(()=>render());
 </script>
 </body>
 </html>
