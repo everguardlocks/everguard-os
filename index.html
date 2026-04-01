@@ -565,7 +565,7 @@ function rDash(){
   if(openTasks>0)h+=`<div style="background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="goTab('tasks')"><div style="font-size:13px;font-weight:700">${openTasks} Open Task${openTasks>1?'s':''}</div><span style="color:var(--gold)">View →</span></div>`;
 
   const todayJobs=S.jobs.filter(j=>j.scheduled_date===td());
-  if(todayJobs.length){h+=`<div class="sl">Today's Jobs (${todayJobs.length})</div>`;todayJobs.forEach(j=>{const c=getC(j.client_id);h+=`<div class="jrow" onclick="S.tab='jobs';S.jobId='${j.id}';render()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><div><div style="font-size:14px;font-weight:700">${c?.name||'Unknown'}</div><div style="font-size:11px;color:var(--t2);margin-top:2px">${j.job_type} · ${j.technician}</div></div><span class="sbadge sb-${(j.status||'').toLowerCase().replace(' ','')}">${j.status}</span></div></div>`);};}
+  if(todayJobs.length){h+=`<div class="sl">Today's Jobs (${todayJobs.length})</div>`;todayJobs.forEach(j=>{const c=getC(j.client_id);h+=`<div class="jrow" onclick="S.tab='jobs';S.jobId='${j.id}';render()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><div><div style="font-size:14px;font-weight:700">${c?.name||'Unknown'}</div><div style="font-size:11px;color:var(--t2);margin-top:2px">${j.job_type} · ${j.technician}</div></div><span class="sbadge sb-${(j.status||'').toLowerCase().replace(' ','')}">${j.status}</span></div></div>`});}
 
   return h;
 }
@@ -1000,26 +1000,39 @@ function rInvoiceDetail(){
 
 function rAddInvoiceForm(){
   const j=S.invJobId?getJ(S.invJobId):null;
-  const clientId=S.invClientId||j?.client_id;
+  const clientId=S.invClientId||(j?j.client_id:null);
   const c=getC(clientId);
   const due=new Date();due.setDate(due.getDate()+30);
   const dueStr=due.toISOString().split('T')[0];
-  const taxEnabled=c?.tax_exempt?false:S.taxEnabled;
-
-  S.invPrefill = j && j.line_items ? j.line_items : [];},50);`).join('')}updateDocTotal('inv-total','inv-li-con');},200);<\/script>`;
-  }
-
-  return`<div class="card">${c?`<div style="font-size:12px;color:var(--t2);font-weight:600;margin-bottom:14px">Client: <strong style="color:var(--gold)">${c.name}</strong>${c.tax_exempt?` <span style="font-size:10px;color:var(--pur);font-weight:800;background:rgba(167,139,250,.1);padding:2px 6px;border-radius:6px">TAX EXEMPT</span>`:''}  </div>`:''} ${!clientId?`<div class="field"><div class="fl">Client</div><select class="inp" id="inv-client" style="background:var(--s2)"><option value="">Select...</option>${S.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select></div>`:''} <div class="two"><div class="field"><div class="fl">Invoice Date</div><input type="date" class="inp" id="if-date" value="${td()}"></div><div class="field"><div class="fl">Due Date</div><input type="date" class="inp" id="if-due" value="${dueStr}"></div></div><div class="field"><div class="fl">Line Items</div><div style="display:flex;gap:6px;margin-bottom:4px"><span style="flex:1;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase">Description</span><span style="width:54px;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;text-align:center">Qty</span><span style="width:70px;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;text-align:center">Price ($)</span><span style="width:28px"></span></div><div id="inv-li-con"></div><div style="display:flex;gap:6px;margin-top:6px"><button class="ali-btn" style="flex:1" onclick="addInvLI('part')">+ Part</button><button class="ali-btn" style="flex:1" onclick="addInvLI('labor')">+ Labor</button><button class="ali-btn" style="flex:1" onclick="addInvLI('custom')">+ Custom</button></div></div>${!c?.tax_exempt?`<div class="tax-row"><span style="font-size:13px;font-weight:600;color:var(--tx)">Sales Tax (${AZ_TAX}%)</span><button class="toggle ${taxEnabled?'on':''}" onclick="S.taxEnabled=!S.taxEnabled;render()"></button></div>`:''}<div id="inv-total" style="text-align:right;margin-top:10px;font-size:14px;font-weight:700;color:var(--gold)"></div><div class="two" style="margin-top:12px"><div class="field"><div class="fl">Payment Method</div><select class="inp" id="if-method" style="background:var(--s2)">${PAY_METHODS.map(m=>`<option>${m}</option>`).join('')}</select></div><div class="field"></div></div><div class="field"><div class="fl">Notes</div><textarea class="inp" id="if-notes" rows="2" style="resize:vertical">Net 30 — Payment due within 30 days</textarea></div><div class="brow"><button class="btnc" onclick="goBack()">Cancel</button><button class="btns" onclick="saveInvoice()">Save Invoice</button></div></div>`;
+  const taxEnabled=c&&c.tax_exempt?false:S.taxEnabled;
+  S.invPrefill=j&&j.line_items?j.line_items:[];
+  const pmOpts=PAY_METHODS.map(m=>'<option>'+m+'</option>').join('');
+  const clientOpts=S.clients.map(cl=>'<option value="'+cl.id+'">'+cl.name+'</option>').join('');
+  let h='<div class="card">';
+  if(c){h+='<div style="font-size:12px;color:var(--t2);font-weight:600;margin-bottom:14px">Client: <strong style="color:var(--gold)">'+c.name+'</strong>'+(c.tax_exempt?'<span style="font-size:10px;color:var(--pur);font-weight:800;background:rgba(167,139,250,.1);padding:2px 6px;border-radius:6px;margin-left:6px">TAX EXEMPT</span>':'')+'</div>';}
+  if(!clientId){h+='<div class="field"><div class="fl">Client</div><select class="inp" id="inv-client" style="background:var(--s2)"><option value="">Select...</option>'+clientOpts+'</select></div>';}
+  h+='<div class="two"><div class="field"><div class="fl">Invoice Date</div><input type="date" class="inp" id="if-date" value="'+td()+'"></div><div class="field"><div class="fl">Due Date</div><input type="date" class="inp" id="if-due" value="'+dueStr+'"></div></div>';
+  h+='<div class="field"><div class="fl">Line Items</div><div style="display:flex;gap:6px;margin-bottom:4px"><span style="flex:1;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase">Description</span><span style="width:54px;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;text-align:center">Qty</span><span style="width:70px;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;text-align:center">Price ($)</span><span style="width:28px"></span></div><div id="inv-li-con"></div><div style="display:flex;gap:6px;margin-top:6px"><button class="ali-btn" style="flex:1" onclick="addInvLI(0)">+ Part</button><button class="ali-btn" style="flex:1" onclick="addInvLI(1)">+ Labor</button><button class="ali-btn" style="flex:1" onclick="addInvLI(2)">+ Custom</button></div></div>';
+  if(!c||!c.tax_exempt){h+='<div class="tax-row"><span style="font-size:13px;font-weight:600;color:var(--tx)">Sales Tax ('+AZ_TAX+'%)</span><button class="toggle '+(taxEnabled?'on':'')+'" onclick="S.taxEnabled=!S.taxEnabled;render()"></button></div>';}
+  h+='<div id="inv-total" style="text-align:right;margin-top:10px;font-size:14px;font-weight:700;color:var(--gold)"></div><div class="two" style="margin-top:12px"><div class="field"><div class="fl">Payment Method</div><select class="inp" id="if-method" style="background:var(--s2)">'+pmOpts+'</select></div><div class="field"></div></div><div class="field"><div class="fl">Notes</div><textarea class="inp" id="if-notes" rows="2" style="resize:vertical">Net 30 - Payment due within 30 days</textarea></div><div class="brow"><button class="btnc" onclick="goBack()">Cancel</button><button class="btns" onclick="saveInvoice()">Save Invoice</button></div></div>';
+  return h;
 }
 
-function addInvLI(type){
+
+function addInvLI(typeNum){
   const c=document.getElementById('inv-li-con');if(!c)return;
   const id='ili'+Date.now();const d=document.createElement('div');d.className='li-row';d.id=id;
   let desc='';
-  if(type==='labor'){const opts=S.laborCatalog.filter(l=>l.is_active).map(l=>`<option value="${l.sell_rate}" data-desc="${l.name}">${l.name} ($${l.sell_rate})</option>`).join('');desc=`<select class="li-desc" onchange="this.parentElement.querySelector('.li-price').value=this.value;updateDocTotal('inv-total','inv-li-con')"><option value="">Select labor...</option>${opts}</select>`;}
-  else if(type==='part'){const opts=S.inventory.filter(i=>i.is_active).map(i=>`<option value="${i.sell_price}" data-desc="${i.name}">${i.name} ($${i.sell_price})</option>`).join('');desc=`<select class="li-desc" onchange="this.parentElement.querySelector('.li-price').value=this.value;updateDocTotal('inv-total','inv-li-con')"><option value="">Select part...</option>${opts}</select>`;}
-  else{desc=`<input class="li-desc" placeholder="Description" oninput="updateDocTotal('inv-total','inv-li-con')">`;}
-  d.innerHTML=`${desc}<input class="li-qty" type="number" placeholder="1" value="1" oninput="updateDocTotal('inv-total','inv-li-con')"><input class="li-price" type="number" placeholder="0.00" oninput="updateDocTotal('inv-total','inv-li-con')"><button class="del" onclick="document.getElementById('${id}').remove();updateDocTotal('inv-total','inv-li-con')">✕</button>`;
+  if(typeNum===1){
+    const opts=S.laborCatalog.filter(l=>l.is_active).map(l=>'<option value="'+l.sell_rate+'" data-desc="'+l.name+'">'+l.name+' ($'+l.sell_rate+')</option>').join('');
+    desc='<select class="li-desc" onchange="this.parentElement.querySelector(\'.li-price\').value=this.value;updateDocTotal(\'inv-total\',\'inv-li-con\')"><option value="">Select labor...</option>'+opts+'</select>';
+  } else if(typeNum===0){
+    const opts=S.inventory.filter(i=>i.is_active).map(i=>'<option value="'+i.sell_price+'" data-desc="'+i.name+'">'+i.name+' ($'+i.sell_price+')</option>').join('');
+    desc='<select class="li-desc" onchange="this.parentElement.querySelector(\'.li-price\').value=this.value;updateDocTotal(\'inv-total\',\'inv-li-con\')"><option value="">Select part...</option>'+opts+'</select>';
+  } else {
+    desc='<input class="li-desc" placeholder="Description" oninput="updateDocTotal(\'inv-total\',\'inv-li-con\')">';
+  }
+  d.innerHTML=desc+'<input class="li-qty" type="number" placeholder="1" value="1" oninput="updateDocTotal(\'inv-total\',\'inv-li-con\')"><input class="li-price" type="number" placeholder="0.00" oninput="updateDocTotal(\'inv-total\',\'inv-li-con\')"><button class="del" onclick="document.getElementById(\''+id+'\').remove();updateDocTotal(\'inv-total\',\'inv-li-con\')">✕</button>';
   c.appendChild(d);updateDocTotal('inv-total','inv-li-con');
 }
 
