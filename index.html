@@ -794,8 +794,8 @@ function addLI(container,type){
   const cs='width:64px;background:var(--s2);border:1px solid var(--b2);border-radius:9px;padding:11px 6px;color:var(--t3);font-size:13px;font-weight:600;outline:none;text-align:center;min-height:44px;';
   let descHTML='',costVal='0';
   if(type==='part'){
-    const opts=S.inventory.filter(i=>i.is_active!==false).map(i=>'<option value="'+i.sell_price+'" data-cost="'+(i.cost_price||0)+'" data-desc="'+i.name+'">'+i.name+'</option>').join('');
-    descHTML='<select class="li-desc" onchange="var r=this.parentElement;r.querySelector(\'.li-price\').value=this.value;r.querySelector(\'.li-cost\').value=this.options[this.selectedIndex].getAttribute(\'data-cost\')||0;updateTotal(\''+container+'\')"><option value="">Select part...</option>'+opts+'</select>';
+    const opts=S.inventory.filter(i=>i.is_active!==false).map(i=>'<option value="'+i.sell_price+'" data-cost="'+(i.cost_price||0)+'" data-desc="'+i.name+'" data-inv-id="'+i.id+'">'+i.name+' ('+i.qty_on_hand+' on hand)</option>').join('');
+    descHTML='<select class="li-desc" onchange="var r=this.parentElement;var opt=this.options[this.selectedIndex];r.querySelector(\'.li-price\').value=this.value;r.querySelector(\'.li-cost\').value=opt.getAttribute(\'data-cost\')||0;r.querySelector(\'.li-inv-id\').value=opt.getAttribute(\'data-inv-id\')||\'\';;updateTotal(\''+container+'\')"><option value="">Select part...</option>'+opts+'</select>';
   }else if(type==='labor'){
     const presets=S.laborCatalog.filter(l=>l.is_active!==false);
     const pb=presets.length?'<button type="button" style="flex-shrink:0;background:var(--gbg);border:1px solid var(--gbr);color:var(--gold);border-radius:8px;padding:0 10px;font-size:11px;font-weight:800;cursor:pointer;min-height:44px;" onclick="pickLaborPreset(\''+id+'\',\''+container+'\')">Rate ▾</button>':'';
@@ -810,6 +810,7 @@ function addLI(container,type){
     +'<input class="li-price" type="number" value="0" placeholder="Sell" oninput="updateTotal(\''+container+'\')">'
     +'<input class="li-cost" type="number" value="'+costVal+'" placeholder="Cost" style="'+cs+'" oninput="updateTotal(\''+container+'\')">'
     +'<input type="hidden" class="li-type" value="'+type+'">'
+    +'<input type="hidden" class="li-inv-id" value="">'
     +'<div class="li-tax-wrap"><span class="li-tax-lbl">Tax</span><input type="checkbox" class="li-tax-cb" '+(taxed?'checked':'')+' onchange="updateTotal(\''+container+'\')"></div>'
     +'<button class="del-btn" onclick="document.getElementById(\''+id+'\').remove();updateTotal(\''+container+'\')">✕</button>';
   con.appendChild(d);
@@ -839,6 +840,7 @@ function getLIs(containerId){
       sell_price:parseFloat(r.querySelector('.li-price')?.value)||0,
       cost_price:parseFloat(r.querySelector('.li-cost')?.value)||0,
       li_type:r.querySelector('.li-type')?.value||'custom',
+      inv_id:r.querySelector('.li-inv-id')?.value||null,
       taxable:r.querySelector('.li-tax-cb')?.checked||false};
   }).filter(i=>i.description||i.sell_price>0);
 }
@@ -984,7 +986,7 @@ async function saveJob(){
   const data={client_id:cid,quote_id:S.formQuoteId||null,po_id:document.getElementById('jf-po')?.value||null,
     job_type:document.getElementById('jf-type')?.value,technician:document.getElementById('jf-tech')?.value,
     scheduled_date:document.getElementById('jf-date')?.value||td(),status:'Scheduled',
-    notes:document.getElementById('jf-notes')?.value||'',archived:false};
+    notes:document.getElementById('jf-notes')?.value||''};
   showLoading('Saving job...');
   try{
     if(S.editingId){await dbUpd('jobs',S.editingId,data);S.jobs=S.jobs.map(j=>j.id===S.editingId?{...j,...data}:j);S.jobId=S.editingId;}
@@ -1159,18 +1161,39 @@ async function saveInvoice(){
   const poId=document.getElementById('inv-po')?.value||null;
   const data={client_id:cid,job_id:S.formJobId||null,po_id:poId||null,number:nextInvNum(),line_items:lis,
     tax_enabled:taxEnabled,tax_rate:AZ_TAX,subtotal:sub,tax,total,
-    status:'Draft',amt_received:0,
+    status:'Draft',amt_received:0,inventory_deducted:true,
     due_date:document.getElementById('inv-due')?.value||null,
     payment_method:document.getElementById('inv-method')?.value||'Cash',
     notes:document.getElementById('inv-notes')?.value||''};
   showLoading('Saving invoice...');
   try{
     let invId=S.editingId;
-    if(S.editingId){await dbUpd('invoices',S.editingId,data);S.invoices=S.invoices.map(i=>i.id===S.editingId?{...i,...data}:i);}
-    else{const r=await dbIns('invoices',data);S.invoices.unshift(r);S.invoiceN++;invId=r.id;}
+    const isNew=!S.editingId;
+    if(S.editingId){
+      // On edit: preserve inventory_deducted flag from original
+      const orig=getInv(S.editingId);
+      data.inventory_deducted=orig?.inventory_deducted||false;
+      data.number=orig?.number||data.number;
+      await dbUpd('invoices',S.editingId,data);
+      S.invoices=S.invoices.map(i=>i.id===S.editingId?{...i,...data}:i);
+    }else{
+      const r=await dbIns('invoices',data);S.invoices.unshift(r);S.invoiceN++;invId=r.id;
+    }
     if(poId){
       await dbUpd('purchase_orders',poId,{status:'Attached',invoice_id:invId});
       S.purchaseOrders=S.purchaseOrders.map(p=>p.id===poId?{...p,status:'Attached',invoice_id:invId}:p);
+    }
+    // Deduct inventory qty on new invoices only
+    if(isNew){
+      const partLines=lis.filter(li=>li.li_type==='part'&&li.inv_id&&li.qty>0);
+      for(const li of partLines){
+        const item=S.inventory.find(i=>i.id===li.inv_id);
+        if(item){
+          const newQty=Math.max((item.qty_on_hand||0)-li.qty,0);
+          await dbUpd('inventory',item.id,{qty_on_hand:newQty});
+          S.inventory=S.inventory.map(i=>i.id===item.id?{...i,qty_on_hand:newQty}:i);
+        }
+      }
     }
     S.showForm=null;S.formClientId=null;S.formJobId=null;S.editingId=null;S.invId=invId;S.tab='finance';S.fsub='invoices';
   }catch(e){alert('Error: '+e.message);}
@@ -1597,7 +1620,8 @@ function renderTask(t){
   const ac=t.assigned_to==='Drew'?'ta-drew':t.assigned_to==='Jaime'?'ta-jaime':'ta-both';
   const canDel=isAdmin()||(t.created_by===S.role);
   const priv=t.visibility&&t.visibility!=='all';
-  const privLabel=t.visibility==='drew'?'🔒 Drew only':t.visibility==='jaime'?'🔒 Jaime only':t.visibility==='admin'?'🔒 Admin only':'';
+  const meVal=S.role==='tech1'?'drew':S.role==='tech2'?'jaime':'admin';
+  const privLabel=priv?(t.visibility===meVal?'🔒 Only Me':'🔒 Private'):'';
   return '<div class="task-row"'+(priv?' style="border-color:var(--gbr);background:rgba(219,177,131,0.04)"':'')+'><div style="display:flex;align-items:flex-start;gap:12px">'
     +'<div class="chk '+(t.status==='done'?'dn':'')+'" onclick="toggleTask(\''+t.id+'\')">'
     +(t.status==='done'?'<svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" stroke="#050d08" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>':'')+'</div>'
@@ -1618,19 +1642,15 @@ function renderTask(t){
 function rTaskForm(){
   const t=S.editingId?S.tasks.find(t=>t.id===S.editingId):{};
   const vis=S.taskVis||(t.visibility||'all');
-  const visOpts=[
-    {v:'all',l:'Everyone',s:''},
-    {v:'drew',l:'🔒 Drew only',s:'color:var(--gold)'},
-    {v:'jaime',l:'🔒 Jaime only',s:'color:var(--blu)'},
-    {v:'admin',l:'🔒 Admin only',s:'color:var(--red)'},
-  ];
+  const meVal=S.role==='tech1'?'drew':S.role==='tech2'?'jaime':'admin';
+  const visOpts=[{v:'all',l:'Everyone'},{v:meVal,l:'🔒 Only Me'}];
   return '<div class="card">'
     +'<div class="field"><div class="fl">Title *</div><input class="inp" id="tf-title" value="'+(t.title||'')+'" placeholder="What needs to get done?"></div>'
     +'<div class="field"><div class="fl">Description</div><textarea class="inp" id="tf-desc" rows="3" style="resize:vertical">'+(t.description||'')+'</textarea></div>'
     +'<div class="field"><div class="fl">Assign To</div><div class="assign-row">'
     +['Drew','Jaime','Both'].map(a=>'<button class="ao ao-'+a.toLowerCase()+' '+(((S.taskAssign||t.assigned_to||'Both')===a)?'on':'')+'" onclick="S.taskAssign=\''+a+'\';render()">'+a+'</button>').join('')+'</div></div>'
-    +'<div class="field"><div class="fl">Visibility</div><div style="display:flex;gap:8px;flex-wrap:wrap">'
-    +visOpts.map(o=>'<button onclick="S.taskVis=\''+o.v+'\';render()" style="flex:1;min-width:80px;padding:10px 6px;border-radius:9px;border:1px solid '+(vis===o.v?'var(--gbr)':'var(--b2)')+';background:'+(vis===o.v?'var(--gbg)':'transparent')+';font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer;'+(vis===o.v?'color:var(--gold)':'color:var(--t3)')+';min-height:44px">'+o.l+'</button>').join('')+'</div></div>'
+    +'<div class="field"><div class="fl">Visibility</div><div style="display:flex;gap:8px">'
+    +visOpts.map(o=>'<button onclick="S.taskVis=\''+o.v+'\';render()" style="flex:1;padding:10px 6px;border-radius:9px;border:1px solid '+(vis===o.v?'var(--gbr)':'var(--b2)')+';background:'+(vis===o.v?'var(--gbg)':'transparent')+';font-family:var(--f);font-size:13px;font-weight:700;cursor:pointer;'+(vis===o.v?'color:var(--gold)':'color:var(--t3)')+';min-height:44px">'+o.l+'</button>').join('')+'</div></div>'
     +'<div class="field"><div class="fl">Due Date</div><input type="date" class="inp" id="tf-due" value="'+(t.due_date||'')+'"></div>'
     +'<div class="brow"><button class="btnc" onclick="S.taskVis=null;goBack()">Cancel</button><button class="btns" onclick="saveTask()">Save Task</button></div></div>';
 }
