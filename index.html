@@ -534,7 +534,7 @@ function render(){
   const st=getHdrState();
   const rb=isAdmin()?'<span class="rbadge rb-admin">ADMIN</span>':'<span class="rbadge rb-tech">TECH</span>';
   const gear=!S.showMap?'<button class="ibtn" onclick="S.showForm=\'settings\';render()">⚙</button>':'';
-  const srchBtn='<button class="ibtn" onclick="S.showSearch=true;S.searchQ=\'\';render()" style="font-size:16px">🔍</button>';
+  const srchBtn='<button style="background:var(--s2);border:1px solid var(--gbr);color:var(--gold);border-radius:9px;padding:7px 13px;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:5px" onclick="S.showSearch=true;S.searchQ=\'\';render()">🔍 Search</button>';
   const mapOv=S.showMap?rMapModal():'';
   let hdrLeft='';
   if(st.showBack){
@@ -686,7 +686,7 @@ function rClients(){
 }
 
 function rClientList(){
-  let h='<input class="search-inp" id="cs" placeholder="🔍  Search clients..." oninput="filterClients()" style="font-size:15px"><div id="client-list">';
+  let h='<input class="search-inp" id="cs" placeholder="🔍  Name, company, address, phone..." oninput="filterClients()" style="font-size:15px"><div id="client-list">';
   if(!S.clients.length)h+='<div class="empty">No clients yet.<br>Tap <strong>+ Client</strong> to add your first.</div>';
   S.clients.forEach(c=>{
     const jobs=S.jobs.filter(j=>j.client_id===c.id).length;
@@ -700,8 +700,8 @@ function rClientList(){
 function filterClients(){
   const q=(document.getElementById('cs')?.value||'').toLowerCase();
   const list=document.getElementById('client-list');if(!list)return;
-  const f=q?S.clients.filter(c=>(c.name+(c.company||'')+(c.phone||'')+(c.email||'')).toLowerCase().includes(q)):S.clients;
-  list.innerHTML=f.map(c=>'<div class="row-item" onclick="S.clientId=\''+c.id+'\';S.clientTab=\'info\';render()"><div><div class="ri-main">'+c.name+'</div><div class="ri-sub">'+(c.company||c.phone||'')+'</div></div><div class="ri-right" style="font-size:12px;color:var(--t3);font-weight:600">'+S.jobs.filter(j=>j.client_id===c.id).length+' jobs</div></div>').join('')||(q?'<div class="empty">No results</div>':'');
+  const f=q?S.clients.filter(c=>(c.name+' '+(c.company||'')+' '+(c.phone||'')+' '+(c.email||'')+' '+(c.address||'')).toLowerCase().includes(q)):S.clients;
+  list.innerHTML=f.map(c=>'<div class="row-item" onclick="S.clientId=\''+c.id+'\';S.clientTab=\'info\';render()"><div><div class="ri-main">'+c.name+'</div><div class="ri-sub">'+(c.company||c.address||c.phone||'')+'</div></div><div class="ri-right" style="font-size:12px;color:var(--t3);font-weight:600">'+S.jobs.filter(j=>j.client_id===c.id).length+' jobs</div></div>').join('')||(q?'<div class="empty">No results</div>':'');
 }
 
 function rClientDetail(){
@@ -1888,10 +1888,10 @@ async function initMap(addr){const mc=document.getElementById('map-container');i
 function rSearchOverlay(){
   return '<div class="search-ov">'
     +'<div class="search-hdr">'
-    +'<input class="search-box" id="global-search" placeholder="Client, PO #, invoice #..." value="'+S.searchQ+'" oninput="renderSearch()" autocomplete="off">'
+    +'<input class="search-box" id="global-search" placeholder="Client, address, company, PO #, invoice #..." value="'+S.searchQ+'" oninput="renderSearch()" autocomplete="off">'
     +'<button class="backbtn" onclick="S.showSearch=false;S.searchQ=\'\';render()">Cancel</button>'
     +'</div>'
-    +'<div class="search-results"><div style="text-align:center;padding:48px 20px;color:var(--t3);font-size:14px;font-weight:600;line-height:1.8">Search by client name,<br>PO number, or invoice #</div></div>'
+    +'<div class="search-results"><div style="text-align:center;padding:48px 20px;color:var(--t3);font-size:14px;font-weight:600;line-height:1.8">Search across everything —<br>client name, company, address,<br>phone, PO number, invoice #</div></div>'
     +'</div>';
 }
 
